@@ -1,0 +1,7 @@
+.v-row {
+  margin: 0 !important;
+
+  & + .v-row {
+    margin-top: $default-space !important;
+  }
+}

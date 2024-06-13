@@ -1,0 +1,17 @@
+.post-detail {
+  .filters {
+    .v-col-3 {
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+
+      .v-checkbox {
+        margin-left: -6px;
+      }
+    }
+  }
+}
