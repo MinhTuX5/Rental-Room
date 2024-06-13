@@ -8,6 +8,7 @@ import router from "@/router";
 import vuetify from "./plugins/vuetify"; // Import cấu hình Vuetify
 
 import { registerGlobalComponent } from "@/components/register/globalComponent.js";
+import { registerPopup } from "@/components/register/popupRegister.js";
 
 const app = createApp(App);
 
@@ -19,5 +20,6 @@ app.use(router);
 app.use(vuetify);
 
 registerGlobalComponent(app);
+registerPopup(app);
 
 app.mount("#app");

@@ -1,9 +1,13 @@
 <template>
-  <v-row align="center" class="room-search">
+  <v-row
+    align="center"
+    class="header position-sticky top-0"
+    :style="{ height: height + 'px' }"
+  >
     <v-col cols="2">
       <v-sheet> Home </v-sheet>
     </v-col>
-    <v-col cols="5">
+    <v-col cols="5" class="pt-0 pb-0">
       <v-tab :data="tabsConfig"></v-tab>
     </v-col>
     <v-col cols="5">
@@ -36,6 +40,12 @@
 
 <script>
 export default {
+  props: {
+    height: {
+      type: [Number, String],
+      default: "70",
+    },
+  },
   setup() {
     const tabsConfig = [
       { display: "Tìm trọ" },
@@ -51,8 +61,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.room-search {
+.header {
   border: 1px solid #ccc;
   margin: unset;
+  z-index: 1;
+  background-color: #fff;
 }
 </style>

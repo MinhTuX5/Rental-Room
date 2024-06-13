@@ -43,51 +43,31 @@
           <span class="mr-4">Giá cả</span>
           <span>Số lượng tương tác</span>
         </v-sheet>
-        <v-sheet
+        <post-overview
           v-for="(item, index) in postDetails"
           :key="index"
-          class="d-flex align-center border-thin mt-2"
-        >
-          <v-col cols="4" align-self="center">
-            <v-img
-              aspect-ratio="1/1"
-              cover
-              src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
-            ></v-img>
-          </v-col>
-          <v-col cols="8">
-            <v-sheet
-              ><a href="">{{ item.title }}</a></v-sheet
-            >
-            <v-sheet>{{ item.price }} đồng/tháng</v-sheet>
-            <v-sheet>{{ item.area }} m²</v-sheet>
-            <v-sheet>{{ item.description }}</v-sheet>
-            <v-row class="mt-2" justify="space-between">
-              <v-col class="mr-2">
-                <v-icon icon="$vuetify"></v-icon>
-                <span>{{ item.author }}</span>
-              </v-col>
-              <v-col class="mr-2">
-                <v-icon icon="$vuetify"></v-icon>
-                <span>Vũ Anh Tú</span>
-              </v-col>
-              <v-col>
-                <v-icon icon="$vuetify"></v-icon>
-                <span>{{ item.address }}</span>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-sheet>
+          :item="item"
+        ></post-overview>
       </v-col>
       <v-col class="border-thin ml-2">
-        <v-sheet>
-          <h2>Lọc</h2>
-        </v-sheet>
-        <v-sheet>
-          <h3>Đặc điểm nổi bật</h3>
-          <v-checkbox density="compact" label="Không chung chủ"></v-checkbox>
-          <v-checkbox density="compact" label="Phòng khép kín"></v-checkbox>
-          <v-checkbox density="compact" label="Giờ giấc tự dos"></v-checkbox>
+        <h2>Lọc</h2>
+        <v-sheet
+          v-for="(filter, index) in roomSearchCommon.filters"
+          :key="index"
+          cols="3"
+          class="mt-4"
+        >
+          <h3>{{ filter.label }}</h3>
+          <ul>
+            <li v-for="item in filter.children" :key="item.label">
+              <v-checkbox
+                :label="item.label"
+                hide-details
+                color="success"
+                density="compact"
+              ></v-checkbox>
+            </li>
+          </ul>
         </v-sheet>
       </v-col>
     </v-row>
@@ -124,166 +104,17 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { useMainView } from "./mainView";
+import PostOverview from "@/components/views/PostOverview.vue";
 
 export default {
   name: "RoomSearchView",
+  components: {
+    PostOverview,
+  },
   setup() {
-    const searchConfig = [
-      {
-        label: "Loại nhà đất",
-        items: [
-          {
-            title: "Tất cả",
-            value: 0,
-          },
-          {
-            title: "Phòng trọ, nhà trọ",
-            value: 1,
-          },
-          {
-            title: "Nhà thuê nguyên căn",
-            value: 2,
-          },
-          {
-            title: "Cho thuê căn hộ",
-            value: 3,
-          },
-        ],
-      },
-      {
-        label: "Chọn giá",
-        items: [
-          {
-            title: "Tất cả",
-            value: 0,
-          },
-          {
-            title: "Phòng trọ, nhà trọ",
-            value: 1,
-          },
-          {
-            title: "Nhà thuê nguyên căn",
-            value: 2,
-          },
-          {
-            title: "Cho thuê căn hộ",
-            value: 3,
-          },
-        ],
-      },
-      {
-        label: "Loại nhà đất",
-        items: [
-          {
-            title: "Tất cả",
-            value: 0,
-          },
-          {
-            title: "Phòng trọ, nhà trọ",
-            value: 1,
-          },
-          {
-            title: "Nhà thuê nguyên căn",
-            value: 2,
-          },
-          {
-            title: "Cho thuê căn hộ",
-            value: 3,
-          },
-        ],
-      },
-      {
-        label: "Chọn giá",
-        items: [
-          {
-            title: "Tất cả",
-            value: 0,
-          },
-          {
-            title: "Phòng trọ, nhà trọ",
-            value: 1,
-          },
-          {
-            title: "Nhà thuê nguyên căn",
-            value: 2,
-          },
-          {
-            title: "Cho thuê căn hộ",
-            value: 3,
-          },
-        ],
-      },
-      {
-        label: "Chọn giá",
-        items: [
-          {
-            title: "Tất cả",
-            value: 0,
-          },
-          {
-            title: "Phòng trọ, nhà trọ",
-            value: 1,
-          },
-          {
-            title: "Nhà thuê nguyên căn",
-            value: 2,
-          },
-          {
-            title: "Cho thuê căn hộ",
-            value: 3,
-          },
-        ],
-      },
-    ];
-
-    const popularPlaces = [
-      {
-        location: "Hà Nội",
-        image: "https://cdn.vuetifyjs.com/images/parallax/material.jpg",
-      },
-      {
-        location: "Đà Nẵng",
-        image: "https://cdn.vuetifyjs.com/images/parallax/material.jpg",
-      },
-      {
-        location: "Hồ Chí Minh",
-        image: "https://cdn.vuetifyjs.com/images/parallax/material.jpg",
-      },
-    ];
-
-    const postDetails = [
-      {
-        title:
-          "Chung cư mini thoáng mát 35m2 tại sô nhà 46 ngõ 204 Trần Duy Hưng",
-        price: 1200000,
-        area: 30,
-        description:
-          "Cho thuê phòng , NHẬN PHÒNG Ở LUÔN TỪ 1.5.24. Diện tích phòng 12m2, KHÔNG KHÉP KÍN. CÓ ĐIỀU HOÀ. Phòng sạch sẽ, không gian thoáng mát, yên tĩnh,…",
-        author: "Nguyễn Huệ",
-        address:
-          "Số 25A, ngõ 139 Nguyễn Ngọc Vũ, phường Trung Hòa, quận Cầu Giấy, thành phố Hà Nội",
-      },
-      {
-        title: "CCMN đầy đủ tiện nghi không cần nghĩ suy",
-        price: 5000000,
-        area: 35,
-        description:
-          "Cho thuê phòng , NHẬN PHÒNG Ở LUÔN TỪ 1.5.24. Diện tích phòng 12m2, KHÔNG KHÉP KÍN. CÓ ĐIỀU HOÀ. Phòng sạch sẽ, không gian thoáng mát, yên tĩnh,…",
-        author: "Nguyễn Tất Thành",
-        address:
-          "Số 25A, ngõ 139 Nguyễn Ngọc Vũ, phường Trung Hòa, quận Cầu Giấy, thành phố Hà Nội",
-      },
-    ];
-
-    const tabVal = ref(1);
-
-    return {
-      searchConfig,
-      tabVal,
-      popularPlaces,
-      postDetails,
-    };
+    const mainView = useMainView();
+    return mainView;
   },
 };
 </script>

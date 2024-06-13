@@ -3,13 +3,16 @@ import { createRouter, createWebHistory } from "vue-router";
 import NotFound from "@/pages/NotFound.vue";
 // Layout
 import RoomSearchContainer from "@/components/layout/roomSearch/Container.vue";
+import AccountContainer from "@/components/layout/account/Container.vue";
 // Auth
 import Auth from "@/views/auth/Auth.vue";
 import LoginView from "@/views/auth/login/Login.vue";
 import RegisterView from "@/views/auth/register/Register.vue";
+import ForgotPassword from "@/views/auth/forgotPassword/ForgotPassword.vue";
 // Room Search
 import RoomSearchView from "@/views/roomSearch/main/MainView.vue";
 import PostDetail from "@/views/roomSearch/postDetail/PostDetail.vue";
+import MyFavorite from "@/views/roomSearch/favorite/Favorite.vue";
 
 // init routes
 const routes = [
@@ -24,11 +27,21 @@ const routes = [
         component: RoomSearchView,
       },
       {
-        path: "/1",
+        path: "/detail",
         name: "PostDetail",
         component: PostDetail,
       },
+      {
+        path: "/favorite",
+        name: "Favorite",
+        component: MyFavorite,
+      },
     ],
+  },
+  {
+    path: "/account",
+    component: AccountContainer,
+    children: [],
   },
   {
     path: "/auth",
@@ -43,6 +56,11 @@ const routes = [
         path: "register",
         name: "RegisterView",
         component: RegisterView,
+      },
+      {
+        path: "forgotten-password",
+        name: "ForgottenPassword",
+        component: ForgotPassword,
       },
     ],
   },
