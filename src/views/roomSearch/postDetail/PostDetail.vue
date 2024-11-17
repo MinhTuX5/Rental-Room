@@ -3,7 +3,7 @@
     <v-col cols="9">
       <v-sheet>
         <v-img
-          cover
+          max-height="400"
           src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
         ></v-img>
       </v-sheet>

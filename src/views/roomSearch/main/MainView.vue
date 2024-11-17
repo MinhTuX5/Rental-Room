@@ -7,7 +7,11 @@
         cols="2"
         align-self="center"
       >
-        <v-combobox label="Loại nhà đất" :items="searchItem.items"></v-combobox>
+        <v-combobox
+          label="Loại nhà đất"
+          :items="searchItem.items"
+          hide-details
+        ></v-combobox>
       </v-col>
       <v-col cols="2">
         <v-btn color="#42b983">Tìm kiếm</v-btn>
@@ -48,6 +52,11 @@
           :key="index"
           :item="item"
         ></post-overview>
+        <v-pagination
+          v-model="page"
+          :length="pageTotal"
+          :total-visible="10"
+        ></v-pagination>
       </v-col>
       <v-col class="border-thin ml-2">
         <h2>Lọc</h2>
@@ -113,6 +122,8 @@ export default {
     PostOverview,
   },
   setup() {
+    console.log(1);
+    
     const mainView = useMainView();
     return mainView;
   },

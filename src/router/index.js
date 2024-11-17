@@ -1,74 +1,67 @@
 import { createRouter, createWebHistory } from "vue-router";
-// Pages
-import NotFound from "@/pages/NotFound.vue";
-// Layout
-import RoomSearchContainer from "@/components/layout/roomSearch/Container.vue";
-import AccountContainer from "@/components/layout/account/Container.vue";
-// Auth
-import Auth from "@/views/auth/Auth.vue";
-import LoginView from "@/views/auth/login/Login.vue";
-import RegisterView from "@/views/auth/register/Register.vue";
-import ForgotPassword from "@/views/auth/forgotPassword/ForgotPassword.vue";
-// Room Search
-import RoomSearchView from "@/views/roomSearch/main/MainView.vue";
-import PostDetail from "@/views/roomSearch/postDetail/PostDetail.vue";
-import MyFavorite from "@/views/roomSearch/favorite/Favorite.vue";
 
 // init routes
-const routes = [
-  { path: "/:pathMatch(.*)*", name: "not-found", component: NotFound },
-  {
-    path: "/",
-    component: RoomSearchContainer,
-    children: [
-      {
-        path: "",
-        name: "RoomSearchView",
-        component: RoomSearchView,
-      },
-      {
-        path: "/detail",
-        name: "PostDetail",
-        component: PostDetail,
-      },
-      {
-        path: "/favorite",
-        name: "Favorite",
-        component: MyFavorite,
-      },
-    ],
-  },
-  {
-    path: "/account",
-    component: AccountContainer,
-    children: [],
-  },
-  {
-    path: "/auth",
-    component: Auth,
-    children: [
-      {
-        path: "login",
-        name: "LoginView",
-        component: LoginView,
-      },
-      {
-        path: "register",
-        name: "RegisterView",
-        component: RegisterView,
-      },
-      {
-        path: "forgotten-password",
-        name: "ForgottenPassword",
-        component: ForgotPassword,
-      },
-    ],
-  },
-];
-
+// Thực hiện load động components => Tránh load thừa dữ liệu
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes: [
+    {
+      name: "Homepage",
+      path: "",
+      component: () => import("@/components/layout/roomSearch/Container.vue"),
+      children: [
+        {
+          path: "",
+          name: "RoomSearchView",
+          component: () => import("@/views/roomSearch/main/MainView.vue"),
+        },
+        {
+          path: "/detail",
+          name: "PostDetail",
+          component: () =>
+            import("@/views/roomSearch/postDetail/PostDetail.vue"),
+        },
+        {
+          path: "/favorite",
+          name: "Favorite",
+          component: () => import("@/views/roomSearch/favorite/Favorite.vue"),
+        },
+      ],
+    },
+    {
+      path: "/tai-khoan/",
+      name: "Account",
+      component: () => import("@/components/layout/account/Container.vue"),
+      children: [],
+    },
+    {
+      path: "/auth",
+      component: () => import("@/views/auth/Auth.vue"),
+      children: [
+        {
+          path: "login",
+          name: "LoginView",
+          component: () => import("@/views/auth/login/Login.vue"),
+        },
+        {
+          path: "register",
+          name: "RegisterView",
+          component: () => import("@/views/auth/register/Register.vue"),
+        },
+        {
+          path: "forgot-password",
+          name: "ForgottenPassword",
+          component: () =>
+            import("@/views/auth/forgotPassword/ForgotPassword.vue"),
+        },
+      ],
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: () => import("@/pages/NotFound.vue"),
+    },
+  ],
 });
 
 export default router;

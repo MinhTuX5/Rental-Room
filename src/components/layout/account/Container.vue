@@ -1,37 +1,38 @@
 <template>
-  <v-header :height="headerHeight" />
-  <v-card>
-    <v-layout>
-      <v-navigation-drawer
-        ref="nav"
-        theme="dark"
-        permanent
-        :width="navWidth"
-        :style="{
-          top: headerHeight + 'px',
-          height: 'calc(100vh - ' + headerHeight + 'px)',
-        }"
-      >
-        <v-list nav @update:selected="handleUpdateSelected">
-          <!-- prepend-icon="mdi-account-circle" -->
-          <v-list-item
-            v-for="item in features"
-            :key="item.title"
-            :title="item.title"
-            :value="item.componentId"
-          ></v-list-item>
-        </v-list>
-        <template v-slot:append>
-          <div class="pa-2">
-            <v-btn block color="red"> Đăng xuất </v-btn>
-          </div>
-        </template>
-      </v-navigation-drawer>
-    </v-layout>
-  </v-card>
-  <v-container :style="{ marginLeft: navWidth + 'px' }">
-    <component :is="componentId"></component>
-  </v-container>
+  <v-layout>
+    <!-- Header -->
+    <!-- <v-app-bar><v-header :height="headerHeight" /></v-app-bar> -->
+    <!-- left nav -->
+    <v-navigation-drawer
+      ref="nav"
+      theme="dark"
+      permanent
+      :width="navWidth"
+    >
+      <v-list nav @update:selected="handleUpdateSelected">
+        <v-list-item
+          v-for="item in features"
+          :key="item.title"
+          :title="item.title"
+          :value="item.componentId"
+          :active="item.active"
+        ></v-list-item>
+      </v-list>
+      <template #append>
+        <div class="pa-2">
+          <router-link to="/">
+            <v-btn block color="orange-darken-1"> Trang chủ </v-btn>
+          </router-link>
+          <v-btn block color="red" class="mt-2"> Đăng xuất </v-btn>
+        </div>
+      </template>
+    </v-navigation-drawer>
+
+    <!-- Main content -->
+    <v-main>
+      <component :is="componentId"></component>
+    </v-main>
+  </v-layout>
 </template>
 
 <script>
