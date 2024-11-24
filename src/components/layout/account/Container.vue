@@ -3,12 +3,14 @@
     <!-- Header -->
     <!-- <v-app-bar><v-header :height="headerHeight" /></v-app-bar> -->
     <!-- left nav -->
-    <v-navigation-drawer
-      ref="nav"
-      theme="dark"
-      permanent
-      :width="navWidth"
-    >
+    <v-navigation-drawer ref="nav" theme="dark" permanent :width="navWidth">
+      <div class="pa-2">
+        <router-link to="/">
+          <v-btn block color="orange-darken-1">
+            <v-icon icon="mdi-home" start></v-icon> Trang chủ
+          </v-btn>
+        </router-link>
+      </div>
       <v-list nav @update:selected="handleUpdateSelected">
         <v-list-item
           v-for="item in features"
@@ -20,9 +22,6 @@
       </v-list>
       <template #append>
         <div class="pa-2">
-          <router-link to="/">
-            <v-btn block color="orange-darken-1"> Trang chủ </v-btn>
-          </router-link>
           <v-btn block color="red" class="mt-2"> Đăng xuất </v-btn>
         </div>
       </template>

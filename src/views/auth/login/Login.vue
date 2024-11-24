@@ -32,6 +32,11 @@
       @input="v$.password.$touch"
     ></v-text-field>
 
+    <v-radio-group v-if="isManagementPage" inline>
+      <v-radio label="Sinh viên" value="1"></v-radio>
+      <v-radio label="Chủ trọ" value="2"></v-radio>
+    </v-radio-group>
+
     <div class="forgot-password text-end">
       <a href="#">Quên mật khẩu?</a>
     </div>

@@ -7,7 +7,14 @@
   >
     <template #eventContent="arg">
       <b>{{ arg.event.title }}</b>
-      <div>{{ moment(arg.event.start).format("HH:mm DD/MM/YYYY") }} - {{ moment(arg.event.end).format("HH:mm DD/MM/YYYY") }}</div>
+      <div>
+        {{ moment(arg.event.start).format("HH:mm DD/MM/YYYY") }}
+        {{
+          arg.event.end
+            ? " - " + moment(arg.event.end).format("HH:mm DD/MM/YYYY")
+            : ""
+        }}
+      </div>
     </template>
   </FullCalendar>
 </template>
@@ -17,22 +24,22 @@ import { onMounted, reactive } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import bootstrap5Plugin from '@fullcalendar/bootstrap5';
+import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import moment from "moment";
-import { INITIAL_EVENTS, createEventId } from './event-utils.js'
+import { INITIAL_EVENTS, createEventId } from "./event-utils.js";
 // css
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-icons/font/bootstrap-icons.css'; // needs additional webpack config!
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack config!
 
 export default {
   name: "Calendar",
   components: { FullCalendar },
   setup() {
     const handleSelect = (selectInfo) => {
-      let title = prompt('Please enter a new title for your event')
-      let calendarApi = selectInfo.view.calendar
+      let title = prompt("Please enter a new title for your event");
+      let calendarApi = selectInfo.view.calendar;
 
-      calendarApi.unselect() // clear date selection
+      calendarApi.unselect(); // clear date selection
 
       if (title) {
         calendarApi.addEvent({
@@ -40,8 +47,8 @@ export default {
           title,
           start: selectInfo.startStr,
           end: selectInfo.endStr,
-          allDay: selectInfo.allDay
-        })
+          allDay: selectInfo.allDay,
+        });
       }
     };
 
@@ -68,7 +75,7 @@ export default {
       buttonText: {
         today: "Hôm nay",
       },
-      select: handleSelect
+      select: handleSelect,
     });
 
     onMounted(() => {});

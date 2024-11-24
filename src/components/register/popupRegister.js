@@ -7,6 +7,20 @@ const PostDetailPopup = defineAsyncComponent(() =>
 const PostManagement = defineAsyncComponent(() =>
   import("@/views/roomSearch/postManagement/PostManagement.vue")
 );
+const RoomList = defineAsyncComponent(() =>
+  import("@/views/roomManagement/renter/roomList/RoomList.vue")
+);
+
+const RoomInfo = defineAsyncComponent(() =>
+  import("@/views/roomManagement/renter/roomInfo/RoomInfo.vue")
+);
+
+const Expense = defineAsyncComponent(() =>
+  import("@/views/roomManagement/renter/expense/Expense.vue")
+);
+const Calculation = defineAsyncComponent(() =>
+  import("@/views/roomManagement/renter/calculation/Calculation.vue")
+);
 
 //#region Account
 const InfoUpdating = defineAsyncComponent(() =>
@@ -26,4 +40,8 @@ export function registerPopup(app) {
   app.component("InfoUpdating", InfoUpdating);
   app.component("PasswordUpdating", PasswordUpdating);
   app.component("AppointmentSchedule", AppointmentSchedule);
+  app.component("RoomList", RoomList);
+  app.component("RoomInfo", RoomInfo);
+  app.component("Expense", Expense);
+  app.component("Calculation", Calculation);
 }

@@ -10,12 +10,18 @@
         {{ Pages.Home.displayName }}
       </v-btn>
     </v-col>
-    <v-col cols="5" class="pt-0 pb-0">
-      <v-tab :data="tabsConfig"></v-tab>
+    <v-col cols="5" class="pt-0 pb-0 d-flex justify-center">
+      <v-btn class="mr-2" variant="plain" @click="openManagePage"
+        >Quản lý phòng trọ</v-btn
+      >
+      <v-btn class="mr-2" variant="plain">Giới thiệu</v-btn>
     </v-col>
+
     <v-col cols="5">
       <v-sheet class="d-flex justify-end">
-        <router-link :to="{ name: 'Account', params: { path: 'quan-ly-bai-dang' } }">
+        <router-link
+          :to="{ name: 'Account', params: { path: 'quan-ly-bai-dang' } }"
+        >
           <v-btn prepend-icon="mdi-text-box-multiple-outline"
             >Quản lý bài đăng</v-btn
           >
@@ -34,7 +40,7 @@
 </template>
 
 <script>
-import { getCurrentInstance } from "vue";
+import { getCurrentInstance, ref } from "vue";
 export default {
   props: {
     height: {
@@ -75,11 +81,23 @@ export default {
         console.log("Page not found:", pageName);
       }
     };
+
+    const openManagePage = () => {
+      const originLink = window.location.origin;
+      const managementLink = `${originLink}/auth/login`;
+      const newTab = window.open(managementLink, "_blank");
+      newTab.previousTabData = {
+        isManagementPage: true,
+      }
+      newTab.focus();
+    };
+
     return {
       tabsConfig,
       iconPages,
       show,
       Pages,
+      openManagePage
     };
   },
 };
@@ -91,5 +109,10 @@ export default {
   margin: unset;
   z-index: 1;
   background-color: #fff;
+
+  .tabs {
+    height: 100%;
+    border: 1px solid #ccc;
+  }
 }
 </style>

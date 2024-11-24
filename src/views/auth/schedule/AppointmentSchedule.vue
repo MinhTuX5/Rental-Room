@@ -1,11 +1,11 @@
 <template>
-  <v-content>
+  <v-container>
     <calendar />
-  </v-content>
+  </v-container>
 </template>
 
 <script>
-import Calendar from '@/components/base/Calendar/fullCalendar/Calendar.vue';
+import Calendar from "@/components/base/Calendar/fullCalendar/Calendar.vue";
 import { useAppointmentSchedule } from "./appointmentSchedule";
 
 export default {

@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 // Vue validate
 import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, maxLength } from "@vuelidate/validators";
@@ -24,5 +24,15 @@ export const useLogin = () => {
 
   const v$ = useVuelidate(rules, state);
 
-  return { state, v$ };
+  const isManagementPage = ref(false);
+
+  onMounted(() => {
+    const previousTabData = window.previousTabData;
+    if (previousTabData && typeof previousTabData === "object") {
+      isManagementPage.value = previousTabData.isManagementPage ?? false;
+      sessionStorage.setItem('isManagementPage', isManagementPage.value);
+    }
+  });
+
+  return { state, v$, isManagementPage };
 };

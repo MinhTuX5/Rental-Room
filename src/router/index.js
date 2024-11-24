@@ -35,6 +35,13 @@ const router = createRouter({
       children: [],
     },
     {
+      path: "/quan-ly/",
+      name: "Management",
+      component: () =>
+        import("@/components/layout/roomManagement/Container.vue"),
+      children: [],
+    },
+    {
       path: "/auth",
       component: () => import("@/views/auth/Auth.vue"),
       children: [
