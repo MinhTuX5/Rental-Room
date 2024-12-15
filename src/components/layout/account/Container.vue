@@ -36,7 +36,6 @@
 
 <script>
 import VHeader from "@/components/layout/roomSearch/Header.vue";
-
 import { useContainer } from "./container";
 
 export default {

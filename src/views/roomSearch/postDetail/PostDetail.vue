@@ -1,32 +1,81 @@
 <template>
   <v-container class="post-detail">
     <v-col cols="9">
-      <v-sheet>
-        <v-img
-          max-height="400"
-          src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
-        ></v-img>
+      <v-sheet class="mb-4">
+        <v-carousel show-arrows="hover" :height="300">
+          <v-carousel-item
+            src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+            cover
+          ></v-carousel-item>
+
+          <v-carousel-item
+            src="https://cdn.vuetifyjs.com/images/cards/hotel.jpg"
+            cover
+          ></v-carousel-item>
+
+          <v-carousel-item
+            src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+            cover
+          ></v-carousel-item>
+        </v-carousel>
       </v-sheet>
-      <v-sheet>
-        <h1>Phòng trọ Hoàng Hoa Thám</h1>
+
+      <v-sheet class="d-flex flex-column mb-4">
+        <h2 :style="{ fontFamily: 'Lexend Medium,Roboto,Arial' }">
+          {{ model.post_title }}
+        </h2>
+        <div class="d-flex align-center">
+          <v-icon icon="mdi-map-marker-outline" color="red"></v-icon>
+          <span class="sub-title">{{ model.room_address }}</span>
+        </div>
       </v-sheet>
-      <v-sheet class="d-flex flex-column">
-        <span>Địa chỉ: {{ model.address }}</span>
-        <span>Giá: {{ model.price / 10 ** 6 }} triệu/tháng</span>
-        <span
-          >Diện tích: {{ model.area }} {{ superscriptCharacters.Squared }}</span
-        >
-        <span>Số phòng ngủ: {{ model.noOfBedrooms }}</span>
-        <span
-          >Ngày đăng: {{ moment(model.posted_date).format("DD/MM/YYYY") }}</span
-        >
+
+      <v-sheet class="d-flex justify-space-between align-center">
+        <v-sheet class="d-flex room-info mb-1">
+          <div class="d-flex flex-column info-item">
+            <span class="title text-center">Mức giá</span>
+            <span class="info"
+              >{{ model.room_price / 10 ** 6 }} triệu/tháng</span
+            >
+          </div>
+          <div class="d-flex flex-column info-item">
+            <span class="title">Diện tích</span>
+            <span class="info text-center">{{ model.room_area }} m²</span>
+          </div>
+          <div class="d-flex flex-column info-item">
+            <span class="title">Số phòng ngủ</span>
+            <span class="info text-center">{{ model.no_of_bed_rooms }}</span>
+          </div>
+          <div class="d-flex flex-column info-item">
+            <span class="title text-center">Ngày đăng</span>
+            <span class="info">{{
+              moment(model.posted_date).format("DD/MM/YYYY")
+            }}</span>
+          </div>
+        </v-sheet>
+        <!-- Features -->
+        <v-sheet class="features">
+          <v-btn
+            color="red"
+            :icon="model.favorite_post_id ? 'mdi-heart' : 'mdi-heart-outline'"
+            variant="text"
+            @click="lovePost"
+          ></v-btn>
+          <v-btn
+            color="blue"
+            icon="mdi-share-variant-outline"
+            variant="text"
+          ></v-btn>
+          <v-btn
+            color="green"
+            icon="mdi-calendar-month-outline"
+            variant="text"
+          ></v-btn>
+        </v-sheet>
       </v-sheet>
-      <v-row class="filters">
-        <v-col
-          v-for="(filter, index) in roomSearchCommon.filters"
-          :key="index"
-          cols="3"
-        >
+
+      <v-row class="filters mb-1">
+        <v-col v-for="(filter, index) in filters" :key="index" cols="3">
           <h3>{{ filter.label }}</h3>
           <ul>
             <li v-for="item in filter.children" :key="item.label">
@@ -35,15 +84,21 @@
                 hide-details
                 color="success"
                 density="compact"
+                v-model="model.room_characteristic"
+                :value="item.value"
+                :disabled="true"
               ></v-checkbox>
             </li>
           </ul>
         </v-col>
       </v-row>
-      <v-sheet>
+
+      <v-sheet class="mb-4">
         <h3>Mô tả thêm</h3>
-        <p>{{ model.description }}</p>
+        <v-textarea label="" :model-value="model.room_description" auto-grow>
+        </v-textarea>
       </v-sheet>
+
       <v-sheet>
         <h3>Bản đồ</h3>
         <p>Địa chỉ: {{ model.address }}</p>
@@ -57,12 +112,6 @@
           referrerpolicy="no-referrer-when-downgrade"
         ></iframe>
       </v-sheet>
-      <v-row justify="space-between" class="mt-4">
-        <v-btn variant="outlined" color="red-darken-1">Yêu thích</v-btn>
-        <v-btn variant="outlined" color="blue-darken-1">Chia sẻ</v-btn>
-        <v-btn variant="outlined" color="green-darken-1">Đặt lịch</v-btn>
-        <v-btn variant="outlined">Báo cáo vi phạm</v-btn>
-      </v-row>
     </v-col>
     <v-col></v-col>
   </v-container>
@@ -70,9 +119,12 @@
 
 <script>
 import { usePostDetail } from "./postDetail.js";
+// base
+import baseView from "@/views/base/baseView";
 
 export default {
   name: "PostDetail",
+  extends: baseView,
   setup() {
     const resource = usePostDetail();
     return resource;

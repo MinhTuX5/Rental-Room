@@ -4,7 +4,7 @@
   >
     <!-- Heart -->
     <v-icon
-      v-if="!item.is_liked"
+      v-if="!item.favorite_post_id"
       icon="mdi-heart-outline"
       class="position-absolute top-0 right-0 pa-4 cursor-pointer"
     ></v-icon>
@@ -22,51 +22,48 @@
       ></v-img>
     </v-col>
     <v-col cols="9">
-      <!-- Title -->
-      <router-link :to="{ name: 'PostDetail' }" class="text-decoration-none">
-        <v-sheet
-          class="text-h6 d-webkit-box text-limit text-line-clamp-2 text-blue"
+      <v-sheet class="d-flex">
+        <!-- Title -->
+        <v-span
+          class="text-h7 text-limit text-no-wrap text-blue cursor-pointer mr-4"
+          @click="viewDetail"
         >
-          {{ item.title }}
-        </v-sheet>
-      </router-link>
+          {{ item.post_title }}
+        </v-span>
+      </v-sheet>
       <!-- Detail info -->
-      <v-sheet class="d-flex justify-space-between mt-2">
-        <v-sheet class="d-flex">
-          <v-sheet class="d-flex align-center mr-2">
-            <v-icon icon="mdi-cash" color="green"></v-icon>
-            <span>{{ item.price }} đồng/tháng</span>
-          </v-sheet>
-          <v-sheet class="d-flex align-center mr-2">
-            <v-icon icon="mdi-home" v-tooltip="'Diện tích'"></v-icon>
-            <span>{{ item.area }} m²</span>
-          </v-sheet>
+      <v-sheet class="d-flex justify-space-between mt-2 info">
+        <v-sheet class="d-flex align-center mr-2">
+          <v-icon icon="mdi-cash" color="green" v-tooltip="'Giá thuê'"></v-icon>
+          <span>{{ item.room_price }} đồng/tháng</span>
         </v-sheet>
-        <v-sheet class="d-flex">
-          <v-sheet class="d-flex align-center mr-2">
-            <v-icon icon="mdi-account-tie" v-tooltip="'Người đăng'"></v-icon>
-            <span>{{ item.author }}</span>
-          </v-sheet>
-          <v-sheet class="d-flex align-center">
-            <v-icon
-              icon="mdi-calendar-clock"
-              v-tooltip="'Ngày đăng'"
-              color="blue"
-            ></v-icon>
-            <span>{{ moment(item.posting_date).format("DD/MM/YYYY") }}</span>
-          </v-sheet>
+        <v-sheet class="d-flex align-center mr-2">
+          <v-icon icon="mdi-home" v-tooltip="'Diện tích'"></v-icon>
+          <span>{{ item.room_area }} m²</span>
+        </v-sheet>
+        <v-sheet class="d-flex align-center mr-2">
+          <v-icon icon="mdi-account-tie" v-tooltip="'Người đăng'"></v-icon>
+          <span>{{ item.post_author }}</span>
+        </v-sheet>
+        <v-sheet class="d-flex align-center">
+          <v-icon
+            icon="mdi-calendar-clock"
+            v-tooltip="'Ngày đăng'"
+            color="blue"
+          ></v-icon>
+          <span>{{ moment(item.posted_date).format("DD/MM/YYYY") }}</span>
         </v-sheet>
       </v-sheet>
       <v-sheet class="d-flex mt-2">
         <v-icon icon="mdi-map-marker-outline" color="red"></v-icon>
-        <span class="text-limit text-no-wrap" v-tooltip="item.address">{{
-          item.address
+        <span class="text-limit text-no-wrap" v-tooltip="item.room_address">{{
+          item.room_address
         }}</span>
       </v-sheet>
       <v-sheet class="d-flex align-start mt-2">
         <v-icon icon="mdi-text-account" class="mr-1" />
         <span class="text-limit limit-2-line" v-tooltip="item.description">{{
-          item.description
+          item.room_description
         }}</span>
       </v-sheet>
 
@@ -77,6 +74,7 @@
 
 <script>
 import moment from "moment";
+import { getCurrentInstance, onMounted } from "vue";
 
 export default {
   props: {
@@ -86,8 +84,19 @@ export default {
     },
   },
   setup() {
+    const { proxy } = getCurrentInstance();
+
+    const viewDetail = () => {
+      const me = proxy;
+      me.$router.push({
+        name: "PostDetail",
+        params: { id: me.$props.item.room_post_id },
+      });
+    };
+
     return {
       moment,
+      viewDetail,
     };
   },
 };
@@ -96,6 +105,12 @@ export default {
 <style lang="scss" scoped>
 .limit-2-line {
   white-space: nowrap;
+}
+
+.info {
+  .v-icon {
+    margin-right: 4px;
+  }
 }
 
 @media screen and (min-width: 1920px) {

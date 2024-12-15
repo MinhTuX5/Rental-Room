@@ -1,5 +1,5 @@
 <template>
-  <v-layout>
+  <v-layout class="room-management-container">
     <!-- Header -->
     <v-app-bar
       color="teal-darken-4"
@@ -36,23 +36,43 @@
       </v-menu>
     </v-app-bar>
     <!-- left nav -->
-    <v-navigation-drawer ref="nav" theme="dark" permanent :width="navWidth">
-      <v-list nav @update:selected="handleSelected">
-        <v-list-item
-          v-for="item in features"
-          :key="item.title"
-          :title="item.title"
-          :value="item.componentId"
-          :active="item.active"
-        ></v-list-item>
+    <v-navigation-drawer ref="nav" theme="dark" permanent>
+      <v-list nav :opened="open" @update:selected="handleSelected">
+        <div v-for="item in features" :key="item.title">
+          <v-list-item
+            v-if="!item.isGroup"
+            :title="item.title"
+            :value="item.componentId"
+            :active="item.active"
+          >
+            <template v-slot:prepend>
+              <v-icon :icon="item.icon"></v-icon> </template
+          ></v-list-item>
+          <v-list-group v-else value="Dictionary">
+            <template #activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                :prepend-icon="item.icon"
+                title="Dictionary"
+              ></v-list-item>
+            </template>
+            <v-list-item
+              v-for="child in item.children"
+              :key="child.title"
+              :title="child.title"
+              :value="child.componentId"
+              :active="child.active"
+            >
+              <template #prepend> <v-icon :icon="child.icon"></v-icon> </template
+            ></v-list-item>
+          </v-list-group>
+        </div>
       </v-list>
     </v-navigation-drawer>
 
     <!-- Main content -->
     <v-main ref="main" class="h-screen">
-      <component
-        :is="componentId"
-      ></component>
+      <component :is="componentId"></component>
     </v-main>
   </v-layout>
 </template>
@@ -76,6 +96,9 @@ export default {
 </script>
 
 <style lang="scss">
-.account-container {
+.room-management-container {
+  .v-list-item__spacer {
+    width: 8px !important;
+  }
 }
 </style>

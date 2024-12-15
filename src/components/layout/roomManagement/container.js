@@ -5,11 +5,39 @@ export const useContainer = () => {
   const menuItems = [{ title: "Tìm phòng trọ" }, { title: "Đăng xuất" }];
 
   const features = reactive([
-    { title: "Danh sách phòng", componentId: "RoomList" },
-    { title: "Thông tin phòng", componentId: "RoomInfo" },
-    { title: "Lịch biểu", componentId: "AppointmentSchedule" },
-    { title: "Quản lý chi tiêu", componentId: "Expense" },
-    { title: "Tính toán", componentId: "Calculation" },
+    {
+      title: "Danh sách phòng",
+      componentId: "RoomList",
+      icon: "mdi-list-box-outline",
+    },
+    {
+      title: "Thông tin phòng",
+      componentId: "RoomInfo",
+      icon: "mdi-information-variant-circle-outline",
+    },
+    {
+      title: "Lịch biểu",
+      componentId: "AppointmentSchedule",
+      icon: "mdi-calendar-account-outline",
+    },
+    {
+      title: "Quản lý chi tiêu",
+      componentId: "Expense",
+      icon: "mdi-calendar-account-outline",
+    },
+    { title: "Tính toán", componentId: "Calculation", icon: "mdi-calculator" },
+    {
+      title: "Danh mục",
+      icon: "mdi-cloud-print-outline",
+      isGroup: true,
+      children: [
+        {
+          title: "Phương tiện",
+          componentId: "VehicleList",
+          icon: "mdi-atv",
+        },
+      ],
+    },
   ]);
   const componentId = ref(features[0].componentId);
 
@@ -27,6 +55,8 @@ export const useContainer = () => {
     }
   };
 
+  const open = [];
+
   onMounted(() => {
     window._container = proxy;
   });
@@ -36,5 +66,6 @@ export const useContainer = () => {
     features,
     componentId,
     handleSelected,
+    open,
   };
 };

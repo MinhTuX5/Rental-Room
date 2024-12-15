@@ -1,0 +1,10 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+
+  .right {
+    .add {
+      width: fit-content;
+    }
+  }
+}

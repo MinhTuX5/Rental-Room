@@ -1,0 +1,29 @@
+<template>
+  <div class="vehicle-list flex-column">
+    <t-feature></t-feature>
+    <t-data-table :items="items" :headers="headers"></t-data-table>
+  </div>
+</template>
+
+<script>
+import { usVehicleList } from "./vehicleList";
+import BaseList from "@/views/base/baseList.js";
+// components
+import TFeature from "@/components/base/views/TFeature.vue";
+
+export default {
+  extends: BaseList,
+  name: "VehicleList",
+  components: { TFeature },
+  setup() {
+    const vehicleList = usVehicleList();
+    return vehicleList;
+  },
+};
+</script>
+
+<style lang="scss">
+.vehicle-list {
+  @import "./VehicleList.scss";
+}
+</style>

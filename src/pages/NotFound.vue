@@ -1,7 +1,10 @@
 <template>
-  <div class="main">
-    <h1 class="center">Không tìm thấy trang!</h1>
-  </div>
+  <v-empty-state
+    headline="Có lỗi xảy ra, 404"
+    title="Không tìm thấy trang"
+    text="Trang bạn đang tìm kiếm không tồn tại"
+    image="https://vuetifyjs.b-cdn.net/docs/images/logos/v.png"
+  ></v-empty-state>
 </template>
 
 <script>

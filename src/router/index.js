@@ -8,16 +8,19 @@ const router = createRouter({
     {
       name: "Homepage",
       path: "",
+      redirect: "/trang-chu",
       component: () => import("@/components/layout/roomSearch/Container.vue"),
+      meta: { requiresAuth: true },
       children: [
         {
-          path: "",
+          path: "/trang-chu",
           name: "RoomSearchView",
           component: () => import("@/views/roomSearch/main/MainView.vue"),
         },
         {
-          path: "/detail",
+          path: "/post/:id",
           name: "PostDetail",
+          meta: { requiresAuth: true },
           component: () =>
             import("@/views/roomSearch/postDetail/PostDetail.vue"),
         },
@@ -70,5 +73,29 @@ const router = createRouter({
     },
   ],
 });
+
+router.beforeEach((to, from, next) => {
+  // log ra tên trang được mở
+  console.log(to.name);
+
+  if (to.meta.requiresAuth && !isLoggedIn()) {
+    next("/auth/login");
+  } else {
+    next();
+  }
+});
+
+const isLoggedIn = () => {
+  // Kiểm tra xem người dùng đã đăng nhập chưa
+  // Trả về true nếu đã đăng nhập, ngược lại trả về false
+  const context = localStorage.getItem("context");
+  if (context) {
+    const contextObj = JSON.parse(context);
+    if (contextObj.accessToken == "123456789") {
+      return true;
+    }
+  }
+  return false;
+};
 
 export default router;

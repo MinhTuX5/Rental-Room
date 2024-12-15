@@ -1,5 +1,5 @@
-import VTab from "@/components/base/tab/VTab.vue";
+import DataTable from "@/components/base/table/DataTable.vue";
 
 export function registerGlobalComponent(app) {
-  app.component(VTab.name, VTab);
+  app.component(DataTable.name, DataTable);
 }

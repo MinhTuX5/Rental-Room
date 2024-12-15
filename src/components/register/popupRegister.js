@@ -34,6 +34,13 @@ const AppointmentSchedule = defineAsyncComponent(() =>
 );
 //#endregion
 
+//#region dictionary
+// C:\Users\thinh\OneDrive\Máy tính\Rental-Room\src\views\roomManagement\innkeeper\dictionary\vehicle\VehicleList.vue
+const VehicleList = defineAsyncComponent(() =>
+  import("@/views/roomManagement/innkeeper/dictionary/vehicle/VehicleList.vue")
+);
+//#endregion
+
 export function registerPopup(app) {
   app.component("PostDetailPopup", PostDetailPopup);
   app.component("PostManagement", PostManagement);
@@ -44,4 +51,5 @@ export function registerPopup(app) {
   app.component("RoomInfo", RoomInfo);
   app.component("Expense", Expense);
   app.component("Calculation", Calculation);
+  app.component("VehicleList", VehicleList);
 }

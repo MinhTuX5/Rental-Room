@@ -1,4 +1,35 @@
+import { useAppStore } from "@/stores/appStore";
+
 // Create a function to introduce a delay
 export const delay = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+export const MessageType = {
+  Success: "success",
+};
+
+export const showMessage = (
+  content = "Thao tác thành công",
+  type = MessageType.Success
+) => {
+  const appStore = useAppStore();
+  appStore.alertType = type;
+  appStore.alertMessage = content;
+  appStore.showAlert = true;
+
+  setTimeout(() => {
+    appStore.showAlert = false;
+  }, 2000);
+};
+
+//#region Validate
+export const isJson = (str) => {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+//#endregion

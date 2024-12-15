@@ -1,0 +1,14 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+
+  .left {
+    width: 280px;
+  }
+
+  .right {
+    .add {
+      width: fit-content;
+    }
+  }
+}

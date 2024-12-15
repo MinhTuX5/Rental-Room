@@ -108,3 +108,7 @@ npm i @fullcalendar/core @fullcalendar/vue3 @fullcalendar/daygrid @fullcalendar/
   load dữ liệu các node con.
   ○ Tối ưu render ít cấp nhất có thể: danh sách dạng cây thường dữ liệu có nhiều cấp, để tối ưu thời gian
   render thì có thể chỉ render 1 hoặc 2 cấp, khi expand node thì mới render cấp tiếp theo.
+
+
+### Viet Nam Location APIs
+https://provinces.open-api.vn/api/?depth=3

@@ -48,8 +48,8 @@
           <span>Số lượng tương tác</span>
         </v-sheet>
         <post-overview
-          v-for="(item, index) in postDetails"
-          :key="index"
+          v-for="item in postDetails"
+          :key="item.room_post_id"
           :item="item"
         ></post-overview>
         <v-pagination
@@ -113,17 +113,20 @@
 </template>
 
 <script>
+// resources
 import { useMainView } from "./mainView";
+// components
 import PostOverview from "@/components/views/PostOverview.vue";
+// base
+import baseView from "@/views/base/baseView";
 
 export default {
   name: "RoomSearchView",
+  extends: baseView,
   components: {
     PostOverview,
   },
   setup() {
-    console.log(1);
-    
     const mainView = useMainView();
     return mainView;
   },

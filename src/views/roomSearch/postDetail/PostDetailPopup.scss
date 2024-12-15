@@ -1,0 +1,26 @@
+.post-detail-popup {
+  .v-row {
+    .v-col {
+      padding: unset;
+    }
+  }
+
+  .address,
+  .room-description {
+    .v-col {
+      & + .v-col {
+        margin-left: 16px;
+      }
+    }
+  }
+
+  .required {
+    color: red;
+  }
+
+  .gender {
+    .v-radio {
+      margin-right: 32px;
+    }
+  }
+}

@@ -14,12 +14,12 @@
     </v-sheet>
 
     <v-text-field
-      v-model="state.phoneNumber"
-      :error-messages="v$.phoneNumber.$errors.map((e) => e.$message)"
+      v-model="state.account"
+      :error-messages="v$.account.$errors.map((e) => e.$message)"
       label="Số điện thoại*"
       required
-      @blur="v$.phoneNumber.$touch"
-      @input="v$.phoneNumber.$touch"
+      @blur="v$.account.$touch"
+      @input="v$.account.$touch"
     ></v-text-field>
 
     <v-text-field
@@ -41,7 +41,7 @@
       <a href="#">Quên mật khẩu?</a>
     </div>
 
-    <v-btn class="mx-auto mt-4" @click="v$.$validate" color="green-lighten-1">
+    <v-btn class="mx-auto mt-4" @click="login" color="green-lighten-1">
       Đăng nhập
     </v-btn>
 
