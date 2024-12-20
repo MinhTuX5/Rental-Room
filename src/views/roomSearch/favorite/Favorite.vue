@@ -13,7 +13,7 @@
 
 <script>
 import { useFavorite } from "./favorite";
-import PostOverview from "@/components/views/PostOverview.vue";
+import PostOverview from "@/components/views/postOverview/PostOverview.vue";
 
 export default {
   name: "MyFavorite",

@@ -6,6 +6,7 @@ import {
   computed,
   getCurrentInstance,
 } from "vue";
+import { cloneDeep } from "lodash";
 // Resources
 import { useRoomSearchCommon } from "../roomSearchCommon";
 // stores
@@ -149,12 +150,18 @@ export const usePostDetailPopup = () => {
 
   const beforeSubmit = () => {
     const me = proxy;
+    me.model.RoomCharacteristic = cloneDeep(roomCharacteristic.value);
     me.model.room_characteristic = JSON.stringify(roomCharacteristic.value);
     me.model.room_address = roomAddress.value;
 
     const contextStore = useContextStore();
     const { user_name } = contextStore.$state;
-    me.model.post_author = user_name ?? 'nvthinh';
+    me.model.post_author = user_name ?? "nvthinh";
+
+    // Loại bỏ dấu phẩy trong chuỗi
+    const numberWithoutCommas = roomPrice.value.replace(/,/g, "");
+    // Chuyển đổi chuỗi thành số
+    me.model.room_price = parseInt(numberWithoutCommas);
   };
 
   onMounted(() => {
@@ -164,6 +171,8 @@ export const usePostDetailPopup = () => {
       room_gender: 0,
       room_price_unit: 0,
       no_of_bed_rooms: 1,
+      room_people_limit: 0,
+      room_vehicle_limit: 0,
     };
 
     priceUnit.value = unitList[0];

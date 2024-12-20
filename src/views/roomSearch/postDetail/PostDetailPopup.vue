@@ -153,9 +153,32 @@
               <v-radio label="Nữ" :value="2"></v-radio>
             </v-radio-group>
           </v-col>
+          <v-col>
+            <label class="text-h6 mb-2">Giới hạn số người ở</label>
+            <v-number-input
+              controlVariant="stacked"
+              :reverse="false"
+              :inset="false"
+              :min="0"
+              v-model="model.room_people_limit"
+            ></v-number-input>
+          </v-col>
+          <v-col>
+            <label class="text-h6 mb-2">Giới hạn số xe</label>
+            <v-number-input
+              controlVariant="stacked"
+              :reverse="false"
+              :inset="false"
+              :min="0"
+              v-model="model.room_vehicle_limit"
+            ></v-number-input>
+          </v-col>
         </v-row>
         <!-- Mô tả thêm -->
-        <normal-input label="Mô tả thêm" control-type="textarea"></normal-input>
+        <v-textarea
+          label="Mô tả thêm"
+          v-model="model.room_description"
+        ></v-textarea>
         <!-- Hình ảnh -->
         <v-file-input
           :rules="imageRules"

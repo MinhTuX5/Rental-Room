@@ -26,10 +26,23 @@ export default class BaseStore {
         };
       },
 
+      /**
+       * @description Thêm mới
+       * @param {Object} config
+       */
       async insertAsync(config) {
         const response = await api.postAsync(config);
         return response;
-      }
+      },
+
+      /**
+       * @description Xóa
+       * @param {Object} config
+       */
+      async deleteAsync(id) {
+        const response = await api.deleteAsync(id);
+        return response;
+      },
     };
   }
 }

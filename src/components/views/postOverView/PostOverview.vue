@@ -1,27 +1,26 @@
 <template>
   <v-sheet
-    class="d-flex align-center border-thin mt-2 position-relative align-stretch"
+    class="post-over-view d-flex align-center border-thin position-relative align-stretch"
   >
     <!-- Heart -->
     <v-icon
-      v-if="!item.favorite_post_id"
+      v-show="isShowLikeIcon && !item.favorite_post_id"
       icon="mdi-heart-outline"
       class="position-absolute top-0 right-0 pa-4 cursor-pointer"
     ></v-icon>
     <v-icon
-      v-else
+      v-show="isShowLikeIcon && item.favorite_post_id"
       icon="mdi-heart"
       class="position-absolute top-0 right-0 pa-4 cursor-pointer"
       :color="'red'"
     ></v-icon>
     <!-- Avatar -->
-    <v-col cols="3" align-self="center">
+    <v-col cols="2" align-self="center">
       <v-img
-        cover
         src="https://images.cenhomes.vn/2020/03/1585033152-can-ho-mau-eurowindow-river-park.jpg"
       ></v-img>
     </v-col>
-    <v-col cols="9">
+    <v-col :cols="isShowFeatureBtn ? 8 : 10">
       <v-sheet class="d-flex">
         <!-- Title -->
         <v-span
@@ -32,25 +31,17 @@
         </v-span>
       </v-sheet>
       <!-- Detail info -->
-      <v-sheet class="d-flex justify-space-between mt-2 info">
-        <v-sheet class="d-flex align-center mr-2">
-          <v-icon icon="mdi-cash" color="green" v-tooltip="'Giá thuê'"></v-icon>
+      <v-sheet class="d-flex mt-2 info">
+        <v-sheet class="d-flex align-center mr-8">
+          <v-icon icon="mdi-cash" v-tooltip="'Giá thuê'"></v-icon>
           <span>{{ item.room_price }} đồng/tháng</span>
         </v-sheet>
-        <v-sheet class="d-flex align-center mr-2">
+        <v-sheet class="d-flex align-center mr-8">
           <v-icon icon="mdi-home" v-tooltip="'Diện tích'"></v-icon>
           <span>{{ item.room_area }} m²</span>
         </v-sheet>
-        <v-sheet class="d-flex align-center mr-2">
-          <v-icon icon="mdi-account-tie" v-tooltip="'Người đăng'"></v-icon>
-          <span>{{ item.post_author }}</span>
-        </v-sheet>
         <v-sheet class="d-flex align-center">
-          <v-icon
-            icon="mdi-calendar-clock"
-            v-tooltip="'Ngày đăng'"
-            color="blue"
-          ></v-icon>
+          <v-icon icon="mdi-calendar-clock" v-tooltip="'Ngày đăng'"></v-icon>
           <span>{{ moment(item.posted_date).format("DD/MM/YYYY") }}</span>
         </v-sheet>
       </v-sheet>
@@ -69,12 +60,27 @@
 
       <!-- More info -->
     </v-col>
+    <v-col v-if="isShowFeatureBtn" cols="2" class="d-flex justify-end">
+      <v-sheet class="d-flex flex-column justify-center align-center">
+        <v-btn
+          prepend-icon="mdi-trash-can-outline"
+          color="red"
+          class="w-fit-content"
+          @click="onDeletePost"
+          >Xóa</v-btn
+        >
+        <v-btn prepend-icon="mdi-eye-off-outline" class="w-fit-content"
+          >Ẩn bài đăng</v-btn
+        >
+      </v-sheet>
+    </v-col>
   </v-sheet>
 </template>
 
 <script>
 import moment from "moment";
-import { getCurrentInstance, onMounted } from "vue";
+// resources
+import { usePostOverview } from "./postOverview";
 
 export default {
   props: {
@@ -82,27 +88,32 @@ export default {
       type: Object,
       required: true,
     },
+    isShowLikeIcon: {
+      type: Boolean,
+      default: true,
+    },
+    isShowFeatureBtn: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
-    const { proxy } = getCurrentInstance();
-
-    const viewDetail = () => {
-      const me = proxy;
-      me.$router.push({
-        name: "PostDetail",
-        params: { id: me.$props.item.room_post_id },
-      });
-    };
-
+    const resource = usePostOverview();
     return {
+      ...resource,
       moment,
-      viewDetail,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.v-btn {
+  & + .v-btn {
+    margin-top: 16px;
+  }
+}
+
 .limit-2-line {
   white-space: nowrap;
 }

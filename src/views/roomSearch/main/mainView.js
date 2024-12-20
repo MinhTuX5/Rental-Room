@@ -139,7 +139,7 @@ export const useMainView = () => {
   // số thứ tự của trang hiện tại
   const page = ref(1);
   // số lượng trang
-  const pageTotal = computed(() => postDetails.value.length / 10);
+  const pageTotal = computed(() => Math.ceil(postDetails.value.length / 10));
   //#endregion
 
   const tabVal = ref(1);
@@ -147,7 +147,7 @@ export const useMainView = () => {
   onMounted(async () => {
     const payload = {
       Skip: 0,
-      Take: 10,
+      Take: 20,
     };
     const res = await roomPostStore.getPaging(payload);
     postDetails.value = res.data;

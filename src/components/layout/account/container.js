@@ -7,19 +7,17 @@ export const useContainer = () => {
   const navWidth = 200;
 
   const features = reactive([
-    { title: "Đăng bài", componentId: "PostDetailPopup", path: "dang-bai" },
+    { title: "Đăng bài", componentId: "PostDetailPopup" },
     {
       title: "Quản lý bài đăng",
       componentId: "PostManagement",
-      path: "quan-ly-bai-dang",
     },
     {
-      title: "Sửa thông tin cá nhân",
+      title: "Quản lý thông tin",
       componentId: "InfoUpdating",
       path: "cap-nhat-thong-tin",
     },
-    { title: "Đổi mật khẩu", componentId: "PasswordUpdating", path: 'doi-mat-khau' },
-    { title: "Lịch hẹn", componentId: "AppointmentSchedule", path: 'lich-hen' },
+    { title: "Lịch hẹn", componentId: "AppointmentSchedule", path: "lich-hen" },
   ]);
 
   const onClickTab = (value) => {
@@ -31,15 +29,17 @@ export const useContainer = () => {
 
   /**
    * @description Xử lý sự kiện chọn tab khác
-   * @author nvthinh 03.08.2024
    */
-  const handleUpdateSelected = (value) => {
+  const handleUpdateSelected = ([routerName, ...args]) => {
+    const me = proxy;
+    debugger;
     const selectedItem = features.find((x) => x.active);
-    if (Array.isArray(value) && value.length) {
-      componentId.value = value[0];
-      if (selectedItem && componentId.value != selectedItem.componentId) {
-        selectedItem.active = false;
-      }
+    if (selectedItem) {
+      selectedItem.active = false;
+    }
+
+    if (routerName) {
+      me.$router.push({ name: routerName });
     }
   };
 

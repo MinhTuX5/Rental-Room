@@ -49,6 +49,10 @@ ul {
   height: 100vh;
 }
 
+.w-fit-content {
+  width: fit-content;
+}
+
 /* Text */
 .text-limit {
   overflow: hidden;

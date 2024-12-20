@@ -6,11 +6,23 @@ class RoomPostAPI extends CrudAPI {
     super(END_POINT); // Gọi constructor của lớp cha
   }
 
-  // Phương thức tìm kiếm phòng theo tiêu chính
   lovePost(favoritePostParam) {
     try {
       const res = this.postAsync(favoritePostParam, "/favorite-post");
       return res;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /**
+   * @description Lấy danh sách các bài đã đăng
+   * @param {String} userID
+   */
+  async getMyPosts(userID) {
+    try {
+      const res = await this.getAsync(null, `/my-posts/${userID}`);
+      return res.data;
     } catch (error) {
       console.log(error);
     }

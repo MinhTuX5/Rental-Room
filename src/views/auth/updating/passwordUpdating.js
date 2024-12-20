@@ -2,6 +2,8 @@ import { reactive, watch } from "vue";
 import i18nApp from "@/constant/resource/i18nApp";
 
 export const usePasswordUpdating = () => {
+  const minWidth = 232;
+
   const model = reactive({
     currentPassword: {
       value: "",
@@ -26,5 +28,5 @@ export const usePasswordUpdating = () => {
     console.log("Form submitted:", model);
   };
 
-  return { model, submit, showPassword, rules };
+  return { model, submit, showPassword, rules, minWidth };
 };

@@ -6,7 +6,7 @@ import api from "@/apis/roomSearchAPI/roomPostAPI";
 
 const store = new BaseStore(api);
 export const useRoomPostStore = defineStore("RoomPost", {
-  state: () => ({ ...store.state }),
+  state: () => ({ ...store.state, idField: "room_post_id" }),
   getters: {},
   actions: {
     ...store.actions,
@@ -17,6 +17,15 @@ export const useRoomPostStore = defineStore("RoomPost", {
 
       const res = await api.lovePost(param);
       return res.data?.data;
+    },
+
+    getMyPosts: async (param) => {
+      if (!param) {
+        return;
+      }
+
+      const res = await api.getMyPosts(param);
+      return res?.data;
     },
   },
 });

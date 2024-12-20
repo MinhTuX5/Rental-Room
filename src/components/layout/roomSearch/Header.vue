@@ -19,17 +19,31 @@
 
     <v-col cols="5">
       <v-sheet class="d-flex justify-end">
-        <router-link
-          :to="{ name: 'Account', params: { path: 'quan-ly-bai-dang' } }"
-        >
+        <router-link :to="{ name: 'PostManagement' }">
           <v-btn prepend-icon="mdi-text-box-multiple-outline"
             >Quản lý bài đăng</v-btn
           >
         </router-link>
-        <router-link v-for="page in iconPages" :key="page.name" :to="page.path">
-          <v-btn density="comfortable" class="ml-2" :icon="page.icon" />
+        <!-- Bài đăng yêu thích -->
+        <router-link :to="{ name: 'Favorite' }" class="ml-2">
+          <v-btn
+            density="comfortable"
+            class="ml-2"
+            icon="mdi-book-heart-outline"
+            v-tooltip:bottom="'Bài đăng yêu thích'"
+          />
         </router-link>
-        <router-link :to="{ name: 'Account', params: { path: 'dang-bai' } }">
+        <!-- Thông báo -->
+        <v-btn density="comfortable" class="ml-2" icon="mdi-bell-outline" />
+        <!-- Tài khoản -->
+        <router-link :to="{ name: 'InfoUpdating' }" class="ml-2">
+          <v-avatar
+            image="https://picsum.photos/1920/1080?random"
+            size="36"
+            v-tooltip:bottom="'Quản lý tài khoản'"
+          ></v-avatar>
+        </router-link>
+        <router-link :to="{ name: 'PostDetailPopup' }">
           <v-btn prepend-icon="mdi-note-plus-outline" class="ml-2" color="red"
             >Đăng bài</v-btn
           >
@@ -57,12 +71,6 @@ export default {
       { display: "Giới thiệu" },
     ];
 
-    const iconPages = [
-      { name: "Favorites", path: "/favorite", icon: "mdi-book-heart-outline" },
-      { name: "Information", path: "/info", icon: "mdi-bell-outline" },
-      { name: "Account", path: "/account", icon: "mdi-account-circle" },
-    ];
-
     const Pages = {
       Home: { key: "Home", displayName: "Trang chủ", path: "/" },
       Detail: { key: "Detail", displayName: "Đăng bài", path: "/account" },
@@ -88,16 +96,15 @@ export default {
       const newTab = window.open(managementLink, "_blank");
       newTab.previousTabData = {
         isManagementPage: true,
-      }
+      };
       newTab.focus();
     };
 
     return {
       tabsConfig,
-      iconPages,
       show,
       Pages,
-      openManagePage
+      openManagePage,
     };
   },
 };

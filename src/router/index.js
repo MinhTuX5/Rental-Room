@@ -25,17 +25,42 @@ const router = createRouter({
             import("@/views/roomSearch/postDetail/PostDetail.vue"),
         },
         {
-          path: "/favorite",
+          path: "/bai-dang-yeu-thich",
           name: "Favorite",
           component: () => import("@/views/roomSearch/favorite/Favorite.vue"),
         },
       ],
     },
     {
-      path: "/tai-khoan/",
+      path: "/tai-khoan",
+      redirect: "tai-khoan/trang-chu",
       name: "Account",
       component: () => import("@/components/layout/account/Container.vue"),
-      children: [],
+      children: [
+        {
+          path: "/tai-khoan/dang-bai",
+          name: "PostDetailPopup",
+          component: () =>
+            import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
+        },
+        {
+          path: "/tai-khoan/quan-ly-bai-dang",
+          name: "PostManagement",
+          component: () =>
+            import("@/views/roomSearch/postManagement/PostManagement.vue"),
+        },
+        {
+          path: "/tai-khoan/quan-ly-tai-khoan",
+          name: "InfoUpdating",
+          component: () => import("@/views/auth/updating/InfoUpdating.vue"),
+        },
+        {
+          path: "/tai-khoan/lich-hen",
+          name: "AppointmentSchedule",
+          component: () =>
+            import("@/views/auth/schedule/AppointmentSchedule.vue"),
+        },
+      ],
     },
     {
       path: "/quan-ly/",

@@ -1,8 +1,11 @@
 // Enum
 import _enum from "@/common/enum";
+// base
+import baseView from "./baseView";
 
 export default {
   name: "BaseList",
+  extends: baseView,
   props: {},
   data() {
     return {
@@ -14,6 +17,9 @@ export default {
     };
   },
   computed: {
+    idField() {
+      return this.store.state.idField;
+    },
     /**
      * 60: header height
      * 40: padding top and bottom
@@ -55,9 +61,6 @@ export default {
     me.loading = true;
     await me.getTableData();
     me.loading = false;
-  },
-  mounted() {
-    window._list = this;
   },
   methods: {
     /**

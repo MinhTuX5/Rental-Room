@@ -2,6 +2,7 @@
 import _enum from "@/common/enum";
 // base
 import baseView from "./baseView";
+// resource
 import { showMessage } from "@/common/commonFunction";
 
 export default {

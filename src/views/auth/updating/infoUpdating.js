@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 export const useInfoUpdating = () => {
   const model = reactive({
@@ -14,12 +14,15 @@ export const useInfoUpdating = () => {
 
   const submit = () => {
     console.log("Form submitted:", model);
-  }
+  };
 
   const handleReset = () => {
     Object.values(model).forEach((field) => {
-      field.value = '';
+      field.value = "";
     });
-  }
-  return { model, submit, handleReset };
+  };
+
+  const tab = ref(1);
+
+  return { model, submit, handleReset, tab };
 };

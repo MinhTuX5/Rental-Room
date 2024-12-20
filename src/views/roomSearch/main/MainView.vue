@@ -116,7 +116,7 @@
 // resources
 import { useMainView } from "./mainView";
 // components
-import PostOverview from "@/components/views/PostOverview.vue";
+import PostOverview from "@/components/views/postOverview/PostOverview.vue";
 // base
 import baseView from "@/views/base/baseView";
 

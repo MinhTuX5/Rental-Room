@@ -5,7 +5,7 @@
     <!-- left nav -->
     <v-navigation-drawer ref="nav" theme="dark" permanent :width="navWidth">
       <div class="pa-2">
-        <router-link to="/">
+        <router-link to="/" class="text-decoration-none">
           <v-btn block color="orange-darken-1">
             <v-icon icon="mdi-home" start></v-icon> Trang chủ
           </v-btn>
@@ -29,7 +29,8 @@
 
     <!-- Main content -->
     <v-main>
-      <component :is="componentId"></component>
+      <router-view />
+      <!-- <component :is="componentId"></component> -->
     </v-main>
   </v-layout>
 </template>
