@@ -22,7 +22,7 @@ export default class BaseStore {
         const response = await api.getPaging(config);
         return {
           data: response.data,
-          totalCount: response?.data.length ?? 0,
+          totalCount: response.totalCount ?? 0,
         };
       },
 

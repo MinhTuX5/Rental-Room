@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="main-view">
     <v-row align="center">
       <v-col
         v-for="searchItem in searchConfig"
@@ -39,44 +39,100 @@
       </v-row>
     </v-col>
     <v-row class="mt-2">
-      <v-col cols="9" class="border-thin pa-4">
-        <h3>Tổng {{ postDetails?.length ?? 0 }} kết quả</h3>
+      <v-col id="list" cols="9" class="border-thin pa-4">
+        <h3>Tổng {{ totalCount ?? 0 }} kết quả</h3>
         <v-sheet class="d-flex align-center">
           <h3 class="mr-1">Sắp xếp:</h3>
           <span class="mr-4">Mới nhất</span>
           <span class="mr-4">Giá cả</span>
           <span>Số lượng tương tác</span>
         </v-sheet>
-        <post-overview
-          v-for="item in postDetails"
-          :key="item.room_post_id"
-          :item="item"
-        ></post-overview>
-        <v-pagination
-          v-model="page"
-          :length="pageTotal"
-          :total-visible="10"
-        ></v-pagination>
+        <v-virtual-scroll
+          v-if="postDetails.length"
+          ref="virtualScroll"
+          :items="postDetails"
+          :height="$refs.filter?.$el.clientHeight"
+        >
+          <template #default="{ item }">
+            <post-overview
+              :key="item.room_post_id"
+              :item="item"
+              class="mb-1"
+              @onClickItem="scrollToIndex(item.sort_order)"
+            />
+          </template>
+        </v-virtual-scroll>
+        <v-empty-state
+          v-else
+          text="Không tìm thấy bài đăng!"
+          image="/src/assets/imgs/common/empty.png"
+        ></v-empty-state>
+        <v-row>
+          <v-col class="d-flex align-center">
+            <v-select
+              label="Số bài mỗi trang"
+              density="compact"
+              :items="[10, 20, 50]"
+              hide-details
+              v-model="pageSize"
+              @update:modelValue="changePage(1)"
+            ></v-select>
+          </v-col>
+          <v-col>
+            <v-pagination
+              ref="pagination"
+              v-model="pageIndex"
+              :length="pageTotal"
+              :total-visible="5"
+              :showFirstLastPage="true"
+              @update:modelValue="changePage"
+            >
+              <template #first="{ onClick, disabled }">
+                <v-btn
+                  icon
+                  variant="text"
+                  @click="onClick"
+                  :disabled="disabled"
+                >
+                  <v-icon>mdi-chevron-double-left</v-icon>
+                </v-btn>
+              </template>
+              <template #last="{ onClick, disabled }">
+                <v-btn
+                  icon
+                  variant="text"
+                  @click="onClick"
+                  :disabled="disabled"
+                >
+                  <v-icon>mdi-chevron-double-right</v-icon>
+                </v-btn>
+              </template>
+            </v-pagination>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col class="border-thin ml-2">
-        <h2>Lọc</h2>
-        <v-sheet
-          v-for="(filter, index) in roomSearchCommon.filters"
-          :key="index"
-          cols="3"
-          class="mt-4"
-        >
-          <h3>{{ filter.label }}</h3>
-          <ul>
-            <li v-for="item in filter.children" :key="item.label">
-              <v-checkbox
-                :label="item.label"
-                hide-details
-                color="success"
-                density="compact"
-              ></v-checkbox>
-            </li>
-          </ul>
+        <v-sheet class="d-flex flex-column justify-space-between">
+          <v-sheet ref="filter" class="flex-column">
+            <v-sheet v-for="(filter, index) in filters" :key="index" cols="3">
+              <h3>{{ filter.label }}</h3>
+              <ul>
+                <li v-for="item in filter.children" :key="item.label">
+                  <v-checkbox
+                    hide-details
+                    color="success"
+                    density="compact"
+                    :label="item.label"
+                    :value="item.value"
+                    v-model="filterVals"
+                  ></v-checkbox>
+                </li>
+              </ul>
+            </v-sheet>
+          </v-sheet>
+          <v-btn class="mt-4" color="blue-accent-1" @click="changePage(1)"
+            >Tìm kiếm</v-btn
+          >
         </v-sheet>
       </v-col>
     </v-row>
@@ -125,6 +181,12 @@ export default {
   extends: baseView,
   components: {
     PostOverview,
+  },
+  props: {
+    heightOfHeader: {
+      type: Number,
+      default: 68,
+    },
   },
   setup() {
     const mainView = useMainView();

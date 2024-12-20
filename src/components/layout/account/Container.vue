@@ -22,7 +22,9 @@
       </v-list>
       <template #append>
         <div class="pa-2">
-          <v-btn block color="red" class="mt-2"> Đăng xuất </v-btn>
+          <v-btn block color="red" class="mt-2" @click="logout">
+            Đăng xuất
+          </v-btn>
         </div>
       </template>
     </v-navigation-drawer>

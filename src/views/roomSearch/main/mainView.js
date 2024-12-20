@@ -1,5 +1,8 @@
 import { computed, getCurrentInstance, onMounted, ref } from "vue";
+import { useGoTo } from "vuetify";
+// resources
 import { useRoomSearchCommon } from "../roomSearchCommon";
+import { scrollTo } from "@/common/commonFunction";
 // stores
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 
@@ -8,7 +11,12 @@ export const useMainView = () => {
   // stores
   const roomPostStore = useRoomPostStore();
 
-  const roomSearchCommon = useRoomSearchCommon();
+  const goTo = useGoTo();
+
+  //#region Filters
+  const { filters } = useRoomSearchCommon();
+  const filterVals = ref([]);
+  //#endregion
 
   const searchConfig = [
     {
@@ -136,23 +144,65 @@ export const useMainView = () => {
   const postDetails = ref([]);
 
   //#region Pagination
+  // Số bản ghi mỗi trang
+  const pageSize = ref(10);
   // số thứ tự của trang hiện tại
-  const page = ref(1);
+  const pageIndex = ref(1);
+  // Tổng số bản ghi thu được
+  const totalCount = ref(20);
   // số lượng trang
-  const pageTotal = computed(() => Math.ceil(postDetails.value.length / 10));
+  const pageTotal = computed(() =>
+    Math.ceil(totalCount.value / pageSize.value)
+  );
+
+  /**
+   * @description Chuyển trang
+   * @param {Number} pageIndex
+   */
+  const changePage = async (pageIndex, isFirstLoad = false) => {
+    const me = proxy;
+    const payload = {
+      PagingItem: {
+        Skip: (pageIndex - 1) * pageSize.value,
+        Take: pageSize.value,
+      },
+      FilterVals: filterVals.value,
+    };
+    const res = await roomPostStore.getPaging(payload);
+
+    if (Array.isArray(res.data)) {
+      postDetails.value = res.data.map((x, index) => ({
+        ...x,
+        sort_order: index,
+      }));
+    }
+
+    if (typeof res.totalCount === "number") {
+      totalCount.value = res.totalCount;
+    }
+
+    if (!isFirstLoad) {
+      scrollTo(
+        goTo,
+        "#list",
+        me.$props.heightOfHeader * -1,
+        "By Query Selector"
+      );
+
+      scrollToIndex(0);
+    }
+  };
+
+  const scrollToIndex = (index) => {
+    const me = proxy;
+    me.$refs.virtualScroll.scrollToIndex(index);
+  };
   //#endregion
 
   const tabVal = ref(1);
 
   onMounted(async () => {
-    const payload = {
-      Skip: 0,
-      Take: 20,
-    };
-    const res = await roomPostStore.getPaging(payload);
-    postDetails.value = res.data;
-
-    window._overview = proxy;
+    changePage(1, true);
   });
 
   return {
@@ -160,8 +210,13 @@ export const useMainView = () => {
     tabVal,
     popularPlaces,
     postDetails,
-    roomSearchCommon,
-    page,
+    pageIndex,
     pageTotal,
+    changePage,
+    totalCount,
+    pageSize,
+    scrollToIndex,
+    filters,
+    filterVals,
   };
 };

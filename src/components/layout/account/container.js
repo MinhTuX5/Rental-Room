@@ -1,7 +1,11 @@
 import { getCurrentInstance, onMounted, reactive, ref } from "vue";
+// resources
+import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
 
 export const useContainer = () => {
   const { proxy } = getCurrentInstance();
+
+  const { logout } = useRoomSearchCommon();
 
   const headerHeight = 70;
   const navWidth = 200;
@@ -32,7 +36,6 @@ export const useContainer = () => {
    */
   const handleUpdateSelected = ([routerName, ...args]) => {
     const me = proxy;
-    debugger;
     const selectedItem = features.find((x) => x.active);
     if (selectedItem) {
       selectedItem.active = false;
@@ -68,5 +71,6 @@ export const useContainer = () => {
     model,
     handleUpdateSelected,
     componentId,
+    logout
   };
 };

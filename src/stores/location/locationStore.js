@@ -62,10 +62,11 @@ export const useLocationStore = defineStore("location", {
       }
       return district;
     },
-    getAllLocations: async () => {
+    async getAllLocations() {
+      const me = this;
       try {
         const result = await api.getAllLocations();
-        setItems(result.data);
+        me.setItems(result.data);
         return result.data;
       } catch (error) {
         console.log(error);

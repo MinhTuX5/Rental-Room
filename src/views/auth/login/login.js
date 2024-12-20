@@ -52,7 +52,7 @@ export const useLogin = () => {
         };
         localStorage.setItem("context", JSON.stringify(context));
 
-        showMessage(MessageType.Success, "Đăng nhập thành công!");
+        showMessage("Đăng nhập thành công!");
         // handle login success
         setTimeout(() => {
           me.$router.push({ path: "/" });

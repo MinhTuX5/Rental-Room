@@ -27,6 +27,19 @@ class RoomPostAPI extends CrudAPI {
       console.log(error);
     }
   }
+
+  /**
+   * @override
+   * @param {Object} config {PagingItem, FilterVals}
+   */
+  async getPaging(config) {
+    try {
+      var response = await this.postAsync(config, `/filter-list`);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 export default new RoomPostAPI();

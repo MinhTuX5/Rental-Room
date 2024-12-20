@@ -5,9 +5,9 @@
     :style="{ height: height + 'px' }"
   >
     <v-col cols="2">
-      <v-btn class="ma-2" color="orange-darken-2" @click="show(Pages.Home.key)">
+      <v-btn class="ma-2" color="orange-darken-2" @click="onClickHomeBtn">
         <v-icon icon="mdi-home" start></v-icon>
-        {{ Pages.Home.displayName }}
+        Trang chủ
       </v-btn>
     </v-col>
     <v-col cols="5" class="pt-0 pb-0 d-flex justify-center">
@@ -54,7 +54,11 @@
 </template>
 
 <script>
-import { getCurrentInstance, ref } from "vue";
+import { getCurrentInstance } from "vue";
+import { useGoTo } from "vuetify";
+// resource
+import { scrollTo } from "@/common/commonFunction";
+
 export default {
   props: {
     height: {
@@ -65,30 +69,13 @@ export default {
   setup() {
     const { proxy } = getCurrentInstance();
 
+    const goTo = useGoTo();
+
     const tabsConfig = [
       { display: "Tìm trọ" },
       { display: "Quản lý trọ" },
       { display: "Giới thiệu" },
     ];
-
-    const Pages = {
-      Home: { key: "Home", displayName: "Trang chủ", path: "/" },
-      Detail: { key: "Detail", displayName: "Đăng bài", path: "/account" },
-    };
-
-    const show = (pageName) => {
-      const me = proxy;
-
-      const pageKeys = Object.keys(Pages);
-
-      if (pageKeys.includes(pageName)) {
-        const selectedPage = Pages[pageName];
-        me.$router?.push(selectedPage.path);
-        console.log("Show page:", pageName);
-      } else {
-        console.log("Page not found:", pageName);
-      }
-    };
 
     const openManagePage = () => {
       const originLink = window.location.origin;
@@ -100,11 +87,15 @@ export default {
       newTab.focus();
     };
 
+    const onClickHomeBtn = () => {
+      const me = proxy;
+      me.$emit("onClickHomeBtn");
+    };
+
     return {
       tabsConfig,
-      show,
-      Pages,
       openManagePage,
+      onClickHomeBtn,
     };
   },
 };

@@ -2,7 +2,6 @@ import { getCurrentInstance, onMounted, ref } from "vue";
 import moment from "moment";
 // Resources
 import { useRoomSearchCommon } from "../roomSearchCommon";
-import { showMessage } from "@/common/commonFunction";
 // store
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 import { useContextStore } from "@/stores/contextStore";
@@ -15,38 +14,9 @@ export const usePostDetail = () => {
   const store = useRoomPostStore();
   const contextStore = useContextStore();
 
-  const { filters } = useRoomSearchCommon();
+  const { filters, lovePost } = useRoomSearchCommon();
 
   const model = ref({});
-
-  /**
-   * @description Yêu thích/Hủy yêu thích bài viết
-   */
-  const lovePost = async () => {
-    if (typeof store.lovePost === "function") {
-      const param = {
-        favorite_post_id: model.value.favorite_post_id,
-        room_post_id: model.value.room_post_id,
-        user_id: contextStore.$state.userID,
-      };
-
-      if (!param.room_post_id || !param.user_id) {
-        return;
-      }
-
-      try {
-        const favoritePostID = await store.lovePost(param);
-        model.value.favorite_post_id = favoritePostID;
-        if (favoritePostID) {
-          showMessage("Đã yêu thích bài viết");
-        } else {
-          showMessage("Đã hủy yêu thích bài viết");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
 
   onMounted(async () => {
     const me = proxy;
@@ -70,11 +40,27 @@ export const usePostDetail = () => {
     window._detail = proxy;
   });
 
+  /**
+   * @description Yêu thích bài viết
+   */
+  const likePost = async () => {
+    const param = {
+      favorite_post_id: model.value.favorite_post_id,
+      room_post_id: model.value.room_post_id,
+    };
+
+    try {
+      model.value.favorite_post_id = await lovePost(param);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     model,
     moment,
     filters,
-    lovePost,
     contextStore,
+    likePost,
   };
 };

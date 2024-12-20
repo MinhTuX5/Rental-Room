@@ -1,6 +1,6 @@
 import BaseAPI from "@/apis/baseAPI";
 
-const END_POINT = "Location/";
+const END_POINT = "Location";
 
 class LocationAPI extends BaseAPI {
   constructor() {

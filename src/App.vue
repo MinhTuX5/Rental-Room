@@ -3,7 +3,9 @@
     <v-alert
       v-if="store.showAlert"
       class="v-alert-custom"
+      variant="flat"
       :type="store.alertType"
+      :height="48"
       >{{ store.alertMessage }}</v-alert
     >
     <router-view />
@@ -30,12 +32,17 @@ export default {
   position: relative;
 
   .v-alert-custom {
-    position: absolute;
-    width: fit-content;
-    position: absolute;
+    position: fixed;
+    display: flex;
+    align-items: center;
     left: 50%;
     transform: translate(-50%, 20%);
     z-index: 2;
+    width: fit-content;
+
+    .v-alert__prepend {
+      align-self: unset;
+    }
   }
 }
 </style>

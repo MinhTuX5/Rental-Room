@@ -59,11 +59,7 @@ export const useExpense = () => {
   const tab = ref();
 
   onMounted(() => {
-    const me = proxy;
     contentHeight.value = getContentOfMainHeight();
-    window._debugger = {
-      contentHeight: contentHeight.value,
-    };
   });
 
   return { headers, items, contentHeight, tabConfig, tab, tabValues };

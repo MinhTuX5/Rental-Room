@@ -1,4 +1,14 @@
+// router
+import router from "@/router";
+// resources
+import { showMessage } from "@/common/commonFunction";
+// store
+import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
+import { useContextStore } from "@/stores/contextStore";
+
 export const useRoomSearchCommon = () => {
+  const contextStore = useContextStore();
+
   const filters = [
     {
       label: "Đặc điểm nổi bật",
@@ -71,5 +81,49 @@ export const useRoomSearchCommon = () => {
     },
   ];
 
-  return { filters };
+  /**
+   * @description Yêu thích/Hủy yêu thích bài viết
+   */
+  const lovePost = async (param) => {
+    if (!param) {
+      param = {};
+    }
+
+    const roomPostStore = useRoomPostStore();
+    if (typeof roomPostStore.lovePost === "function") {
+      const payload = {
+        ...param,
+        user_id: contextStore.$state.userID,
+      };
+
+      if (!payload.room_post_id || !payload.user_id) {
+        return;
+      }
+
+      try {
+        const favoritePostID = await roomPostStore.lovePost(payload);
+
+        if (favoritePostID) {
+          showMessage("Đã yêu thích bài viết");
+        } else {
+          showMessage("Đã hủy yêu thích bài viết");
+        }
+
+        return favoritePostID;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  /**
+   * @description đăng xuất
+   */
+  const logout = () => {
+    localStorage.removeItem("context");
+    contextStore.$reset();
+    router.push('/');
+  };
+
+  return { filters, lovePost, logout };
 };

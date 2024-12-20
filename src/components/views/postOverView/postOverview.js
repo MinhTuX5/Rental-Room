@@ -1,8 +1,9 @@
-import { getCurrentInstance } from "vue";
+import { getCurrentInstance, onMounted } from "vue";
 // store
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 // resource
 import { showMessage } from "@/common/commonFunction";
+import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
 
 export const usePostOverview = () => {
   const { proxy } = getCurrentInstance();
@@ -34,8 +35,37 @@ export const usePostOverview = () => {
     }
   };
 
+  /**
+   * @description Yêu thích bài viết
+   */
+  const likePost = async (item) => {
+    const me = proxy;
+
+    const { lovePost } = useRoomSearchCommon();
+    const param = {
+      favorite_post_id: item.favorite_post_id,
+      room_post_id: item.room_post_id,
+    };
+
+    try {
+      const favoritePostID = await lovePost(param);
+      me.$props.item.favorite_post_id = favoritePostID;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onClickItem = () => {
+    const me = proxy;
+    me.$emit("onClickItem");
+  };
+
+  onMounted(() => {});
+
   return {
     viewDetail,
     onDeletePost,
+    likePost,
+    onClickItem,
   };
 };

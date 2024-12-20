@@ -59,7 +59,7 @@
             color="red"
             :icon="model.favorite_post_id ? 'mdi-heart' : 'mdi-heart-outline'"
             variant="text"
-            @click="lovePost"
+            @click="likePost"
           ></v-btn>
           <v-btn
             color="blue"
