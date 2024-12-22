@@ -11,14 +11,14 @@ export default {
     return {
       detailForm: "",
       store: {},
-      loading: false,
+      loading: true,
       search: "",
       searchFields: [],
     };
   },
   computed: {
     idField() {
-      return this.store.state.idField;
+      return this.store?.$state.idField;
     },
     /**
      * 60: header height
@@ -47,10 +47,6 @@ export default {
         return this.tableData;
       }
     },
-
-    idField() {
-      return this.store.state?.idField ?? "";
-    },
   },
 
   beforeCreate() {},
@@ -58,9 +54,6 @@ export default {
   async created() {
     const me = this;
     me.initConfig();
-    me.loading = true;
-    await me.getTableData();
-    me.loading = false;
   },
   methods: {
     /**

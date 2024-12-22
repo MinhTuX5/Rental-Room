@@ -1,3 +1,4 @@
+import { provide } from "vue";
 // enum
 import _enum from "@/common/enum";
 // base
@@ -28,6 +29,10 @@ export default {
   created() {
     const me = this;
     me.initConfig();
+
+    provide("baseDetail", {
+      abc: 1,
+    });
   },
   mounted() {
     window._detail = this;

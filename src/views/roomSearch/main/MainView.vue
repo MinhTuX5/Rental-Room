@@ -1,25 +1,8 @@
 <template>
   <v-container class="main-view">
-    <v-row align="center">
-      <v-col
-        v-for="searchItem in searchConfig"
-        :key="searchItem.label"
-        cols="2"
-        align-self="center"
-      >
-        <v-combobox
-          label="Loại nhà đất"
-          :items="searchItem.items"
-          hide-details
-        ></v-combobox>
-      </v-col>
-      <v-col cols="2">
-        <v-btn color="#42b983">Tìm kiếm</v-btn>
-      </v-col>
-    </v-row>
     <v-col>
       <v-sheet align="center">
-        <h1>Cho Thuê Phòng Trọ, Thuê Nhà Trọ Giá Rẻ, Chính Chủ</h1>
+        <h2>Cho Thuê Phòng Trọ, Thuê Nhà Trọ Giá Rẻ, Chính Chủ</h2>
       </v-sheet>
       <v-sheet align="center"
         >Cho thuê phòng trọ, nhà trọ giá rẻ hàng đầu Việt Nam - Cập nhật thông
@@ -38,7 +21,31 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-row class="mt-2">
+    <v-row align="center" class="above-filter">
+      <v-col
+        v-for="item in searchConfig"
+        :key="item.label"
+        cols="2"
+        align-self="center"
+        class="filter-item"
+      >
+        <v-autocomplete
+          density="compact"
+          :auto-select-first="true"
+          :hide-details="false"
+          :no-data-text="item.noDataText"
+          :label="item.label"
+          :items="item.items"
+          :autofocus="item.autofocus"
+          :disabled="viewing"
+          @update:modelValue="onSelectFilter($event, item.locationType)"
+        ></v-autocomplete>
+      </v-col>
+      <!-- <v-col cols="">
+        <v-btn color="blue-accent-1">Tìm kiếm</v-btn>
+      </v-col> -->
+    </v-row>
+    <v-row>
       <v-col id="list" cols="9" class="border-thin pa-4">
         <h3>Tổng {{ totalCount ?? 0 }} kết quả</h3>
         <v-sheet class="d-flex align-center">
@@ -196,6 +203,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.above-filter {
+  .v-col {
+    padding: unset;
+  }
+
+  .filter-item {
+    &+.filter-item {
+      margin-left: 12px;
+    }
+  }
+}
 .why {
   .v-sheet {
     width: 100%;

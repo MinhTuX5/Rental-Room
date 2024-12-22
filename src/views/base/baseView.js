@@ -6,6 +6,7 @@ export default {
   },
   mounted() {
     const me = this;
+    
     // log ra tên component được mở
     console.log(me.$.type.name);
 

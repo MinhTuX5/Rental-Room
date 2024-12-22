@@ -1,5 +1,13 @@
 .post-detail-popup {
+  ul {
+    padding-left: unset;
+  }
+
   .v-row {
+    & + .v-row {
+      margin-top: unset !important;
+    }
+
     .v-col {
       padding: unset;
     }
@@ -20,7 +28,7 @@
 
   .gender {
     .v-radio {
-      margin-right: 32px;
+      margin-right: 16px;
     }
   }
 }

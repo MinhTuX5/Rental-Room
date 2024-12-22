@@ -5,10 +5,12 @@
     :style="{ height: height + 'px' }"
   >
     <v-col cols="2">
-      <v-btn class="ma-2" color="orange-darken-2" @click="onClickHomeBtn">
-        <v-icon icon="mdi-home" start></v-icon>
-        Trang chủ
-      </v-btn>
+      <router-link :to="{ name: 'Homepage' }" class="ml-2">
+        <v-btn class="ma-2" color="orange-darken-2" @click="onClickHomeBtn">
+          <v-icon icon="mdi-home" start></v-icon>
+          Trang chủ
+        </v-btn>
+      </router-link>
     </v-col>
     <v-col cols="5" class="pt-0 pb-0 d-flex justify-center">
       <v-btn class="mr-2" variant="plain" @click="openManagePage"
@@ -25,7 +27,10 @@
           >
         </router-link>
         <!-- Bài đăng yêu thích -->
-        <router-link :to="{ name: 'Favorite' }" class="ml-2">
+        <router-link
+          :to="{ name: 'PostManagement', query: { tab: 3 } }"
+          class="ml-2"
+        >
           <v-btn
             density="comfortable"
             class="ml-2"
@@ -55,9 +60,6 @@
 
 <script>
 import { getCurrentInstance } from "vue";
-import { useGoTo } from "vuetify";
-// resource
-import { scrollTo } from "@/common/commonFunction";
 
 export default {
   props: {
@@ -68,8 +70,6 @@ export default {
   },
   setup() {
     const { proxy } = getCurrentInstance();
-
-    const goTo = useGoTo();
 
     const tabsConfig = [
       { display: "Tìm trọ" },

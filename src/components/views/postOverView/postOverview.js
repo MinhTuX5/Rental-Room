@@ -4,11 +4,14 @@ import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 // resource
 import { showMessage } from "@/common/commonFunction";
 import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
+import { usePostOverviewCommon } from "./postOverviewCommon";
 
 export const usePostOverview = () => {
   const { proxy } = getCurrentInstance();
 
   const store = useRoomPostStore();
+
+  const {featureBtns} = usePostOverviewCommon();
 
   const viewDetail = () => {
     const me = proxy;
@@ -50,6 +53,9 @@ export const usePostOverview = () => {
     try {
       const favoritePostID = await lovePost(param);
       me.$props.item.favorite_post_id = favoritePostID;
+      if (!favoritePostID) {
+        me.$emit("unlikePost", item.room_post_id);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -67,5 +73,6 @@ export const usePostOverview = () => {
     onDeletePost,
     likePost,
     onClickItem,
+    featureBtns
   };
 };

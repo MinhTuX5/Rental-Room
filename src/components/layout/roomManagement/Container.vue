@@ -20,7 +20,7 @@
       <v-spacer></v-spacer>
 
       <v-btn icon id="menu-activator" class="menu">
-        <v-icon @click="console.log('nvthinh')">mdi-dots-vertical</v-icon>
+        <v-icon>mdi-dots-vertical</v-icon>
       </v-btn>
 
       <v-menu activator="#menu-activator">
@@ -29,6 +29,7 @@
             v-for="(item, index) in menuItems"
             :key="index"
             :value="index"
+            @click="item.onClick"
           >
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
@@ -53,7 +54,7 @@
               <v-list-item
                 v-bind="props"
                 :prepend-icon="item.icon"
-                title="Dictionary"
+                :title="item.title"
               ></v-list-item>
             </template>
             <v-list-item
@@ -63,7 +64,8 @@
               :value="child.componentId"
               :active="child.active"
             >
-              <template #prepend> <v-icon :icon="child.icon"></v-icon> </template
+              <template #prepend>
+                <v-icon :icon="child.icon"></v-icon> </template
             ></v-list-item>
           </v-list-group>
         </div>

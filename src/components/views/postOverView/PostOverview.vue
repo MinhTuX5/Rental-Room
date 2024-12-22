@@ -36,7 +36,7 @@
         <v-sheet class="d-flex mt-2 info">
           <v-sheet class="d-flex align-center mr-8">
             <v-icon icon="mdi-cash" v-tooltip="'Giá thuê'"></v-icon>
-            <span>{{ item.room_price }} đồng/tháng</span>
+            <span>{{ item.room_price/1000000 }} triệu/tháng</span>
           </v-sheet>
           <v-sheet class="d-flex align-center mr-8">
             <v-icon icon="mdi-home" v-tooltip="'Diện tích'"></v-icon>
@@ -44,7 +44,7 @@
           </v-sheet>
           <v-sheet class="d-flex align-center">
             <v-icon icon="mdi-calendar-clock" v-tooltip="'Ngày đăng'"></v-icon>
-            <span>{{ moment(item.posted_date).format("DD/MM/YYYY") }}</span>
+            <span>{{ moment(item.posted_date).format("hh:mm DD/MM/YYYY") }}</span>
           </v-sheet>
         </v-sheet>
         <v-sheet class="d-flex mt-2">
@@ -67,13 +67,24 @@
     <v-col v-if="isShowFeatureBtn" cols="2" class="d-flex justify-end">
       <v-sheet class="d-flex flex-column justify-center align-center">
         <v-btn
+          v-if="displayedBtns.includes(featureBtns.Delete)"
           prepend-icon="mdi-trash-can-outline"
           color="red"
           class="w-fit-content"
           @click="onDeletePost"
           >Xóa</v-btn
         >
-        <v-btn prepend-icon="mdi-eye-off-outline" class="w-fit-content"
+        <v-btn
+          v-if="displayedBtns.includes(featureBtns.Post)"
+          prepend-icon="mdi-post-outline"
+          class="w-fit-content"
+          color="blue-accent-1"
+          >Đăng bài</v-btn
+        >
+        <v-btn
+          v-if="displayedBtns.includes(featureBtns.Hide)"
+          prepend-icon="mdi-eye-off-outline"
+          class="w-fit-content"
           >Ẩn bài đăng</v-btn
         >
       </v-sheet>
@@ -99,6 +110,10 @@ export default {
     isShowFeatureBtn: {
       type: Boolean,
       default: false,
+    },
+    displayedBtns: {
+      type: Array,
+      default: () => [],
     },
   },
   setup() {

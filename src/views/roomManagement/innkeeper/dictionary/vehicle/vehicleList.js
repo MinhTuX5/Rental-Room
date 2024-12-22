@@ -9,21 +9,26 @@ export const usVehicleList = () => {
 
   const searchFields = ref([store.$state.codeField, store.$state.nameField]);
 
-  const headers = ref([
-    { title: "Ngày chi tiêu", key: "spendingDate" },
-    { title: "Người chi", key: "spender" },
-    { title: "Số tiền", key: "amount" },
-    { title: "Ghi chú", key: "note" },
-  ]);
-
-  const items = [
+  const headers = reactive([
     {
-      spendingDate: new Date().toISOString().split("T")[0],
-      spender: "John Doe",
-      amount: 200000,
-      note: "Chi tiêu tháng 1",
+      prop: "vehicle_code",
+      label: "Mã phương tiện",
+      sortable: true,
+      width: 200,
+      align: "center",
     },
-  ];
+    {
+      prop: "vehicle_name",
+      label: "Loại phương tiện",
+      minWidth: 150,
+    },
+    {
+      prop: "vehicle_price",
+      label: "Mức giá gửi xe / tháng",
+      width: 300,
+      align: "right",
+    },
+  ]);
 
   onMounted(() => {});
 

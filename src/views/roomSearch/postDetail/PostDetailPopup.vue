@@ -1,7 +1,16 @@
 <template>
   <v-container class="post-detail-popup">
     <v-col>
-      <v-sheet class="text-h4 mb-4">Đăng tin mới</v-sheet>
+      <v-sheet class="text-h4 mb-4">{{ title }}</v-sheet>
+      <v-sheet class="mb-4 w-50">
+        <v-sheet class="text-h5 mb-4">Loại nhà đất</v-sheet>
+        <v-select
+          density="compact"
+          :items="roomCategories"
+          hide-details
+          v-model="roomCategory"
+        ></v-select>
+      </v-sheet>
       <v-sheet>
         <v-sheet class="text-h5 mb-4">Địa chỉ cho thuê</v-sheet>
         <v-row align="center" class="address">
@@ -70,7 +79,7 @@
               >Giá cho thuê <span class="required">*</span></label
             >
             <v-row>
-              <v-col cols="8">
+              <v-col cols="7">
                 <v-text-field
                   :maxlength="16"
                   :required="true"
@@ -122,7 +131,7 @@
             v-for="(filter, index) in roomSearchCommon.filters"
             :key="index"
           >
-            <h3>{{ filter.label }}</h3>
+            <h4>{{ filter.label }}</h4>
             <ul>
               <li v-for="item in filter.children" :key="item.label">
                 <v-checkbox
@@ -193,10 +202,14 @@
     </v-col>
     <v-row>
       <v-col cols="6" class="d-flex justify-center">
-        <v-btn color="light-blue-accent-4">Lưu</v-btn>
+        <v-btn color="light-blue-accent-4" @click="submitPopup(false)"
+          >Lưu</v-btn
+        >
       </v-col>
       <v-col cols="6" class="d-flex justify-center">
-        <v-btn color="green-lighten-1" @click="submit">Đăng bài</v-btn>
+        <v-btn color="green-lighten-1" @click="submitPopup(true)"
+          >Đăng bài</v-btn
+        >
       </v-col>
     </v-row>
   </v-container>

@@ -11,10 +11,10 @@
       single-line
       @click:append-inner="onClickSearchInput"
     ></v-text-field>
-    <v-btn :prepend-icon="featureBtnConfig[featureBtnType].icon">
-      <template #prepend>
-        <v-icon color="success"></v-icon>
-      </template>
+    <v-btn
+      :prepend-icon="featureBtnConfig[featureBtnType].icon"
+      color="blue-lighten-1"
+    >
       {{ featureBtnConfig[featureBtnType].text }}
     </v-btn>
   </div>

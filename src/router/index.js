@@ -24,16 +24,11 @@ const router = createRouter({
           component: () =>
             import("@/views/roomSearch/postDetail/PostDetail.vue"),
         },
-        {
-          path: "/bai-dang-yeu-thich",
-          name: "Favorite",
-          component: () => import("@/views/roomSearch/favorite/Favorite.vue"),
-        },
       ],
     },
     {
       path: "/tai-khoan",
-      redirect: "tai-khoan/trang-chu",
+      redirect: "tai-khoan/dang-bai",
       name: "Account",
       component: () => import("@/components/layout/account/Container.vue"),
       children: [
@@ -46,6 +41,7 @@ const router = createRouter({
         {
           path: "/tai-khoan/quan-ly-bai-dang",
           name: "PostManagement",
+          query: { tab: 1 },
           component: () =>
             import("@/views/roomSearch/postManagement/PostManagement.vue"),
         },

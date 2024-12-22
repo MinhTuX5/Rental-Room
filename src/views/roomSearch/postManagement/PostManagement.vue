@@ -1,10 +1,11 @@
 <template>
   <v-container class="post-management">
-    <v-tabs v-model="tab" class="mb-4">
+    <v-tabs v-model="tabIndex" class="mb-4" @update:modelValue="onChangeTab">
       <v-tab :value="1">Bài đã đăng</v-tab>
       <v-tab :value="2">Bài đã lưu</v-tab>
+      <v-tab :value="3">Yêu thích</v-tab>
     </v-tabs>
-    <v-tabs-window v-model="tab">
+    <v-tabs-window v-model="tabIndex">
       <v-tabs-window-item :value="1">
         <v-virtual-scroll
           v-if="postedPosts.length > 0"
@@ -16,27 +17,69 @@
               :item="item"
               :isShowLikeIcon="false"
               :isShowFeatureBtn="true"
+              :displayed-btns="[featureBtns.Delete, featureBtns.Hide]"
               @delete="onAfterDelete"
             ></post-overview>
           </template>
         </v-virtual-scroll>
+        <v-skeleton-loader
+          v-else-if="loading"
+          type="table-tbody"
+        ></v-skeleton-loader>
         <v-empty-state
           v-else
           title="Chưa có bài viết nào được đăng!"
           image="/src/assets/imgs/common/empty.png"
         ></v-empty-state>
       </v-tabs-window-item>
-      <v-tabs-window-item :value="2">
-        <v-virtual-scroll :items="savedPosts" :height="heightOfList">
+      <v-tabs-window-item :value="tabVals.savedPosts">
+        <v-virtual-scroll
+          v-if="savedPosts.length > 0"
+          :items="savedPosts"
+          :height="heightOfList"
+        >
           <template v-slot:default="{ item }">
             <post-overview
               :item="item"
               :isShowLikeIcon="false"
               :isShowFeatureBtn="true"
+              :displayed-btns="[featureBtns.Delete, featureBtns.Post]"
               @delete="onAfterDelete"
             ></post-overview>
           </template>
         </v-virtual-scroll>
+        <v-skeleton-loader
+          v-else-if="loading"
+          type="table-tbody"
+        ></v-skeleton-loader>
+        <v-empty-state
+          v-else
+          title="Chưa có bài viết nào được lưu!"
+          image="/src/assets/imgs/common/empty.png"
+        ></v-empty-state>
+      </v-tabs-window-item>
+      <v-tabs-window-item :value="tabVals.favoritePosts">
+        <v-virtual-scroll
+          v-if="favoritePosts.length > 0"
+          :items="favoritePosts"
+          :height="heightOfList"
+        >
+          <template v-slot:default="{ item }">
+            <post-overview
+              :item="item"
+              @unlikePost="onUnLikePost"
+            ></post-overview>
+          </template>
+        </v-virtual-scroll>
+        <v-skeleton-loader
+          v-else-if="loading"
+          type="table-tbody"
+        ></v-skeleton-loader>
+        <v-empty-state
+          v-else
+          title="Chưa có bài viết yêu thích nào!"
+          image="/src/assets/imgs/common/empty.png"
+        ></v-empty-state>
       </v-tabs-window-item>
     </v-tabs-window>
   </v-container>
@@ -54,6 +97,12 @@ export default {
   extends: baseList,
   components: {
     PostOverview,
+  },
+  props: {
+    postStatus: {
+      type: Boolean,
+      default: null,
+    },
   },
   setup() {
     const resource = usePostManagement();

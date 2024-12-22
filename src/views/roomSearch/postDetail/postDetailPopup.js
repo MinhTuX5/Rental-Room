@@ -9,6 +9,7 @@ import {
 import { cloneDeep } from "lodash";
 // Resources
 import { useRoomSearchCommon } from "../roomSearchCommon";
+import RoomCategoryConfig from "@/common/config/roomCategoryConfig";
 // stores
 import { useLocationStore } from "@/stores/location/locationStore";
 import { useContextStore } from "@/stores/contextStore";
@@ -26,6 +27,7 @@ export const usePostDetailPopup = () => {
   const priceUnit = ref("");
   const roomCharacteristic = ref([]);
   const roomPrice = ref("");
+  const title = ref("Đăng tin mới");
 
   const addressInfo = reactive([
     {
@@ -48,6 +50,12 @@ export const usePostDetailPopup = () => {
       noDataText: "Chưa có Quận/Huyện nào được chọn",
     },
   ]);
+
+  const roomCategoryConfig = RoomCategoryConfig.filter(x => x.value > 0);
+  const roomCategories = computed(() => {
+    return roomCategoryConfig.map((x) => x.text);
+  });
+  const roomCategory = ref("");
 
   const validImageTypes = ["image/png", "image/jpeg", "image/bmp"];
   const imageRules = [
@@ -148,20 +156,44 @@ export const usePostDetailPopup = () => {
 
   const unitList = ["đồng/tháng"];
 
+  /**
+   * @description Xử lý trước khi submit
+   */
   const beforeSubmit = () => {
     const me = proxy;
+
+    const contextStore = useContextStore();
+    const { userID } = contextStore.$state;
+    me.model.user_id = userID;
+
     me.model.RoomCharacteristic = cloneDeep(roomCharacteristic.value);
     me.model.room_characteristic = JSON.stringify(roomCharacteristic.value);
     me.model.room_address = roomAddress.value;
 
-    const contextStore = useContextStore();
-    const { user_name } = contextStore.$state;
-    me.model.post_author = user_name ?? "nvthinh";
+    // Lấy loại phòng cho thuê
+    me.model.room_category = roomCategoryConfig.find(
+      (x) => x.name === roomCategory.value
+    ).value;
 
     // Loại bỏ dấu phẩy trong chuỗi
     const numberWithoutCommas = roomPrice.value.replace(/,/g, "");
     // Chuyển đổi chuỗi thành số
     me.model.room_price = parseInt(numberWithoutCommas);
+  };
+
+  const submitPopup = async (postStatus = true) => {
+    const me = proxy;
+    try {
+      // Trạng thái là đăng bài hay lưu bài
+      me.model.post_status = postStatus;
+      await me.submit();
+      me.$router.push({
+        name: "PostManagement",
+        query: { tab: postStatus ? 1 : 2 },
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   onMounted(() => {
@@ -176,6 +208,8 @@ export const usePostDetailPopup = () => {
     };
 
     priceUnit.value = unitList[0];
+
+    roomCategory.value = roomCategoryConfig[0].text;
   });
 
   onUnmounted(() => {
@@ -199,5 +233,9 @@ export const usePostDetailPopup = () => {
     beforeSubmit,
     roomCharacteristic,
     roomPrice,
+    submitPopup,
+    title,
+    roomCategories,
+    roomCategory
   };
 };

@@ -1,10 +1,27 @@
 import { getCurrentInstance, onMounted, reactive, ref } from "vue";
+// stores
+import { useContextStore } from "@/stores/contextStore";
+// resources
+import Role from "@/common/enum/Role";
+import { logout } from "@/common/commonFunction";
 
 export const useContainer = () => {
   const { proxy } = getCurrentInstance();
-  const menuItems = [{ title: "Tìm phòng trọ" }, { title: "Đăng xuất" }];
 
-  const features = reactive([
+  const contextStore = useContextStore();
+
+  const moveToHomePage = () => {
+    const me = proxy;
+    me.$router.push({ path: "/" });
+  };
+
+  const menuItems = ref([
+    { title: "Tìm trọ", onClick: moveToHomePage },
+    { title: "Đăng xuất", onClick: logout },
+  ]);
+
+  const features = ref([]);
+  const renterFeatures = reactive([
     {
       title: "Danh sách phòng",
       componentId: "RoomList",
@@ -26,6 +43,9 @@ export const useContainer = () => {
       icon: "mdi-calendar-account-outline",
     },
     { title: "Tính toán", componentId: "Calculation", icon: "mdi-calculator" },
+  ]);
+
+  const innkeeperFeatures = reactive([
     {
       title: "Danh mục",
       icon: "mdi-cloud-print-outline",
@@ -39,14 +59,15 @@ export const useContainer = () => {
       ],
     },
   ]);
-  const componentId = ref(features[0].componentId);
+
+  const componentId = ref(renterFeatures[0].componentId);
 
   /**
    * @description Xử lý sự kiện chọn tab khác
    * @author nvthinh 03.08.2024
    */
   const handleSelected = (value) => {
-    const selectedItem = features.find((x) => x.active);
+    const selectedItem = renterFeatures.find((x) => x.active);
     if (Array.isArray(value) && value.length) {
       componentId.value = value[0];
       if (selectedItem && componentId.value != selectedItem.componentId) {
@@ -58,6 +79,18 @@ export const useContainer = () => {
   const open = [];
 
   onMounted(() => {
+    const { role } = contextStore.$state;
+    switch (role) {
+      case Role.Innkeeper:
+        features.value = innkeeperFeatures;
+        break;
+      case Role.Renter:
+        features.value = renterFeatures;
+        break;
+      default:
+        break;
+    }
+
     window._container = proxy;
   });
 

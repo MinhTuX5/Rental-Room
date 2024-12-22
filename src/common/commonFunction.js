@@ -42,14 +42,32 @@ export const isJson = (str) => {
  * @param {Number} offset
  * @param {*} container
  */
-export const scrollTo = (goTo, to, offset = 0, target = "By Number") => {
+export const scrollTo = (
+  goTo,
+  to,
+  offset = 0,
+  duration = 0,
+  target = "By Number"
+) => {
   const scrollOptions = {
     // container: container,
-    duration: 100,
+    duration,
     easing: "easeInOutQuad", // Hiệu ứng chuyển động bắt đầu từ chậm đến nhanh rồi chậm lại theo hàm bậc hai.
     offset,
     target,
   };
 
   goTo(to, scrollOptions);
+};
+
+export const moveToTop = () => {
+  window.scrollTo({ top: 0, behavior: "instant" });
+};
+
+/**
+ * @description đăng xuất
+ */
+export const logout = () => {
+  localStorage.removeItem("context");
+  contextStore.$reset();
 };

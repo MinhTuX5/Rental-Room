@@ -1,8 +1,8 @@
 <template>
-  <div class="vehicle-list flex-column">
-    <t-feature></t-feature>
+  <v-container class="vehicle-list">
+    <t-feature class="mb-4" search-label="Mã, Loại phương tiện"></t-feature>
     <t-data-table :items="items" :headers="headers"></t-data-table>
-  </div>
+  </v-container>
 </template>
 
 <script>

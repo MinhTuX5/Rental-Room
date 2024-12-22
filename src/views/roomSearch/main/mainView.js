@@ -1,15 +1,21 @@
-import { computed, getCurrentInstance, onMounted, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, reactive, ref } from "vue";
 import { useGoTo } from "vuetify";
 // resources
 import { useRoomSearchCommon } from "../roomSearchCommon";
 import { scrollTo } from "@/common/commonFunction";
+import RoomCategoryConfig from "@/common/config/roomCategoryConfig";
+import LocationConfig from "@/common/config/locationConfig";
 // stores
+import { useLocationStore } from "@/stores/location/locationStore";
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
+// enum
+import LocationType from "@/common/enum/LocationType";
 
 export const useMainView = () => {
   const { proxy } = getCurrentInstance();
   // stores
   const roomPostStore = useRoomPostStore();
+  const locationStore = useLocationStore();
 
   const goTo = useGoTo();
 
@@ -18,113 +24,40 @@ export const useMainView = () => {
   const filterVals = ref([]);
   //#endregion
 
-  const searchConfig = [
+  const searchConfig = reactive([
     {
+      type: 10,
       label: "Loại nhà đất",
-      items: [
-        {
-          title: "Tất cả",
-          value: 0,
-        },
-        {
-          title: "Phòng trọ, nhà trọ",
-          value: 1,
-        },
-        {
-          title: "Nhà thuê nguyên căn",
-          value: 2,
-        },
-        {
-          title: "Cho thuê căn hộ",
-          value: 3,
-        },
-      ],
+      items: RoomCategoryConfig.map((x) => x.text),
     },
-    {
-      label: "Chọn giá",
-      items: [
-        {
-          title: "Tất cả",
-          value: 0,
-        },
-        {
-          title: "Phòng trọ, nhà trọ",
-          value: 1,
-        },
-        {
-          title: "Nhà thuê nguyên căn",
-          value: 2,
-        },
-        {
-          title: "Cho thuê căn hộ",
-          value: 3,
-        },
-      ],
-    },
-    {
-      label: "Loại nhà đất",
-      items: [
-        {
-          title: "Tất cả",
-          value: 0,
-        },
-        {
-          title: "Phòng trọ, nhà trọ",
-          value: 1,
-        },
-        {
-          title: "Nhà thuê nguyên căn",
-          value: 2,
-        },
-        {
-          title: "Cho thuê căn hộ",
-          value: 3,
-        },
-      ],
-    },
-    {
-      label: "Chọn giá",
-      items: [
-        {
-          title: "Tất cả",
-          value: 0,
-        },
-        {
-          title: "Phòng trọ, nhà trọ",
-          value: 1,
-        },
-        {
-          title: "Nhà thuê nguyên căn",
-          value: 2,
-        },
-        {
-          title: "Cho thuê căn hộ",
-          value: 3,
-        },
-      ],
-    },
-    {
-      label: "Chọn giá",
-      items: [
-        {
-          title: "Tất cả",
-          value: 0,
-        },
-        {
-          title: "Phòng trọ, nhà trọ",
-          value: 1,
-        },
-        {
-          title: "Nhà thuê nguyên căn",
-          value: 2,
-        },
-        {
-          title: "Cho thuê căn hộ",
-          value: 3,
-        },
-      ],
-    },
-  ];
+    ...LocationConfig,
+  ]);
+
+  const onSelectFilter = (selectedVal, type) => {
+    let config = null;
+    switch (type) {
+      case LocationType.Province:
+        locationStore.selectProvinceByName(selectedVal);
+        config = searchConfig.find(
+          (x) => x.locationType === LocationType.District
+        );
+        if (config) {
+          config.items = locationStore.districtItems.map(
+            (x) => x.location_name
+          );
+        }
+        break;
+      case LocationType.District:
+        locationStore.selectDistrictByName(selectedVal);
+        config = searchConfig.find((x) => x.locationType === LocationType.Ward);
+        if (config) {
+          config.items = locationStore.wardItems.map((x) => x.location_name);
+        }
+        break;
+      default:
+        break;
+    }
+  };
 
   const popularPlaces = [
     {
@@ -186,6 +119,7 @@ export const useMainView = () => {
         goTo,
         "#list",
         me.$props.heightOfHeader * -1,
+        100,
         "By Query Selector"
       );
 
@@ -218,5 +152,6 @@ export const useMainView = () => {
     scrollToIndex,
     filters,
     filterVals,
+    onSelectFilter,
   };
 };

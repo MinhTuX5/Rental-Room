@@ -3,7 +3,13 @@
     <!-- Header -->
     <!-- <v-app-bar><v-header :height="headerHeight" /></v-app-bar> -->
     <!-- left nav -->
-    <v-navigation-drawer ref="nav" theme="dark" permanent :width="navWidth">
+    <v-navigation-drawer
+      ref="nav"
+      theme="dark"
+      permanent
+      :width="navWidth"
+      v-model="drawer"
+    >
       <div class="pa-2">
         <router-link to="/" class="text-decoration-none">
           <v-btn block color="orange-darken-1">

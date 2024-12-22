@@ -1,6 +1,7 @@
 import { getCurrentInstance, onMounted, reactive, ref } from "vue";
 // resources
 import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
+import { moveToTop } from "@/common/commonFunction";
 
 export const useContainer = () => {
   const { proxy } = getCurrentInstance();
@@ -9,6 +10,7 @@ export const useContainer = () => {
 
   const headerHeight = 70;
   const navWidth = 200;
+  const drawer = ref();
 
   const features = reactive([
     { title: "Đăng bài", componentId: "PostDetailPopup" },
@@ -48,15 +50,21 @@ export const useContainer = () => {
 
   onMounted(() => {
     const me = proxy;
-    const route = me.$route.params;
 
-    if (route && typeof route === "object") {
-      if (route.path) {
-        const component = features.find((x) => x.path === route.path);
-        if (component) {
-          component.active = true;
-          componentId.value = component.componentId;
-        }
+    moveToTop();
+
+    const { name } = me.$route;
+    if (name) {
+      switch (name) {
+        case "PostManagement":
+          features[1].active = true;
+          break;
+        case "InfoUpdating":
+          features[2].active = true;
+          break;
+        default:
+          features[0].active = true;
+          break;
       }
     }
 
@@ -71,6 +79,7 @@ export const useContainer = () => {
     model,
     handleUpdateSelected,
     componentId,
-    logout
+    logout,
+    drawer,
   };
 };

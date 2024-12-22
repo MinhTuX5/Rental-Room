@@ -10,7 +10,7 @@ import { useGoTo } from "vuetify";
 import VHeader from "./Header.vue";
 import VFooter from "./Footer.vue";
 // resource
-import { scrollTo } from "@/common/commonFunction";
+import { scrollTo, moveToTop } from "@/common/commonFunction";
 
 export default {
   name: "SearchContainer",
@@ -28,6 +28,7 @@ export default {
     };
 
     onMounted(() => {
+      moveToTop();
       window._roomSearchContainer = proxy;
     });
 

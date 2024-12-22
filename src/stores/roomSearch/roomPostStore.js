@@ -27,5 +27,14 @@ export const useRoomPostStore = defineStore("RoomPost", {
       const res = await api.getMyPosts(param);
       return res?.data;
     },
+
+    getMyFavoritePosts: async (param) => {
+      if (!param) {
+        return;
+      }
+
+      const res = await api.getMyFavoritePosts(param);
+      return res;
+    },
   },
 });
