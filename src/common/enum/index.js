@@ -114,5 +114,32 @@ export default {
     Paid: 2, // Hoàn thành
   },
 
-  //#endregion
+  // Đơn vị dịch vụ
+  PriceUnit: {
+    "đồng/tháng": 0,
+    "triệu/năm": 1,
+  },
+
+  // Đơn vị dịch vụ
+  ServicePriceUnit: {
+    "đồng/người/tháng": 1, // 1
+    "đồng/phòng/tháng": 2, // 1
+    "đồng/số": 3, // số (Ex: số điện)
+    "đồng/m²": 4, //  mét vuông
+    "đồng/m³": 5, // khối (Ex: Khối nước)
+  },
+
+  // Đơn vị dịch vụ
+  ResidentGender: {
+    "Cả 2": 0,
+    Nam: 1,
+    Nữ: 2,
+  },
+
+  // Trạng thái tòa nhà
+  BuildingStatus: {
+    "Không hiển thị": 0,
+    "Đang sử dụng": 1,
+    "Không sử dụng": 2,
+  },
 };

@@ -1,7 +1,7 @@
-import BaseAPI from "@/apis/baseAPI";
+import CrudAPI from "@/apis/crudAPI";
 
-const END_POINT = "Resident/";
-class ResidentAPI extends BaseAPI {
+const END_POINT = "Residents";
+class ResidentAPI extends CrudAPI {
   constructor() {
     super(END_POINT); // Gọi constructor của lớp cha
   }

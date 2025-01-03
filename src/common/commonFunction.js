@@ -71,3 +71,21 @@ export const logout = () => {
   localStorage.removeItem("context");
   contextStore.$reset();
 };
+
+//#region Format
+export const formatNumberWithCommas = (number) => {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
+export const convertCurrencyFormat = (input) => {
+  // Kiểm tra xem input có chứa dấu chấm hay không
+  if (typeof input === "string" && input.includes(".")) {
+    // Nếu có dấu chấm trong chuỗi, loại bỏ dấu chấm và chuyển về kiểu Number
+    return Number(input.replace(/\./g, ""));
+  } else if (typeof input === "number") {
+    // Nếu là số, chuyển về định dạng chuỗi với dấu chấm ngăn cách
+    return input.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+  return input;
+};
+//#endregion

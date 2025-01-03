@@ -4,7 +4,13 @@
       <v-window v-model="onboarding">
         <v-window-item v-for="n in length" :key="`card-${n}`" :value="n">
           <v-card class="d-flex justify-center align-center" height="200">
-            <span class="text-h2"> Card {{ n }} </span>
+            <!-- <span class="text-h2"> Card {{ n }} </span> -->
+            <v-img
+              color="surface-variant"
+              height="200"
+              src="https://cdn.vuetifyjs.com/docs/images/cards/purple-flowers.jpg"
+              cover
+            />
           </v-card>
         </v-window-item>
       </v-window>

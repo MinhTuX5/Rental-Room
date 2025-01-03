@@ -116,5 +116,14 @@ export const useRoomSearchCommon = () => {
     }
   };
 
+  /**
+   * @description đăng xuất
+   */
+  const logout = () => {
+    localStorage.removeItem("context");
+    contextStore.$reset();
+    router.push("/");
+  };
+
   return { filters, lovePost, logout };
 };

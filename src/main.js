@@ -10,8 +10,12 @@ import vuetify from "./plugins/vuetify"; // Import cấu hình Vuetify
 import { registerGlobalComponent } from "@/components/register/globalComponent.js";
 import { registerPopup } from "@/components/register/popupRegister.js";
 import { initApp } from "@/common/initApp.js";
+// Popup
+import { vfmPlugin } from "vue-final-modal";
 
 const app = createApp(App);
+
+app.use(vfmPlugin);
 
 const pinia = createPinia();
 app.use(pinia);

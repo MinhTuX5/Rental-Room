@@ -1,6 +1,10 @@
 export const RoomPriceUnitMapping = [
   {
-    perMonth: "đồng/tháng",
+    key: "đồng/tháng",
     value: 0,
+  },
+  {
+    key: "triệu/năm",
+    value: 1,
   },
 ];

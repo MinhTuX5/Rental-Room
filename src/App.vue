@@ -9,15 +9,19 @@
       >{{ store.alertMessage }}</v-alert
     >
     <router-view />
+    <modals-container />
   </div>
 </template>
 
 <script>
 import { useAppStore } from "@/stores/appStore";
+import { ModalsContainer } from "vue-final-modal";
 
 export default {
   name: "App",
-  components: {},
+  components: {
+    ModalsContainer,
+  },
   setup() {
     const store = useAppStore();
     return {
@@ -37,7 +41,7 @@ export default {
     align-items: center;
     left: 50%;
     transform: translate(-50%, 20%);
-    z-index: 2;
+    z-index: 1007;
     width: fit-content;
 
     .v-alert__prepend {

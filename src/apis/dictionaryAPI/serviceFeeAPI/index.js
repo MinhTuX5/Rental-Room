@@ -1,7 +1,7 @@
-import BaseAPI from "@/apis/baseAPI";
+import CrudAPI from "@/apis/crudAPI";
 
-const END_POINT = "ServiceFeeType/";
-class ServiceFeeAPI extends BaseAPI {
+const END_POINT = "ServiceFee";
+class ServiceFeeAPI extends CrudAPI {
   constructor() {
     super(END_POINT); // Gọi constructor của lớp cha
   }

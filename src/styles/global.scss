@@ -1,3 +1,15 @@
 .v-row {
   margin: 0 !important;
 }
+
+.hide-spin-buttons {
+  .v-number-input__control {
+    display: none;
+  }
+}
+
+.v-list-item--nav {
+  .v-list-item-title {
+    line-height: 20px;
+  }
+}

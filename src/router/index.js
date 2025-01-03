@@ -63,7 +63,77 @@ const router = createRouter({
       name: "Management",
       component: () =>
         import("@/components/layout/roomManagement/Container.vue"),
-      children: [],
+      children: [
+        {
+          path: "/quan-ly/thong-tin-phong",
+          name: "RoomInfo",
+          component: () =>
+            import("@/views/roomManagement/renter/roomInfo/RoomInfo.vue"),
+        },
+        {
+          path: "/quan-ly/danh-muc",
+          redirect: "/quan-ly/danh-muc/phi-dich-vu",
+          name: "Dictionary",
+          children: [
+            {
+              path: "/quan-ly/danh-muc/toa-nha",
+              name: "BuildingList",
+              component: () =>
+                import(
+                  "@/views/roomManagement/innkeeper/dictionary/building/BuildingList.vue"
+                ),
+            },
+            {
+              path: "/quan-ly/danh-muc/phi-gui-xe",
+              name: "VehicleFeeList",
+              component: () =>
+                import(
+                  "@/views/roomManagement/innkeeper/dictionary/vehicle/VehicleFeeList.vue"
+                ),
+            },
+            {
+              path: "/quan-ly/danh-muc/phi-dich-vu",
+              name: "ServiceFeeList",
+              component: () =>
+                import(
+                  "@/views/roomManagement/innkeeper/dictionary/service/ServiceFeeList.vue"
+                ),
+            },
+            {
+              path: "/quan-ly/danh-muc/loai-phong",
+              name: "RoomCategoryList",
+              component: () =>
+                import(
+                  "@/views/roomManagement/innkeeper/dictionary/roomCategory/RoomCategoryList.vue"
+                ),
+            },
+            {
+              path: "/quan-ly/danh-muc/phong",
+              name: "RoomList",
+              component: () =>
+                import(
+                  "@/views/roomManagement/innkeeper/dictionary/room/RoomList.vue"
+                ),
+            },
+            {
+              path: "/quan-ly/danh-muc/hop-dong",
+              name: "ContractList",
+              component: () =>
+                import(
+                  "@/views/roomManagement/innkeeper/dictionary/contract/ContractList.vue"
+                ),
+            },
+            {
+              path: "/quan-ly/danh-muc/nguoi-thue",
+              name: "ResidentList",
+              component: () =>
+                import(
+                  "@/views/roomManagement/innkeeper/dictionary/resident/ResidentList.vue"
+                ),
+            },
+          ],
+        },
+      ],
     },
     {
       path: "/auth",

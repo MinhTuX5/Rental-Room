@@ -1,10 +1,10 @@
-import { provide } from "vue";
 // enum
 import _enum from "@/common/enum";
 // base
 import baseView from "./baseView";
 // resource
 import { showMessage } from "@/common/commonFunction";
+import { convertCurrencyFormat } from "@/common/commonFunction";
 
 export default {
   name: "BaseDetail",
@@ -25,14 +25,16 @@ export default {
     viewing() {
       return this.editMode == _enum.Mode.View;
     },
+    numberFields() {
+      return this.store.$state.numberFields ?? [];
+    },
+    detailForm() {
+      return this.$.type.name ?? "";
+    },
   },
   created() {
     const me = this;
     me.initConfig();
-
-    provide("baseDetail", {
-      abc: 1,
-    });
   },
   mounted() {
     window._detail = this;
@@ -50,21 +52,19 @@ export default {
     beforeOpen($event) {
       const me = this;
       me._formParam = $event.ref.params?.value;
-      const { mode } = me._formParam;
-
       // Cập nhật edit mode
-      me.editMode = mode;
+      me.editMode = me._formParam.editMode ?? _enum.Mode.Add;
 
-      // Cập nhật model
-      if (me.viewing) {
-        const detailData = me._formParam.detailData;
-        me.model = { ...detailData };
-      } else {
-        // update model with default model
-        const keys = Object.keys(me.defaultModel);
-        if (keys.length > 0) {
-          me.model = { ...me.defaultModel };
-        }
+      if (
+        me._formParam.model &&
+        typeof me._formParam.model === "object" &&
+        Array.isArray(me.numberFields)
+      ) {
+        me.numberFields.forEach((x) => {
+          me._formParam.model[x] = convertCurrencyFormat(
+            me._formParam.model[x]
+          );
+        });
       }
     },
 
@@ -74,6 +74,20 @@ export default {
     opened() {
       const me = this;
       me.updateTitle(me.editMode);
+
+      // Lấy giá trị mặc định
+      const keys = Object.keys(me.defaultModel);
+      if (keys.length > 0) {
+        me.model = { ...me.defaultModel };
+      }
+
+      // Không phải thêm mới
+      if (me.editMode != _enum.Mode.Add) {
+        const currentModel = me._formParam.model;
+        if (currentModel && typeof currentModel == "object") {
+          me.model = { ...me.model, ...currentModel };
+        }
+      }
     },
 
     /**
@@ -95,30 +109,6 @@ export default {
       }
     },
 
-    /**
-     * Xử lý sự kiện khi click vào các nút chức năng
-     * @param {Number} mode Chế độ chức năng
-     */
-    commandClick(mode) {
-      const me = this;
-
-      // do action
-      switch (mode) {
-        case _enum.Mode.Add:
-          // CALL API
-          me.submit();
-          break;
-        case _enum.Mode.Update:
-          // update title
-          me.updateTitle(mode);
-          // update edit mode
-          me.editMode = mode;
-          break;
-        default:
-          break;
-      }
-    },
-
     beforeSubmit() {},
 
     async submit() {
@@ -129,11 +119,11 @@ export default {
       // call API
       try {
         switch (me.editMode) {
-          case _enum.Mode.Add:
-            await me.insert();
-            break;
           case _enum.Mode.Update:
             await me.update();
+            break;
+          default:
+            await me.insert();
             break;
         }
       } catch (error) {
@@ -146,18 +136,11 @@ export default {
     async insert() {
       const me = this;
       try {
-        // CALL API
-        const res = await me.store.insertAsync(me.model);
-        // Show result
-        if (res) {
-          // show toast
+        const item = await me.store.insertAsync(me.model);
+        if (item) {
           showMessage("Thêm mới thành công");
-          // Xử lý sau khi lưu thành công
-          if (res.data.entity) {
-            me.submitSuccess(res.data.entity);
-          }
-          // hide form
-          me.hide();
+
+          me.submitSuccess(item);
         }
       } catch (error) {
         console.log(error);
@@ -167,23 +150,15 @@ export default {
     async update() {
       const me = this;
       try {
-        // CALL API
-        const res = await me.store.state.api.putAsync(me.model);
+        const res = await me.store.putAsync(me.model);
         // Show result
-        if (
-          res?.status == _enum.APIStatus.Ok &&
-          res?.data?.code == _enum.APICode.Success
-        ) {
-          // update store
-          me.store.commit("update", res.data.entity);
+        if (res) {
           // show toast
           showMessage("Cập nhật thành công");
           // Xử lý sau khi lưu thành công
-          if (res.data.entity) {
-            me.submitSuccess(res.data.entity);
+          if (res) {
+            me.submitSuccess(res);
           }
-          // hide form
-          me.hide();
         }
       } catch (error) {
         console.log(error);
@@ -192,8 +167,8 @@ export default {
 
     hide() {
       const me = this;
-      if (me._formParam?.detailForm) {
-        me.$vfm.hide(me._formParam.detailForm);
+      if (me.detailForm) {
+        me.$vfm.hide(me.detailForm);
       }
     },
 
@@ -203,6 +178,8 @@ export default {
       if (callBack && typeof callBack == "function") {
         callBack(data);
       }
+
+      me.hide();
     },
   },
 };

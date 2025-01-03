@@ -52,33 +52,55 @@ export const useContainer = () => {
       isGroup: true,
       children: [
         {
-          title: "Phương tiện",
-          componentId: "VehicleList",
+          title: "Tòa nhà",
+          componentId: "BuildingList",
+          icon: "mdi-home-city",
+        },
+        {
+          title: "Loại phòng",
+          componentId: "RoomCategoryList",
+          icon: "mdi-home-circle-outline",
+        },
+        {
+          title: "Phòng",
+          componentId: "RoomList",
+          icon: "mdi-home-group",
+        },
+        {
+          title: "Hợp đồng cho thuê",
+          componentId: "ContractList",
+          icon: "mdi-file-sign",
+        },
+        {
+          title: "Người thuê",
+          componentId: "ResidentList",
+          icon: "mdi-account-group-outline",
+        },
+        {
+          title: "Phí gửi xe",
+          componentId: "VehicleFeeList",
           icon: "mdi-atv",
+        },
+        {
+          title: "Phí dịch vụ",
+          componentId: "ServiceFeeList",
+          icon: "mdi-currency-usd",
         },
       ],
     },
   ]);
 
-  const componentId = ref(renterFeatures[0].componentId);
-
   /**
    * @description Xử lý sự kiện chọn tab khác
-   * @author nvthinh 03.08.2024
    */
-  const handleSelected = (value) => {
-    const selectedItem = renterFeatures.find((x) => x.active);
-    if (Array.isArray(value) && value.length) {
-      componentId.value = value[0];
-      if (selectedItem && componentId.value != selectedItem.componentId) {
-        selectedItem.active = false;
-      }
-    }
+  const handleSelected = ([routerName, ...args]) => {
+    const me = proxy;
+    me.$router.push({ name: routerName });
   };
 
-  const open = [];
+  const open = ["dictionary"];
 
-  onMounted(() => {
+  const getMenu = () => {
     const { role } = contextStore.$state;
     switch (role) {
       case Role.Innkeeper:
@@ -90,6 +112,39 @@ export const useContainer = () => {
       default:
         break;
     }
+  };
+
+  const activeMenuItem = () => {
+    const me = proxy;
+    const { name } = me.$route;
+    if (name) {
+      var menuItem = features.value.find(
+        (x) =>
+          x.componentId == name ||
+          x.children?.some((y) => y.componentId == name)
+      );
+      if (menuItem) {
+        if (Array.isArray(menuItem.children)) {
+          menuItem.children.forEach((x) => (x.active = false));
+          const childItem = menuItem.children.find(
+            (x) => x.componentId == name
+          );
+          if (childItem) {
+            childItem.active = true;
+          } else {
+            menuItem.children[0].active = true;
+          }
+        } else {
+          menuItem.active = true;
+        }
+      }
+    }
+  };
+
+  onMounted(() => {
+    getMenu();
+
+    activeMenuItem();
 
     window._container = proxy;
   });
@@ -97,7 +152,6 @@ export const useContainer = () => {
   return {
     menuItems,
     features,
-    componentId,
     handleSelected,
     open,
   };

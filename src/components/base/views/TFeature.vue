@@ -1,6 +1,7 @@
 <template>
   <div class="d-flex justify-space-between">
     <v-text-field
+      v-model="searchText"
       density="compact"
       append-inner-icon="mdi-magnify"
       variant="solo"
@@ -9,11 +10,13 @@
       :max-width="searchMaxWidth"
       hide-details
       single-line
-      @click:append-inner="onClickSearchInput"
+      @click:append-inner="$emit('search', searchText)"
+      @keyup.enter="$emit('search', searchText)"
     ></v-text-field>
     <v-btn
       :prepend-icon="featureBtnConfig[featureBtnType].icon"
       color="blue-lighten-1"
+      @click="$emit('on-click')"
     >
       {{ featureBtnConfig[featureBtnType].text }}
     </v-btn>
@@ -31,7 +34,7 @@ export default {
     },
     searchMaxWidth: {
       type: Number,
-      default: "300",
+      default: 300,
     },
     featureBtnType: {
       default: "add",
@@ -39,6 +42,7 @@ export default {
     },
   },
   setup() {
+    const searchText = ref("");
     const searchLoading = ref(false);
     const onClickSearchInput = () => {
       searchLoading.value = true;
@@ -67,6 +71,7 @@ export default {
       searchLoading,
       onClickSearchInput,
       featureBtnConfig,
+      searchText,
     };
   },
 };

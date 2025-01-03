@@ -29,6 +29,7 @@ npm i @fullcalendar/core @fullcalendar/vue3 @fullcalendar/daygrid @fullcalendar/
 
 [Vuelidate](https://vuelidate-next.netlify.app/)
 [FullCalendar](https://github.com/fullcalendar/fullcalendar-examples/tree/main/vue3/)
+[VueCurrencyInput](https://dm4t2.github.io/vue-currency-input/guide.html)
 
 # NOTE
 

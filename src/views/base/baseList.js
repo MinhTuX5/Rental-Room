@@ -13,39 +13,11 @@ export default {
       store: {},
       loading: true,
       search: "",
-      searchFields: [],
     };
   },
   computed: {
     idField() {
       return this.store?.$state.idField;
-    },
-    /**
-     * 60: header height
-     * 40: padding top and bottom
-     * 20: padding bottom of toolbar
-     * 32: height of toolbar
-     */
-    tableMaxHeight() {
-      return window.innerHeight - 60 - 40 - 20 - 32;
-    },
-
-    tableData() {
-      return this.store.state?.items ?? [];
-    },
-
-    tableSearchData() {
-      if (this.searchFields.length > 0) {
-        return this.tableData.filter((item) =>
-          this.searchFields.some(
-            (field) =>
-              item[field] &&
-              item[field].toLowerCase().includes(this.search.toLowerCase())
-          )
-        );
-      } else {
-        return this.tableData;
-      }
     },
   },
 
@@ -67,21 +39,6 @@ export default {
       if (typeof me.store?.dispatch == "function") {
         await me.store.dispatch("getAll");
       }
-    },
-
-    handleOnClickAddButton() {
-      const me = this;
-      if (!me.detailForm) {
-        throw new Error("detailForm is required");
-      }
-      const param = {
-        mode: _enum.Mode.Add,
-        detailForm: me.detailForm,
-      };
-      me.$vfm.show({ component: me.detailForm }, param).then(() => {
-        // do something on modal opened
-        console.log(me.detailForm);
-      });
     },
 
     handleOnEditGrid({ row }) {

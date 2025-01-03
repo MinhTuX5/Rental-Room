@@ -1,8 +1,5 @@
 <template>
   <v-layout>
-    <!-- Header -->
-    <!-- <v-app-bar><v-header :height="headerHeight" /></v-app-bar> -->
-    <!-- left nav -->
     <v-navigation-drawer
       ref="nav"
       theme="dark"
@@ -35,10 +32,8 @@
       </template>
     </v-navigation-drawer>
 
-    <!-- Main content -->
     <v-main>
       <router-view />
-      <!-- <component :is="componentId"></component> -->
     </v-main>
   </v-layout>
 </template>

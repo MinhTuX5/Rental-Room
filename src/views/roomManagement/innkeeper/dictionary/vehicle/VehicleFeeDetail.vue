@@ -1,7 +1,7 @@
-vehicleType<template>
+<template>
   <t-dynamic-popup
     :title="title"
-    :width="450"
+    :width="600"
     name="VehicleFeeDetail"
     class="vehicle-fee-detail"
     @before-open="beforeOpen"
@@ -9,34 +9,39 @@ vehicleType<template>
   >
     <!-- Nội dung popup -->
     <template #content>
-      <div class="flex space-between mb-2">
-        <div class="flex-column flex flex1">
+      <v-row>
+        <v-col>
           <label> Mã phương tiện </label>
-          <el-input
-            v-model="model.vehicleTypeCode"
-            placeholder="V01"
-            :disabled="viewing || editMode == _enum.Mode.Update"
-          />
-        </div>
-      </div>
-      <div class="flex space-between mb-2">
-        <div class="flex-column flex flex1">
-          <label> Loại phương tiện </label>
-          <el-input
-            v-model="model.name"
-            placeholder="Ô tô, Xe máy, ..."
+          <v-text-field
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            placeholder="Nhập mã phương tiện"
             :disabled="viewing"
-          />
-        </div>
-      </div>
-      <div class="flex space-between mb-2">
-        <div class="flex-column flex flex1">
-          <label>Mức giá gửi xe / tháng</label>
+            v-model="model.vehicle_fee_code"
+        /></v-col>
+        <v-col>
+          <label> Loại phương tiện </label>
+          <v-text-field
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            placeholder="Ô tô, xe máy, ..."
+            :disabled="viewing"
+            v-model="model.vehicle_type"
+        /></v-col>
+      </v-row>
+
+      <v-row>
+        <v-col>
+          <label>Giá phí gửi xe</label>
           <t-currency-input
-            v-model="model.parkingFee"
-            placeholder="0₫"
+            class="mt-2"
+            v-model="feePrice"
+            placeholder=""
             :options="{
               currency: 'VND',
+              currencyDisplay: 'hidden',
               locale: 'de-DE',
               valueRange: {
                 min: 0,
@@ -44,25 +49,26 @@ vehicleType<template>
               hideGroupingSeparatorOnFocus: false,
             }"
           />
-        </div>
-      </div>
+        </v-col>
+        <v-col>
+          <label>Đơn vị tính</label>
+          <v-select
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            :items="unitItems"
+            v-model="model.unit"
+          />
+        </v-col>
+      </v-row>
     </template>
     <!-- Chân popup -->
     <template #footer="{ close }">
-      <div class="flex footer">
-        <el-button @click="close">Hủy</el-button>
-        <el-button
-          v-if="!viewing"
-          type="primary"
-          @click="commandClick(_enum.Mode.Add)"
-          >Lưu</el-button
+      <div class="d-flex flex-row-reverse">
+        <v-btn class="ml-3" min-width="80" color="blue" @click="submit"
+          >Lưu</v-btn
         >
-        <el-button
-          v-else
-          type="primary"
-          @click="commandClick(_enum.Mode.Update)"
-          >Sửa</el-button
-        >
+        <v-btn min-width="80" @click="close" variant="outlined">Hủy</v-btn>
       </div>
     </template>
   </t-dynamic-popup>
@@ -72,9 +78,15 @@ vehicleType<template>
 import { useVehicleFeeDetail } from "./vehicleFeeDetail";
 // base
 import BaseDetail from "@/views/base/baseDetail.js";
+// components
+import TCurrencyInput from "@/components/base/input/TCurrencyInput.vue";
+
 export default {
   extends: BaseDetail,
-  name: "VehicleTypeDetail",
+  name: "VehicleFeeDetail",
+  components: {
+    TCurrencyInput,
+  },
   setup() {
     const vehicleFeeDetail = useVehicleFeeDetail();
     return vehicleFeeDetail;
@@ -84,6 +96,8 @@ export default {
 
 <style lang="scss">
 .vehicle-fee-detail {
-  @import "./VehicleFeeDetail.scss";
+  .modal_content {
+    padding: unset;
+  }
 }
 </style>

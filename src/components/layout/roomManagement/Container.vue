@@ -2,6 +2,7 @@
   <v-layout class="room-management-container">
     <!-- Header -->
     <v-app-bar
+      ref="VHeader"
       color="teal-darken-4"
       image="https://picsum.photos/1920/1080?random"
     >
@@ -49,7 +50,7 @@
             <template v-slot:prepend>
               <v-icon :icon="item.icon"></v-icon> </template
           ></v-list-item>
-          <v-list-group v-else value="Dictionary">
+          <v-list-group v-else value="dictionary">
             <template #activator="{ props }">
               <v-list-item
                 v-bind="props"
@@ -74,7 +75,7 @@
 
     <!-- Main content -->
     <v-main ref="main" class="h-screen">
-      <component :is="componentId"></component>
+      <router-view :height-of-app-header="$refs.VHeader?.$el.clientHeight" />
     </v-main>
   </v-layout>
 </template>

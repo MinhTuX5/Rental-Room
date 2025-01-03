@@ -1,0 +1,8 @@
+export default {
+  Equal: 0,
+  NotEqual: 1,
+  GreaterThan: 2,
+  LessThan: 3,
+  Contains: 4,
+  IN: 5,
+};
