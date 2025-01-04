@@ -159,7 +159,7 @@ export const usePostDetailPopup = () => {
   /**
    * @description Xử lý trước khi submit
    */
-  const beforeSubmit = () => {
+  const customBeforeSubmit = () => {
     const me = proxy;
 
     const contextStore = useContextStore();
@@ -230,7 +230,7 @@ export const usePostDetailPopup = () => {
     unitList,
     priceUnit,
     store,
-    beforeSubmit,
+    customBeforeSubmit,
     roomCharacteristic,
     roomPrice,
     submitPopup,

@@ -20,6 +20,7 @@ export default {
       mainViewPadding: 16,
       refToolBar: "refToolBar",
       itemsPerPage: 20,
+      lastPagingParam: {},
     };
   },
   computed: {
@@ -125,6 +126,8 @@ export default {
     async loadItems({ page, itemsPerPage, sortBy }) {
       const me = this;
 
+      me.lastPagingParam = { page, itemsPerPage, sortBy };
+
       var sorts = me.defaultSorts.map((x) => ({
         Column: x.Field,
         IsAscending: x.IsAscending,
@@ -153,6 +156,11 @@ export default {
       } finally {
         me.loading = false;
       }
+    },
+
+    refresh() {
+      const me = this;
+      me.loadItems(me.lastPagingParam);
     },
 
     onSearch(searchText) {

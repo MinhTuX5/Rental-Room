@@ -109,7 +109,19 @@ export default {
       }
     },
 
-    beforeSubmit() {},
+    beforeSubmit() {
+      const me = this;
+      me.handleCommon();
+      me.customBeforeSubmit();
+    },
+
+    handleCommon() {
+      const me = this;
+      if (me.store?.$state?.buildingID) {
+        me.model.building_id = me.store.$state.buildingID;
+      }
+    },
+    customBeforeSubmit() {},
 
     async submit() {
       const me = this;

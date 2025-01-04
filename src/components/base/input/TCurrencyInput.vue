@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useCurrencyInput } from "vue-currency-input";
 
 export default {
@@ -57,7 +57,7 @@ export default {
     },
   },
   setup(props) {
-    const { inputRef } = useCurrencyInput(props.options);
+    const { inputRef, setValue  } = useCurrencyInput(props.options);
 
     const isFocus = ref(false);
     const focus = () => {
@@ -69,6 +69,13 @@ export default {
     };
 
     const onHandleInput = (e) => {};
+
+    watch(
+      () => props.modelValue,
+      (value) => {
+        setValue(value);
+      }
+    );
 
     return { inputRef, focus, isFocus, blur, onHandleInput };
   },

@@ -18,7 +18,6 @@ export const useVehicleFeeDetail = () => {
   };
 
   const feePrice = ref(0);
-
   watch(feePrice, (newVal) => {
     proxy.model.fee_price = newVal;
   });

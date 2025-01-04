@@ -6,6 +6,7 @@ export const useAppStore = defineStore({
     alertMessage: "",
     alertType: "error", // or 'success', 'info', 'warning'
     showAlert: false,
+    allRoomCategories: []
   }),
   actions: {
     setAlert({ message, type }) {

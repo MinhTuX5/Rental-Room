@@ -27,6 +27,9 @@ const RoomCategoryDetail = defineAsyncComponent(() =>
     "@/views/roomManagement/innkeeper/dictionary/roomCategory/RoomCategoryDetail.vue"
   )
 );
+const RoomDetail = defineAsyncComponent(() =>
+  import("@/views/roomManagement/innkeeper/dictionary/room/RoomDetail.vue")
+);
 //#endregion
 
 export function registerPopup(app) {
@@ -36,4 +39,5 @@ export function registerPopup(app) {
   app.component("VehicleFeeDetail", VehicleFeeDetail);
   app.component("ServiceFeeDetail", ServiceFeeDetail);
   app.component("RoomCategoryDetail", RoomCategoryDetail);
+  app.component("RoomDetail", RoomDetail);
 }

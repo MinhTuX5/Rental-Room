@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-space-between">
+  <div class="d-flex justify-space-between align-center">
     <v-text-field
       v-model="searchText"
       density="compact"
@@ -10,16 +10,27 @@
       :max-width="searchMaxWidth"
       hide-details
       single-line
+      v-tooltip:top="`Tìm kiếm theo ${searchLabel}`"
       @click:append-inner="$emit('search', searchText)"
       @keyup.enter="$emit('search', searchText)"
     ></v-text-field>
-    <v-btn
-      :prepend-icon="featureBtnConfig[featureBtnType].icon"
-      color="blue-lighten-1"
-      @click="$emit('on-click')"
-    >
-      {{ featureBtnConfig[featureBtnType].text }}
-    </v-btn>
+    <div class="d-flex">
+      <v-btn
+        icon="mdi-refresh"
+        class="mr-4"
+        density="comfortable"
+        v-tooltip:top="`Tải lại trang`"
+        @click="$emit('refresh')"
+      />
+      <v-btn
+        :prepend-icon="featureBtnConfig[featureBtnType].icon"
+        color="blue-lighten-1"
+        :title="featureBtnConfig[featureBtnType].text"
+        @click="$emit('on-click')"
+      >
+        {{ featureBtnConfig[featureBtnType].text }}
+      </v-btn>
+    </div>
   </div>
 </template>
 

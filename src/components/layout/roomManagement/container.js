@@ -47,44 +47,57 @@ export const useContainer = () => {
 
   const innkeeperFeatures = reactive([
     {
+      title: "Danh sách phòng",
+      componentId: "RoomList",
+      icon: "mdi-list-box-outline",
+      value: "RoomList",
+    },
+    {
       title: "Danh mục",
       icon: "mdi-cloud-print-outline",
       isGroup: true,
       children: [
         {
           title: "Tòa nhà",
-          componentId: "BuildingList",
           icon: "mdi-home-city",
+          componentId: "BuildingList",
+          value: "BuildingList",
         },
         {
           title: "Loại phòng",
           componentId: "RoomCategoryList",
           icon: "mdi-home-circle-outline",
+          value: "RoomCategoryList",
         },
         {
           title: "Phòng",
           componentId: "RoomList",
           icon: "mdi-home-group",
+          value: "RoomList",
         },
         {
           title: "Hợp đồng cho thuê",
           componentId: "ContractList",
           icon: "mdi-file-sign",
+          value: "ContractList",
         },
         {
           title: "Người thuê",
           componentId: "ResidentList",
           icon: "mdi-account-group-outline",
+          value: "ResidentList",
         },
         {
           title: "Phí gửi xe",
           componentId: "VehicleFeeList",
           icon: "mdi-atv",
+          value: "VehicleFeeList",
         },
         {
           title: "Phí dịch vụ",
           componentId: "ServiceFeeList",
           icon: "mdi-currency-usd",
+          value: "ServiceFeeList",
         },
       ],
     },
@@ -144,7 +157,7 @@ export const useContainer = () => {
   onMounted(() => {
     getMenu();
 
-    activeMenuItem();
+    // activeMenuItem();
 
     window._container = proxy;
   });

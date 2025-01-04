@@ -9,9 +9,9 @@ export default class BaseStore {
         return response;
       },
 
-      async getAllRecords(keyWord) {
-        const response = await api.getAsync({ keyWord });
-        return response;
+      async getAll() {
+        const response = await api.getAsync();
+        return response?.data ?? [];
       },
 
       afterGetPaging(result) {

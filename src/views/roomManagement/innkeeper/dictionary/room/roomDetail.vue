@@ -1,36 +1,63 @@
 <template>
   <t-dynamic-popup
     :title="title"
-    :width="660"
-    name="RoomCategoryDetail"
-    class="room-category-detail"
+    :width="800"
+    name="RoomDetail"
+    class="room-detail"
     @before-open="beforeOpen"
     @opened="opened"
   >
     <!-- Nội dung popup -->
     <template #content>
       <v-row>
-        <v-col cols="5">
-          <label> Mã loại phòng </label>
+        <v-col>
+          <label> Mã phòng </label>
           <v-text-field
             class="mt-2"
             variant="outlined"
             color="blue-lighten-3"
             placeholder="Nhập mã loại phòng"
-            :autofocus=true
+            :autofocus="true"
             :disabled="viewing"
-            v-model="model.room_category_code"
+            v-model="model[store.codeField]"
         /></v-col>
-        <v-col cols="7">
-          <label> Loại phòng </label>
+        <v-col class="ml-4">
+          <label> Tên phòng </label>
           <v-text-field
             class="mt-2"
             variant="outlined"
             color="blue-lighten-3"
-            placeholder="Phòng VIP, ..."
+            placeholder="Phòng 001, ..."
             :disabled="viewing"
-            v-model="model.room_category_name"
-        /></v-col>
+            v-model="model[store.nameField]"
+          />
+        </v-col>
+        <v-col class="ml-4">
+          <label> Loại phòng </label>
+          <v-autocomplete
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            :items="allRoomCategories"
+            :item-title="roomCategoryStore.nameField"
+            :item-value="roomCategoryStore.idField"
+            v-model="model[roomCategoryStore.idField]"
+            @update:modelValue="onSelectRoomCategory"
+          ></v-autocomplete>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col>
+          <label> Vị trí phòng </label>
+          <v-text-field
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            placeholder="Tầng 2 bên phải cầu thang máy ..."
+            v-model="model.room_position"
+          />
+        </v-col>
       </v-row>
 
       <v-row>
@@ -38,7 +65,7 @@
           <label>Giá phòng</label>
           <t-currency-input
             class="mt-2"
-            v-model="feePrice"
+            v-model="roomPrice"
             placeholder=""
             :options="{
               currency: 'VND',
@@ -50,22 +77,22 @@
             }"
           />
         </v-col>
-        <v-col>
+        <v-col class="ml-4">
           <label>Diện tích</label>
           <v-number-input
             class="mt-2 hide-spin-buttons"
             variant="outlined"
             controlVariant=""
-            type='number'
+            type="number"
             :reverse="false"
             :inset="false"
             :min="0"
             :hide-spin-buttons="true"
-            suffix='m²'
+            suffix="m²"
             v-model="model.room_area"
           ></v-number-input>
         </v-col>
-        <v-col>
+        <v-col class="ml-4">
           <label>Số phòng ngủ</label>
           <v-number-input
             class="mt-2"
@@ -81,18 +108,26 @@
     </template>
     <!-- Chân popup -->
     <template #footer="{ close }">
-      <div class="d-flex flex-row-reverse">
-        <v-btn class="ml-3" min-width="80" color="blue" @click="submit"
-          >Lưu</v-btn
-        >
-        <v-btn min-width="80" @click="close" variant="outlined">Hủy</v-btn>
+      <div class="d-flex flex-row-reverse justify-space-between align-center">
+        <div class="d-flex flex-row-reverse">
+          <v-btn class="ml-3" min-width="80" color="blue" @click="submit"
+            >Lưu</v-btn
+          >
+          <v-btn min-width="80" @click="close" variant="outlined">Hủy</v-btn>
+        </div>
+        <v-checkbox-btn
+          label="Còn trống"
+          color="blue"
+          density="compact"
+          v-model="model.is_empty"
+        ></v-checkbox-btn>
       </div>
     </template>
   </t-dynamic-popup>
 </template>
 
 <script>
-import { useVehicleFeeDetail } from "./roomCategoryDetail";
+import { useRoomDetail } from "./roomDetail";
 // base
 import BaseDetail from "@/views/base/baseDetail.js";
 // components
@@ -100,16 +135,21 @@ import TCurrencyInput from "@/components/base/input/TCurrencyInput.vue";
 
 export default {
   extends: BaseDetail,
-  name: "VehicleFeeDetail",
+  name: "RoomDetail",
   components: {
     TCurrencyInput,
   },
   setup() {
-    const vehicleFeeDetail = useVehicleFeeDetail();
-    return vehicleFeeDetail;
+    const resource = useRoomDetail();
+    return resource;
   },
 };
 </script>
 
 <style lang="scss">
+.room-detail {
+  .v-col {
+    padding: unset;
+  }
+}
 </style>

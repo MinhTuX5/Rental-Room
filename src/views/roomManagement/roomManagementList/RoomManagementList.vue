@@ -12,17 +12,16 @@
 </template>
 
 <script>
-import { useRoomList } from "./roomList";
+import { useRoomManagementList } from "./roomManagementList";
 
 export default {
-  name: "RoomList",
+  name: "RoomManagementList",
   setup() {
-    const resource = useRoomList();
+    const resource = useRoomManagementList();
     return resource;
   },
 };
 </script>
 
 <style lang="scss">
-@import "./RoomList";
 </style>

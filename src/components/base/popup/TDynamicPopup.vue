@@ -44,7 +44,11 @@
       </div>
       <!-- right of title -->
       <div class="title_right">
-        <img src="../../../assets/svg/x-thin-svgrepo-com.svg" alt="X Icon" @click="close">
+        <img
+          src="../../../assets/svg/x-thin-svgrepo-com.svg"
+          alt="X Icon"
+          @click="close"
+        />
       </div>
     </div>
     <div class="modal_content">
@@ -131,7 +135,7 @@ export default {
 
 :deep(.modal-content) {
   background-color: white;
-  padding: 20px;
+  padding: 20px 20px 0 20px;
   border-radius: 4px;
 }
 
@@ -153,5 +157,10 @@ export default {
 .modal_content {
   display: flex;
   flex-direction: column;
+  padding: 20px 0;
+}
+
+.modal_footer {
+  padding-bottom: 20px;
 }
 </style>

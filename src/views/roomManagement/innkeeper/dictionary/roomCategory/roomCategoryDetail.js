@@ -11,12 +11,13 @@ export const useVehicleFeeDetail = () => {
 
   const defaultModel = {
     no_of_bed_rooms: 1,
-    room_area: 0
-  }
+    room_area: 0,
+  };
 
+  // Giá phòng
   const feePrice = ref(0);
   watch(feePrice, (newVal) => {
-    proxy.model.fee_price = newVal;
+    proxy.model.room_price = newVal;
   });
 
   onMounted(() => {
@@ -30,6 +31,6 @@ export const useVehicleFeeDetail = () => {
     title,
     store,
     feePrice,
-    defaultModel
+    defaultModel,
   };
 };

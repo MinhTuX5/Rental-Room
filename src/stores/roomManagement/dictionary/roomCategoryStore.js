@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
 import { useContextStore } from "@/stores/contextStore";
+import { useAppStore } from "../../appStore";
 // resource
 import { convertCurrencyFormat } from "@/common/commonFunction";
 // enum
@@ -22,6 +23,7 @@ export const useRoomCategoryStore = defineStore("room_category", {
     nameField: "room_category_name",
     searchFields: ["room_category_code", "room_category_name"],
     numberFields: ["room_price"],
+    invalidCache: true,
   }),
   getters: {
     defaultSorts(state) {
@@ -57,11 +59,13 @@ export const useRoomCategoryStore = defineStore("room_category", {
       item = me.standardItem(item);
       me.items.unshift(item);
       me.totalItems++;
+      me.invalidCache = true;
     },
     afterDeleteAsync(id) {
       const me = this;
       me.items = me.items.filter((x) => x[me.idField] != id);
       me.totalItems--;
+      me.invalidCache = true;
     },
     afterUpdate(item) {
       const me = this;
@@ -70,6 +74,7 @@ export const useRoomCategoryStore = defineStore("room_category", {
         item = me.standardItem(item);
         Object.assign(curItem, item);
       }
+      me.invalidCache = true;
     },
     getEnumItem(item) {
       const me = this;
@@ -92,6 +97,26 @@ export const useRoomCategoryStore = defineStore("room_category", {
       item = me.getEnumItem(item);
       item = me.getAmountItem(item);
       return item;
+    },
+    async getAllItems() {
+      const me = this;
+      const appStore = useAppStore();
+      if (me.invalidCache) {
+        try {
+          const res = await me.getAll();
+          if (Array.isArray(res)) {
+            me.invalidCache = false;
+            appStore.$state.allRoomCategories = res;
+            return res;
+          } else {
+            return [];
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        return appStore.$state.allRoomCategories;
+      }
     },
   },
 });

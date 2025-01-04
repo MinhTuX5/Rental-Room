@@ -2,7 +2,7 @@ import { getCurrentInstance, onMounted, ref, watch } from "vue";
 // store
 import { useServiceFeeStore } from "@/stores/roomManagement/dictionary/serviceFeeStore";
 // enum
-import _enum from "../@/common/enum";
+import _enum from "@/common/enum";
 
 export const useServiceFeeDetail = () => {
   const { proxy } = getCurrentInstance();

@@ -1,18 +1,22 @@
 import { defineStore } from "pinia";
 // base
 import BaseDicStore from "@/stores/baseDicStore";
+import { useContextStore } from "@/stores/contextStore";
 // api
 import api from "@/apis/dictionaryAPI/vehicleFeeAPI";
 // resource
 import { convertCurrencyFormat } from "@/common/commonFunction";
+import FilterOperator from "@/common/enum/FilterOperator";
 // enum
 import _enum from "@/common/enum";
 
 const store = new BaseDicStore(api);
+const contextStore = useContextStore();
 
 export const useVehicleFeeStore = defineStore("vehicle-fee", {
   state: () => ({
     ...store.state,
+    buildingID: contextStore.$state.buildingID,
     idField: "vehicle_fee_id",
     codeField: "vehicle_fee_code",
     nameField: "vehicle_type",
@@ -32,6 +36,15 @@ export const useVehicleFeeStore = defineStore("vehicle-fee", {
         {
           Field: state.codeField,
           IsAscending: true,
+        },
+      ];
+    },
+    defaultFilters(state) {
+      return [
+        {
+          Field: "building_id",
+          Value: state.buildingID,
+          Operator: FilterOperator.Equal,
         },
       ];
     },

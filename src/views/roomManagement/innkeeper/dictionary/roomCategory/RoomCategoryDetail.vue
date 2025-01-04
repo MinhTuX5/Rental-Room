@@ -100,7 +100,7 @@ import TCurrencyInput from "@/components/base/input/TCurrencyInput.vue";
 
 export default {
   extends: BaseDetail,
-  name: "VehicleFeeDetail",
+  name: "RoomCategoryDetail",
   components: {
     TCurrencyInput,
   },

@@ -1,11 +1,12 @@
 <template>
-  <v-container class="room-category-list">
+  <v-container class="room-list">
     <t-feature
       :ref="refToolBar"
       class="pb-4"
       search-label="Mã, Loại phòng"
       @on-click="viewDetail"
       @search="onSearch"
+      @refresh="refresh"
     ></t-feature>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
@@ -24,10 +25,15 @@
       @update:options="loadItems"
     >
       <template v-slot:item.is_empty="{ item }">
-        <v-checkbox-btn class="justify-center" v-model="item.is_empty" readonly></v-checkbox-btn>
+        <v-checkbox-btn
+          class="justify-center"
+          v-model="item.is_empty"
+          readonly
+          color="green"
+        ></v-checkbox-btn>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-row>
+        <v-row class="action">
           <v-col>
             <v-icon
               color="blue"
@@ -80,4 +86,11 @@ export default {
 </script>
 
 <style lang="scss">
+.room-list {
+  .v-table {
+    .v-col {
+      padding: unset;
+    }
+  }
+}
 </style>
