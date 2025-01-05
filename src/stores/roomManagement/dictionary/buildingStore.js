@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import BaseDicStore from "@/stores/baseDicStore";
 import { useContextStore } from "@/stores/contextStore";
 // resource
-import { convertCurrencyFormat } from "@/common/commonFunction";
+import BuildingStatus from "../../../common/enum/BuildingStatus";
 import FilterOperator from "@/common/enum/FilterOperator";
 // enum
 import _enum from "@/common/enum";
@@ -30,8 +30,10 @@ export const useBuildingStore = defineStore("building", {
     defaultSorts(state) {
       return [
         {
+          Field: "status",
+        },
+        {
           Field: state.nameField,
-          IsAscending: true,
         },
       ];
     },
@@ -86,17 +88,19 @@ export const useBuildingStore = defineStore("building", {
       });
       return item;
     },
-    getAmountItem(item) {
-      const me = this;
-      me.numberFields.forEach((y) => {
-        item[y] = convertCurrencyFormat(item[y]);
-      });
-      return item;
-    },
     standardItem(item) {
       const me = this;
       item = me.getEnumItem(item);
-      item = me.getAmountItem(item);
+
+      switch (item.status) {
+        case BuildingStatus.Using:
+          item.statusColor = "green";
+          break;
+        case BuildingStatus.Hide:
+          item.statusColor = "red";
+          break;
+      }
+
       return item;
     },
   },

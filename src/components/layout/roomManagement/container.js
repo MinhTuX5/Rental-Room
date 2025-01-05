@@ -24,8 +24,9 @@ export const useContainer = () => {
   const renterFeatures = reactive([
     {
       title: "Danh sách phòng",
-      componentId: "RoomList",
+      componentId: "RoomListOverview",
       icon: "mdi-list-box-outline",
+      value: "RoomListOverview",
     },
     {
       title: "Thông tin phòng",
@@ -47,15 +48,30 @@ export const useContainer = () => {
 
   const innkeeperFeatures = reactive([
     {
-      title: "Danh sách phòng",
-      componentId: "RoomList",
-      icon: "mdi-list-box-outline",
-      value: "RoomList",
+      title: "Quản lý thông tin",
+      icon: "mdi-cloud-print-outline",
+      isGroup: true,
+      parentVal: 'infoManagement',
+      children: [
+        {
+          title: "Quản lý hộ gia đình",
+          icon: "mdi-home-city",
+          componentId: "BuildingList",
+          value: "BuildingList",
+        },
+        {
+          title: "Quản lý thu phí",
+          icon: "mdi-home-city",
+          componentId: "BuildingList",
+          value: "BuildingList",
+        },
+      ],
     },
     {
       title: "Danh mục",
       icon: "mdi-cloud-print-outline",
       isGroup: true,
+      parentVal: 'dictionary',
       children: [
         {
           title: "Tòa nhà",
@@ -106,12 +122,12 @@ export const useContainer = () => {
   /**
    * @description Xử lý sự kiện chọn tab khác
    */
-  const handleSelected = ([routerName, ...args]) => {
+  const handleSelected = ([target, ...args]) => {
     const me = proxy;
-    me.$router.push({ name: routerName });
+    me.$router.push({ name: target });
   };
 
-  const open = ["dictionary"];
+  const open = [];
 
   const getMenu = () => {
     const { role } = contextStore.$state;

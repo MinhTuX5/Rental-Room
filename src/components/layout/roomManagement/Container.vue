@@ -50,7 +50,7 @@
             <template v-slot:prepend>
               <v-icon :icon="item.icon"></v-icon> </template
           ></v-list-item>
-          <v-list-group v-else value="dictionary">
+          <v-list-group v-else :value="item.parentVal">
             <template #activator="{ props }">
               <v-list-item
                 v-bind="props"

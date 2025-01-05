@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
 import { useContextStore } from "@/stores/contextStore";
+import { useAppStore } from "../../appStore";
 // resource
 import { convertCurrencyFormat } from "@/common/commonFunction";
 // enum
@@ -21,7 +22,8 @@ export const useRoomStore = defineStore("room", {
     codeField: "room_code",
     nameField: "room_name",
     searchFields: ["room_code", "room_name"],
-    numberFields: ["room_price", "room_area" , "no_of_bed_rooms"],
+    numberFields: ["room_price", "room_area", "no_of_bed_rooms"],
+    invalidCache: true
   }),
   getters: {
     defaultSorts(state) {
@@ -92,6 +94,27 @@ export const useRoomStore = defineStore("room", {
       item = me.getEnumItem(item);
       item = me.getAmountItem(item);
       return item;
+    },
+
+    async getAllItems() {
+      const me = this;
+      const appStore = useAppStore();
+      if (me.invalidCache) {
+        try {
+          const res = await me.getAll();
+          if (Array.isArray(res)) {
+            me.invalidCache = false;
+            appStore.$state.allRooms = res;
+            return res;
+          } else {
+            return [];
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        return appStore.$state.allRooms;
+      }
     },
   },
 });

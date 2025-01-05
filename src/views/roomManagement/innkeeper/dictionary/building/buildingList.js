@@ -11,7 +11,7 @@ export const useBuildingList = () => {
     {
       key: "displayed_status",
       title: "Trạng thái",
-      align: "start",
+      align: "center",
     },
     {
       title: "Chức năng",

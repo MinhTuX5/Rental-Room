@@ -59,24 +59,33 @@ const router = createRouter({
       ],
     },
     {
-      path: "/quan-ly/",
+      path: "/quan-ly",
       name: "Management",
+      redirect: '/quan-ly/danh-sach-phong',
       component: () =>
         import("@/components/layout/roomManagement/Container.vue"),
       children: [
         {
-          path: "/quan-ly/thong-tin-phong",
+          path: "danh-sach-phong",
+          name: "RoomListOverview",
+          component: () =>
+            import(
+              "@/views/roomManagement/roomListOverview/RoomListOverview.vue"
+            ),
+        },
+        {
+          path: "thong-tin-phong",
           name: "RoomInfo",
           component: () =>
             import("@/views/roomManagement/renter/roomInfo/RoomInfo.vue"),
         },
         {
-          path: "/quan-ly/danh-muc",
-          redirect: "/quan-ly/danh-muc/phi-dich-vu",
+          path: "danh-muc",
           name: "Dictionary",
+          redirect: 'danh-muc/toa-nha',
           children: [
             {
-              path: "/quan-ly/danh-muc/toa-nha",
+              path: "toa-nha",
               name: "BuildingList",
               component: () =>
                 import(
@@ -84,7 +93,7 @@ const router = createRouter({
                 ),
             },
             {
-              path: "/quan-ly/danh-muc/phi-gui-xe",
+              path: "phi-gui-xe",
               name: "VehicleFeeList",
               component: () =>
                 import(
@@ -92,7 +101,7 @@ const router = createRouter({
                 ),
             },
             {
-              path: "/quan-ly/danh-muc/phi-dich-vu",
+              path: "phi-dich-vu",
               name: "ServiceFeeList",
               component: () =>
                 import(
@@ -100,7 +109,7 @@ const router = createRouter({
                 ),
             },
             {
-              path: "/quan-ly/danh-muc/loai-phong",
+              path: "loai-phong",
               name: "RoomCategoryList",
               component: () =>
                 import(
@@ -108,7 +117,7 @@ const router = createRouter({
                 ),
             },
             {
-              path: "/quan-ly/danh-muc/phong",
+              path: "phong",
               name: "RoomList",
               component: () =>
                 import(
@@ -116,7 +125,7 @@ const router = createRouter({
                 ),
             },
             {
-              path: "/quan-ly/danh-muc/hop-dong",
+              path: "hop-dong",
               name: "ContractList",
               component: () =>
                 import(
@@ -124,7 +133,7 @@ const router = createRouter({
                 ),
             },
             {
-              path: "/quan-ly/danh-muc/nguoi-thue",
+              path: "nguoi-thue",
               name: "ResidentList",
               component: () =>
                 import(

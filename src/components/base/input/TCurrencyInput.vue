@@ -57,7 +57,7 @@ export default {
     },
   },
   setup(props) {
-    const { inputRef, setValue  } = useCurrencyInput(props.options);
+    const { inputRef, setValue } = useCurrencyInput(props.options);
 
     const isFocus = ref(false);
     const focus = () => {

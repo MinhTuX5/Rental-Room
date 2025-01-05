@@ -18,7 +18,6 @@
             color="blue-lighten-3"
             placeholder="Nhập mã loại phòng"
             :autofocus="true"
-            :disabled="viewing"
             v-model="model[store.codeField]"
         /></v-col>
         <v-col class="ml-4">
@@ -28,7 +27,6 @@
             variant="outlined"
             color="blue-lighten-3"
             placeholder="Phòng 001, ..."
-            :disabled="viewing"
             v-model="model[store.nameField]"
           />
         </v-col>
@@ -65,7 +63,7 @@
           <label>Giá phòng</label>
           <t-currency-input
             class="mt-2"
-            v-model="roomPrice"
+            v-model="model.room_price"
             placeholder=""
             :options="{
               currency: 'VND',

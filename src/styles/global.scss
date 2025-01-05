@@ -1,5 +1,9 @@
 .v-row {
   margin: 0 !important;
+
+  .v-col {
+    padding: unset;
+  }
 }
 
 .hide-spin-buttons {
@@ -12,4 +16,12 @@
   .v-list-item-title {
     line-height: 20px;
   }
+}
+
+.mb-22px {
+  margin-bottom: 22px;
+}
+
+.mt-22px {
+  margin-top: 22px !important;
 }

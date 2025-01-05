@@ -6,6 +6,7 @@
       search-label="Tên, địa chỉ tòa nhà"
       @on-click="viewDetail"
       @search="onSearch"
+      @refresh="refresh"
     ></t-feature>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
@@ -23,6 +24,9 @@
       :style="{ maxHeight: tableMaxHeight + 'px' }"
       @update:options="loadItems"
     >
+      <template v-slot:item.displayed_status="{ item }">
+        <v-chip :color="item.statusColor">{{ item.displayed_status }}</v-chip>
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-row>
           <v-col>
@@ -36,7 +40,7 @@
               mdi-pencil
             </v-icon>
           </v-col>
-          <v-col>
+          <v-col v-if="item.status != BuildingStatus.Using">
             <v-icon
               class="cursor-pointer"
               color="red"
@@ -58,6 +62,8 @@ import { useBuildingList } from "./buildingList";
 import baseDicList from "@/views/base/baseDicList";
 // components
 import TFeature from "@/components/base/views/TFeature.vue";
+import _enum from "../../../../../common/enum";
+import BuildingStatus from "../../../../../common/enum/BuildingStatus";
 
 export default {
   extends: baseDicList,
@@ -71,7 +77,7 @@ export default {
   },
   setup() {
     const resource = useBuildingList();
-    return resource;
+    return { ...resource, BuildingStatus };
   },
 };
 </script>

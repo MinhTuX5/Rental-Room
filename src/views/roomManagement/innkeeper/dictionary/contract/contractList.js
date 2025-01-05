@@ -13,13 +13,12 @@ export const useContractList = () => {
     { key: "deposit_amount_paid", title: "Tiền cọc đã trả", align: "end" },
     { key: "displayed_start_date", title: "Ngày bắt đầu", align: "center" },
     { key: "displayed_end_date", title: "Ngày kết thúc", align: "center" },
-    { key: "displayed_created_date", title: "Ngày tạo", align: "center" },
     {
       title: "Chức năng",
       key: "actions",
       sortable: false,
       align: "center",
-      width: 140,
+      width: 120,
     },
   ];
 

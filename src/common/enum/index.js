@@ -138,7 +138,7 @@ export default {
 
   // Trạng thái tòa nhà
   BuildingStatus: {
-    "Không hiển thị": 0,
+    "Không hiển thị": 3,
     "Đang sử dụng": 1,
     "Không sử dụng": 2,
   },

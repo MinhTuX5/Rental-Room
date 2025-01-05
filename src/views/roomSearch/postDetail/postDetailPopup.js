@@ -172,7 +172,7 @@ export const usePostDetailPopup = () => {
 
     // Lấy loại phòng cho thuê
     me.model.room_category = roomCategoryConfig.find(
-      (x) => x.name === roomCategory.value
+      (x) => x.text === roomCategory.value
     ).value;
 
     // Loại bỏ dấu phẩy trong chuỗi

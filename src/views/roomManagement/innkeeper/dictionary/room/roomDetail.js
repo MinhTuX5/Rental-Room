@@ -17,11 +17,6 @@ export const useRoomDetail = () => {
     is_empty: true,
   };
 
-  const roomPrice = ref(0);
-  watch(roomPrice, (newVal) => {
-    proxy.model.room_price = newVal;
-  });
-
   const onSelectRoomCategory = (itemVal) => {
     const me = proxy;
     const roomCategory = allRoomCategories.value.find(
@@ -37,18 +32,12 @@ export const useRoomDetail = () => {
 
   const allRoomCategories = ref([]); // list of all room categories
   onMounted(async () => {
-    const me = proxy;
-    if (me._formParam?.model?.room_price) {
-      roomPrice.value = me._formParam?.model?.room_price;
-    }
-
     allRoomCategories.value = await roomCategoryStore.getAllItems();
   });
 
   return {
     title,
     store,
-    roomPrice,
     defaultModel,
     roomCategoryStore,
     allRoomCategories,
