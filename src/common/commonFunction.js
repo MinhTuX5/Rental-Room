@@ -1,3 +1,5 @@
+// libraries
+import moment from "moment";
 // stores
 import { useAppStore } from "@/stores/appStore";
 
@@ -88,4 +90,9 @@ export const convertCurrencyFormat = (input) => {
   }
   return input;
 };
+
+export const formatDate = (date) => {
+  const validDate = date ?? new Date();
+  return moment(validDate).format('DD/MM/YYYY');
+}
 //#endregion

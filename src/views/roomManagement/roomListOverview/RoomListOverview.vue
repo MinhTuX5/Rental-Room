@@ -1,7 +1,7 @@
 <template>
   <v-container class="room-list-overview">
     <v-row>
-      <v-col cols="auto" v-for="(room, index) in items" :key="index">
+      <v-col cols="auto" v-for="(room, index) in items" :key="index" class="mr-4">
         <v-card :title="room.roomName">
           <v-card-text>
             <p>Diện tích: {{ room.roomPrice }}</p>

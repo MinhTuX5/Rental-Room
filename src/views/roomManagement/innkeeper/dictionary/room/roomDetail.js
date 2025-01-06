@@ -23,7 +23,7 @@ export const useRoomDetail = () => {
       (r) => r[roomCategoryStore.idField] === itemVal
     );
     if (roomCategory) {
-      roomPrice.value = roomPrice.value || roomCategory.room_price;
+      me.model.room_price = roomCategory.room_price;
       me.model.room_area = me.model.room_area || roomCategory.room_area;
       me.model.no_of_bed_rooms =
         me.model.no_of_bed_rooms || roomCategory.no_of_bed_rooms;

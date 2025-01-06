@@ -23,7 +23,7 @@ export const useRoomStore = defineStore("room", {
     nameField: "room_name",
     searchFields: ["room_code", "room_name"],
     numberFields: ["room_price", "room_area", "no_of_bed_rooms"],
-    invalidCache: true
+    invalidCache: true,
   }),
   getters: {
     defaultSorts(state) {
@@ -104,8 +104,11 @@ export const useRoomStore = defineStore("room", {
           const res = await me.getAll();
           if (Array.isArray(res)) {
             me.invalidCache = false;
-            appStore.$state.allRooms = res;
-            return res;
+            const orderedItems = res.sort(
+              (a, b) => a[me.codeField] < b[me.codeField]
+            );
+            appStore.$state.allRooms = orderedItems;
+            return orderedItems;
           } else {
             return [];
           }

@@ -10,18 +10,18 @@
     <!-- Nội dung popup -->
     <template #content>
       <v-row>
-        <v-col cols="5">
+        <v-col class="mr-4">
           <label> Mã loại phòng </label>
           <v-text-field
             class="mt-2"
             variant="outlined"
             color="blue-lighten-3"
             placeholder="Nhập mã loại phòng"
-            :autofocus=true
+            :autofocus="true"
             :disabled="viewing"
             v-model="model.room_category_code"
         /></v-col>
-        <v-col cols="7">
+        <v-col>
           <label> Loại phòng </label>
           <v-text-field
             class="mt-2"
@@ -34,7 +34,7 @@
       </v-row>
 
       <v-row>
-        <v-col cols="5">
+        <v-col class="mr-4">
           <label>Giá phòng</label>
           <t-currency-input
             class="mt-2"
@@ -50,18 +50,18 @@
             }"
           />
         </v-col>
-        <v-col>
+        <v-col class="mr-4">
           <label>Diện tích</label>
           <v-number-input
             class="mt-2 hide-spin-buttons"
             variant="outlined"
             controlVariant=""
-            type='number'
+            type="number"
             :reverse="false"
             :inset="false"
             :min="0"
             :hide-spin-buttons="true"
-            suffix='m²'
+            suffix="m²"
             v-model="model.room_area"
           ></v-number-input>
         </v-col>

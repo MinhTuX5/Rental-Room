@@ -48,10 +48,16 @@ export const useContainer = () => {
 
   const innkeeperFeatures = reactive([
     {
+      title: "Danh sách phòng",
+      componentId: "RoomListOverview",
+      icon: "mdi-list-box-outline",
+      value: "RoomListOverview",
+    },
+    {
       title: "Quản lý thông tin",
       icon: "mdi-cloud-print-outline",
       isGroup: true,
-      parentVal: 'infoManagement',
+      parentVal: "infoManagement",
       children: [
         {
           title: "Quản lý hộ gia đình",
@@ -71,7 +77,7 @@ export const useContainer = () => {
       title: "Danh mục",
       icon: "mdi-cloud-print-outline",
       isGroup: true,
-      parentVal: 'dictionary',
+      parentVal: "dictionary",
       children: [
         {
           title: "Tòa nhà",

@@ -6,6 +6,7 @@
       search-label="Mã, Họ tên, SĐT"
       @on-click="viewDetail"
       @search="onSearch"
+      @refresh="refresh"
     ></t-feature>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
@@ -25,16 +26,18 @@
     >
       <template v-slot:item.is_owner="{ item }">
         <v-checkbox-btn
-          class="justify-center"
-          v-model="item.is_owner"
           readonly
+          class="justify-center"
+          color="green"
+          v-model="item.is_owner"
         ></v-checkbox-btn>
       </template>
-      <template v-slot:item.onLeave="{ item }">
+      <template v-slot:item.on_leave="{ item }">
         <v-checkbox-btn
-          class="justify-center"
-          v-model="item.onLeave"
           readonly
+          color="green"
+          class="justify-center"
+          v-model="item.on_leave"
         ></v-checkbox-btn>
       </template>
       <template v-slot:item.actions="{ item }">

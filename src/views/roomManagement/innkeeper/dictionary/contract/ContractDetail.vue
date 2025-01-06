@@ -88,14 +88,15 @@
       </v-row>
 
       <v-row class="mt-22px">
-        <v-col>
+        <v-col class="mr-4">
           <label>Ngày bắt đầu</label>
           <v-text-field
             id="startDate"
             variant="outlined"
-            v-model="model.start_date"
-            prepend-icon="mdi-calendar"
+            v-model="startDate"
+            append-inner-icon="mdi-calendar"
             readonly
+            class="mt-2"
           ></v-text-field>
           <v-menu
             location="end center"
@@ -106,13 +107,36 @@
               v-model="model.start_date"
               hide-header
               show-adjacent-months
-              locale="sv-se"
             >
               <v-spacer></v-spacer>
             </v-date-picker>
           </v-menu>
         </v-col>
-        <v-col></v-col>
+        <v-col>
+          <label>Ngày kết thúc</label>
+          <v-text-field
+            id="endDate"
+            variant="outlined"
+            v-model="endDate"
+            append-inner-icon="mdi-calendar"
+            readonly
+            class="mt-2"
+          ></v-text-field>
+          <v-menu
+            location="start center"
+            activator="#endDate"
+            :close-on-content-click="false"
+          >
+            <!-- locale="sv-se" -->
+            <v-date-picker
+              v-model="model.end_date"
+              hide-header
+              show-adjacent-months
+            >
+              <v-spacer></v-spacer>
+            </v-date-picker>
+          </v-menu>
+        </v-col>
       </v-row>
     </template>
     <!-- Chân popup -->
@@ -128,6 +152,7 @@
 </template>
 
 <script>
+// resource
 import { useContractDetail } from "./contractDetail";
 // base
 import BaseDetail from "@/views/base/baseDetail.js";
@@ -142,7 +167,9 @@ export default {
   },
   setup() {
     const resource = useContractDetail();
-    return resource;
+    return {
+      ...resource,
+    };
   },
 };
 </script>
