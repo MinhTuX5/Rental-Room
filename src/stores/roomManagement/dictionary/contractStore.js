@@ -19,7 +19,7 @@ export const useContractStore = defineStore("contract", {
     idField: "contract_id",
     codeField: "contract_code",
     searchFields: ["contract_code", "room_code"],
-    numberFields: ["room_price", "room_deposit", "deposit_amount_paid"],
+    numberFields: ["room_price", "room_deposit", "deposit_amount_received"],
     dateFields: ["start_date", "end_date", "created_date"],
   }),
   getters: {

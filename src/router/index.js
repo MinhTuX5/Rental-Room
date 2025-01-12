@@ -61,7 +61,8 @@ const router = createRouter({
     {
       path: "/quan-ly",
       name: "Management",
-      redirect: '/quan-ly/danh-sach-phong',
+      redirect: "/quan-ly/danh-sach-phong",
+      meta: { requiresAuth: true },
       component: () =>
         import("@/components/layout/roomManagement/Container.vue"),
       children: [
@@ -74,15 +75,35 @@ const router = createRouter({
             ),
         },
         {
+          path: "chi-tiet-phong/:roomID",
+          name: "Management_PostDetail",
+          component: () =>
+            import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
+        },
+        {
           path: "thong-tin-phong",
           name: "RoomInfo",
           component: () =>
             import("@/views/roomManagement/renter/roomInfo/RoomInfo.vue"),
         },
         {
+          path: "ho-gia-dinh",
+          name: "HouseholdList",
+          component: () =>
+            import(
+              "@/views/roomManagement/innkeeper/household/HouseholdList.vue"
+            ),
+        },
+        {
+          path: "thu-phi",
+          name: "FeeList",
+          component: () =>
+            import("@/views/roomManagement/innkeeper/fee/FeeList.vue"),
+        },
+        {
           path: "danh-muc",
           name: "Dictionary",
-          redirect: 'danh-muc/toa-nha',
+          redirect: "danh-muc/toa-nha",
           children: [
             {
               path: "toa-nha",

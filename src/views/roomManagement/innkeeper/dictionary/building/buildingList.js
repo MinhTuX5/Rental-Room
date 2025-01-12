@@ -18,7 +18,7 @@ export const useBuildingList = () => {
       key: "actions",
       sortable: false,
       align: "center",
-      width: 140,
+      width: 108,
     },
   ];
 

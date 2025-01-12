@@ -40,6 +40,9 @@
           v-model="item.on_leave"
         ></v-checkbox-btn>
       </template>
+      <template v-slot:item.gender="{ item }">
+        <v-chip :color="item.color">{{ item.gender }}</v-chip>
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-row>
           <v-col>

@@ -41,7 +41,7 @@ export default {
     align-items: center;
     left: 50%;
     transform: translate(-50%, 20%);
-    z-index: 1007;
+    z-index: 2001;
     width: fit-content;
 
     .v-alert__prepend {

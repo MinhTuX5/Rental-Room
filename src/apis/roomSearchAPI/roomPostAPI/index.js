@@ -28,18 +28,18 @@ class RoomPostAPI extends CrudAPI {
     }
   }
 
-    /**
+  /**
    * @description Lấy danh sách các bài đã yêu thích
    * @param {String} userID
    */
-    async getMyFavoritePosts(userID) {
-      try {
-        const res = await this.getAsync(null, `/my-favorite-posts/${userID}`);
-        return res.data;
-      } catch (error) {
-        console.log(error);
-      }
+  async getMyFavoritePosts(userID) {
+    try {
+      const res = await this.getAsync(null, `/my-favorite-posts/${userID}`);
+      return res.data;
+    } catch (error) {
+      console.log(error);
     }
+  }
 
   /**
    * @override
@@ -48,6 +48,15 @@ class RoomPostAPI extends CrudAPI {
   async getPaging(config) {
     try {
       var response = await this.postAsync(config, `/filter-list`);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async saveLocation(entity) {
+    try {
+      const response = await this.postAsync(entity, "/location");
       return response.data;
     } catch (error) {
       console.error(error);

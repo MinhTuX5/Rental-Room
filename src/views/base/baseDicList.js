@@ -4,6 +4,7 @@ import moment from "moment";
 import baseList from "./baseList";
 // resources
 import popupUtil from "../../common/popupUtil";
+import { formatNumberWithCommas } from "@/common/commonFunction";
 // enum
 import _enum from "@/common/enum";
 import { showMessage } from "@/common/commonFunction";
@@ -29,6 +30,8 @@ export default {
       const data = this.store?.$state.items ?? [];
       data.forEach((item) => {
         item = me.getDateItem(item, me.store?.$state.dateFields);
+        item = me.getNumberItem(item, me.store?.$state.numberFields);
+        item = me.getEnumItem(item, me.store?.$state.enumFields);
       });
       return data;
     },
@@ -77,7 +80,23 @@ export default {
 
       dateFields.forEach((field) => {
         const col = `displayed_${field}`;
-        item[col] = moment(item[field]).format("DD-MM-YYYY");
+        item[col] = moment(item[field]).format("DD/MM/YYYY");
+      });
+      return item;
+    },
+
+    getNumberItem(item, numberFields) {
+      numberFields.forEach((y) => {
+        item[y] = formatNumberWithCommas(item[y]);
+      });
+      return item;
+    },
+
+    getEnumItem(item, enumFields) {
+      enumFields.forEach((x) => {
+        const keys = Object.keys(_enum[x.enum]);
+        const key = keys.find((y) => _enum[x.enum][y] == item[x.field]);
+        if (key) item[x.column] = key;
       });
       return item;
     },
@@ -147,8 +166,12 @@ export default {
           value: me.keyWord,
         },
         sorts,
-        filters: me.defaultFilters,
       };
+
+      if (Array.isArray(me.defaultFilters)) {
+        payload.filters = me.defaultFilters;
+      }
+
       try {
         await me.store.getPaging(payload);
       } catch (error) {

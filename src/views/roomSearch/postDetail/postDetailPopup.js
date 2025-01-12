@@ -19,10 +19,15 @@ import LocationType from "@/common/enum/LocationType";
 
 export const usePostDetailPopup = () => {
   const { proxy } = getCurrentInstance();
+
+  // config
+  const isManagement = ref(false);
+
   // stores
   const store = useRoomPostStore();
   const locationStore = useLocationStore();
   const roomSearchCommon = useRoomSearchCommon();
+
   // variables
   const priceUnit = ref("");
   const roomCharacteristic = ref([]);
@@ -33,25 +38,28 @@ export const usePostDetailPopup = () => {
     {
       label: "Chọn Tỉnh/Thành phố",
       locationType: LocationType.Province,
-      items: locationStore.provinceItems.map((x) => x.location_name),
+      items: locationStore.provinceItems,
       noDataText: "Không có dữ liệu",
       autofocus: true,
+      valueField: "province_id",
     },
     {
       label: "Chọn Quận/Huyện",
       locationType: LocationType.District,
       items: [],
       noDataText: "Chưa có Tỉnh/Thành phố nào được chọn",
+      valueField: "district_id",
     },
     {
       label: "Chọn Phường/Xã",
       locationType: LocationType.Ward,
-      items: locationStore.wardItems.map((x) => x.location_name),
+      items: locationStore.wardItems,
       noDataText: "Chưa có Quận/Huyện nào được chọn",
+      valueField: "ward_id",
     },
   ]);
 
-  const roomCategoryConfig = RoomCategoryConfig.filter(x => x.value > 0);
+  const roomCategoryConfig = RoomCategoryConfig.filter((x) => x.value > 0);
   const roomCategories = computed(() => {
     return roomCategoryConfig.map((x) => x.text);
   });
@@ -86,10 +94,11 @@ export const usePostDetailPopup = () => {
    * @param {Number} locationType Loại vị trí đc chọn
    */
   const onSelectLocation = (selectedVal, locationType) => {
+    const me = proxy;
     let config = null;
     switch (locationType) {
       case LocationType.Province:
-        locationStore.selectProvinceByName(selectedVal);
+        locationStore.selectProvinceById(selectedVal);
         config = addressInfo.find(
           (x) => x.locationType === LocationType.District
         );
@@ -101,7 +110,7 @@ export const usePostDetailPopup = () => {
         updateLocationParts(selectedVal, 5);
         break;
       case LocationType.District:
-        locationStore.selectDistrictByName(selectedVal);
+        locationStore.selectDistrictById(selectedVal);
         config = addressInfo.find((x) => x.locationType === LocationType.Ward);
         if (config) {
           config.items = locationStore.wardItems.map((x) => x.location_name);
@@ -179,6 +188,10 @@ export const usePostDetailPopup = () => {
     const numberWithoutCommas = roomPrice.value.replace(/,/g, "");
     // Chuyển đổi chuỗi thành số
     me.model.room_price = parseInt(numberWithoutCommas);
+
+    if (isManagement.value) {
+      me.model.is_management = true;
+    }
   };
 
   const submitPopup = async (postStatus = true) => {
@@ -187,10 +200,18 @@ export const usePostDetailPopup = () => {
       // Trạng thái là đăng bài hay lưu bài
       me.model.post_status = postStatus;
       await me.submit();
-      me.$router.push({
-        name: "PostManagement",
-        query: { tab: postStatus ? 1 : 2 },
+
+      // Lưu vị trí
+      store.saveLocation(me.model).catch((error) => {
+        console.error(error);
       });
+
+      if (!isManagement.value) {
+        me.$router.push({
+          name: "PostManagement",
+          query: { tab: postStatus ? 1 : 2 },
+        });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -198,6 +219,14 @@ export const usePostDetailPopup = () => {
 
   onMounted(() => {
     const me = proxy;
+
+    if (me.$route.name === "Management_PostDetail") {
+      isManagement.value = true;
+      title.value = "Chi tiết phòng";
+      me.updateText = "";
+      me.addText = "";
+    }
+
     me.model = {
       ...me.model,
       room_gender: 0,
@@ -236,6 +265,6 @@ export const usePostDetailPopup = () => {
     submitPopup,
     title,
     roomCategories,
-    roomCategory
+    roomCategory,
   };
 };

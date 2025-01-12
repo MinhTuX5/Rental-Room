@@ -8,6 +8,7 @@ export const useAppStore = defineStore({
     showAlert: false,
     allRoomCategories: [],
     allRooms: [],
+    allServiceFees: [],
   }),
   actions: {
     setAlert({ message, type }) {

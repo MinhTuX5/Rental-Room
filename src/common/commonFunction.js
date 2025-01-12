@@ -2,6 +2,9 @@
 import moment from "moment";
 // stores
 import { useAppStore } from "@/stores/appStore";
+// enum
+import _enum from "./enum";
+import { options } from "@fullcalendar/core/preact.js";
 
 // Create a function to introduce a delay
 export const delay = (ms) => {
@@ -76,7 +79,10 @@ export const logout = () => {
 
 //#region Format
 export const formatNumberWithCommas = (number) => {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  if (typeof number === "number") {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+  return number;
 };
 
 export const convertCurrencyFormat = (input) => {
@@ -93,6 +99,55 @@ export const convertCurrencyFormat = (input) => {
 
 export const formatDate = (date) => {
   const validDate = date ?? new Date();
-  return moment(validDate).format('DD/MM/YYYY');
-}
+  return moment(validDate).format("DD/MM/YYYY");
+};
 //#endregion
+
+export const getEnumItem = (item, enumFields) => {
+  item = item ?? {};
+
+  if (Array.isArray(enumFields) && enumFields.length) {
+    enumFields.forEach((x) => {
+      const keys = Object.keys(_enum[x.enum]);
+      const key = keys.find((y) => _enum[x.enum][y] == item[x.field]);
+      if (key) item[x.column] = key;
+    });
+  }
+
+  return item;
+};
+
+export const getNumberItem = (item, numberFields) => {
+  numberFields.forEach((y) => {
+    item[y] = formatNumberWithCommas(item[y]);
+  });
+  return item;
+};
+
+export const getDateItem = (item, dateFields) => {
+  if (!Array.isArray(dateFields) || dateFields.length === 0) {
+    return item;
+  }
+
+  dateFields.forEach((field) => {
+    const col = `displayed_${field}`;
+    item[col] = moment(item[field]).format("DD/MM/YYYY");
+  });
+  return item;
+};
+
+export const standardItem = (item, options = {}) => {
+  if (Array.isArray(options.enumFields)) {
+    item = getEnumItem(item, options.enumFields);
+  }
+
+  if (Array.isArray(options.numberFields)) {
+    item = getNumberItem(item, options.numberFields);
+  }
+
+  if (Array.isArray(options.dateFields)) {
+    item = getDateItem(item, options.dateFields);
+  }
+
+  return item;
+};

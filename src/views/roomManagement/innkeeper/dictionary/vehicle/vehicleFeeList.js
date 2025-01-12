@@ -33,7 +33,7 @@ export const usVehicleList = () => {
       key: "actions",
       sortable: false,
       align: "center",
-      width: 140,
+      width: 108,
     },
   ]);
 

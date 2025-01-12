@@ -23,13 +23,17 @@
         @click="$emit('refresh')"
       />
       <v-btn
-        :prepend-icon="featureBtnConfig[featureBtnType].icon"
-        color="blue-lighten-1"
-        :title="featureBtnConfig[featureBtnType].text"
+        v-if="showAddBtn"
+        class="cursor-pointer"
+        prepend-icon="mdi-plus"
+        :color="addBtnColor"
+        :title="addBtnText"
         @click="$emit('on-click')"
       >
-        {{ featureBtnConfig[featureBtnType].text }}
+        {{ addBtnText }}
       </v-btn>
+      <!-- slot -->
+      <slot name="featureBtn" />
     </div>
   </div>
 </template>
@@ -38,6 +42,7 @@
 import { ref } from "vue";
 
 export default {
+  name: "TFeature",
   props: {
     searchLabel: {
       default: "Tìm kiếm",
@@ -47,8 +52,16 @@ export default {
       type: Number,
       default: 300,
     },
-    featureBtnType: {
-      default: "add",
+    showAddBtn: {
+      default: true,
+      type: Boolean,
+    },
+    addBtnText: {
+      default: "Thêm mới",
+      type: String,
+    },
+    addBtnColor: {
+      default: "blue-lighten-1",
       type: String,
     },
   },
@@ -63,25 +76,9 @@ export default {
       }, 2000); // Replace with actual search logic and delay
     };
 
-    const featureBtnConfig = {
-      add: {
-        text: "Thêm mới",
-        icon: "mdi-plus",
-      },
-      edit: {
-        text: "Sửa",
-        icon: "mdi-pencil",
-      },
-      delete: {
-        text: "Xóa",
-        icon: "mdi-trash-can",
-      },
-    };
-
     return {
       searchLoading,
       onClickSearchInput,
-      featureBtnConfig,
       searchText,
     };
   },

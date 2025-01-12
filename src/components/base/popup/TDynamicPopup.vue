@@ -7,7 +7,7 @@
     :ssr="true"
     classes="modal-container"
     overlay-class=""
-    content-class="modal-content"
+    :content-class="['modal-content', maximum ? 'h-100' : '']"
     :styles="{}"
     :overlay-style="{}"
     :content-style="styles"
@@ -25,7 +25,6 @@
     :focus-retain="true"
     :focus-trap="false"
     :fit-parent="true"
-    :drag="true"
     drag-selector=""
     :keep-changed-style="false"
     :resize="false"
@@ -33,7 +32,8 @@
     :min-width="200"
     :min-height="200"
     :max-width="Infinity"
-    :max-height="Infinity"
+    :max-height="600"
+    :drag="drag"
     @before-open="$emit('before-open', $event)"
     @opened="$emit('opened', $event)"
   >
@@ -86,6 +86,10 @@ export default {
       type: String,
       required: true,
       default: "TDynamicPopup",
+    },
+    drag: {
+      type: Boolean,
+      default: true,
     },
   },
   components: {},

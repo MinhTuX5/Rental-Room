@@ -1,25 +1,26 @@
 <template>
   <t-dynamic-popup
     :title="title"
-    :width="600"
-    name="VehicleFeeDetail"
-    class="vehicle-fee-detail"
+    :width="700"
+    name="VehicleDetail"
+    class="vehicle-detail"
     @before-open="beforeOpen"
     @opened="opened"
   >
     <!-- Nội dung popup -->
     <template #content>
       <v-row>
-        <v-col>
-          <label> Mã phương tiện </label>
+        <v-col class="mr-4">
+          <label> Chủ xe </label>
           <v-text-field
+            disabled
+            hide-details
             class="mt-2"
             variant="outlined"
             color="blue-lighten-3"
-            placeholder="Nhập mã phương tiện"
-            :disabled="viewing"
-            v-model="model.vehicle_fee_code"
-        /></v-col>
+            v-model="model.resident_name"
+          />
+        </v-col>
         <v-col>
           <label> Loại phương tiện </label>
           <v-text-field
@@ -33,33 +34,33 @@
       </v-row>
 
       <v-row>
-        <v-col>
-          <label>Giá phí gửi xe</label>
-          <t-currency-input
-            class="mt-2"
-            v-model="model.fee_price"
-            placeholder=""
-            :options="{
-              currency: 'VND',
-              currencyDisplay: 'hidden',
-              locale: 'de-DE',
-              valueRange: {
-                min: 0,
-              },
-              hideGroupingSeparatorOnFocus: false,
-            }"
-          />
-        </v-col>
-        <v-col>
-          <label>Đơn vị tính</label>
-          <v-select
+        <v-col class="mr-4">
+          <label> Biển số xe </label>
+          <v-text-field
             class="mt-2"
             variant="outlined"
             color="blue-lighten-3"
-            :items="unitItems"
-            v-model="model.unit"
+            v-model="model.license_plate"
           />
         </v-col>
+        <v-col class="mr-4">
+          <label> Màu sắc </label>
+          <v-text-field
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            placeholder="Nhập màu xe"
+            v-model="model.color"
+        /></v-col>
+        <v-col>
+          <label> Mẫu xe </label>
+          <v-text-field
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            placeholder="Honda vision, Honda LEAD, ..."
+            v-model="model.vehicle_brand"
+        /></v-col>
       </v-row>
     </template>
     <!-- Chân popup -->
@@ -75,20 +76,16 @@
 </template>
 
 <script>
-import { useVehicleFeeDetail } from "./vehicleFeeDetail";
+import { useVehicleDetail } from "./vehicleDetail";
 // base
 import BaseDetail from "@/views/base/baseDetail.js";
-// components
-import TCurrencyInput from "@/components/base/input/TCurrencyInput.vue";
 
 export default {
   extends: BaseDetail,
-  name: "VehicleFeeDetail",
-  components: {
-    TCurrencyInput,
-  },
+  name: "VehicleDetail",
+  components: {},
   setup() {
-    const resource = useVehicleFeeDetail();
+    const resource = useVehicleDetail();
     return resource;
   },
 };

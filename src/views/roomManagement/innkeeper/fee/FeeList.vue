@@ -1,10 +1,12 @@
 <template>
-  <v-container class="building-list">
+  <v-container class="household-list">
     <t-feature
       :ref="refToolBar"
       class="pb-4"
-      search-label="Tên, địa chỉ tòa nhà"
-      @on-click="viewDetail"
+      search-label="Mã hợp đồng, mã phòng"
+      addBtnColor="green-lighten-1"
+      addBtnText="Sinh thu phí"
+      @on-click="genFees"
       @search="onSearch"
       @refresh="refresh"
     ></t-feature>
@@ -24,23 +26,36 @@
       :style="{ maxHeight: tableMaxHeight + 'px' }"
       @update:options="loadItems"
     >
-      <template v-slot:item.displayed_status="{ item }">
-        <v-chip :color="item.statusColor">{{ item.displayed_status }}</v-chip>
+      <template v-slot:item.displayed_fee_status="{ item }">
+        <v-chip :color="item.status_color">{{
+          item.displayed_fee_status
+        }}</v-chip>
       </template>
       <template v-slot:item.actions="{ item }">
         <v-row>
           <v-col>
             <v-icon
+              color="green"
+              v-tooltip:top="'Thanh toán'"
+              class="cursor-pointer"
+              size="large"
+              @click="pay(item)"
+            >
+              mdi-cash-sync
+            </v-icon>
+          </v-col>
+          <v-col>
+            <v-icon
               color="blue"
               v-tooltip:top="'Chỉnh sửa'"
-              class="mr-2 cursor-pointer"
+              class="cursor-pointer"
               size="large"
               @click="editItem(item)"
             >
               mdi-pencil
             </v-icon>
           </v-col>
-          <v-col v-if="item.status != BuildingStatus.Using">
+          <v-col>
             <v-icon
               class="cursor-pointer"
               color="red"
@@ -58,17 +73,14 @@
 </template>
 
 <script>
-import { useBuildingList } from "./buildingList";
 import baseDicList from "@/views/base/baseDicList";
-// components
-import TFeature from "@/components/base/views/TFeature.vue";
-import _enum from "../../../../../common/enum";
-import BuildingStatus from "../../../../../common/enum/BuildingStatus";
+// resources
+import { useHouseholdList } from "./feeList.js";
 
 export default {
   extends: baseDicList,
   name: "BuildingList",
-  components: { TFeature },
+  components: {},
   props: {
     heightOfAppHeader: {
       typeof: "number",
@@ -76,8 +88,8 @@ export default {
     },
   },
   setup() {
-    const resource = useBuildingList();
-    return { ...resource, BuildingStatus };
+    const resource = useHouseholdList();
+    return { ...resource };
   },
 };
 </script>

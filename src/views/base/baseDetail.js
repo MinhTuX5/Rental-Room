@@ -5,6 +5,7 @@ import baseView from "./baseView";
 // resource
 import { showMessage } from "@/common/commonFunction";
 import { convertCurrencyFormat } from "@/common/commonFunction";
+import popupUtil from "../../common/popupUtil";
 
 export default {
   name: "BaseDetail",
@@ -19,6 +20,8 @@ export default {
       _enum,
       store: {},
       loading: false,
+      updateText: "Sửa",
+      addText: "Thêm",
     };
   },
   computed: {
@@ -51,6 +54,7 @@ export default {
      */
     beforeOpen($event) {
       const me = this;
+
       me._formParam = $event.ref.params?.value;
       // Cập nhật edit mode
       me.editMode = me._formParam.editMode ?? _enum.Mode.Add;
@@ -66,14 +70,6 @@ export default {
           );
         });
       }
-    },
-
-    /**
-     * Xử lý sau khi đã mở modal
-     */
-    opened() {
-      const me = this;
-      me.updateTitle(me.editMode);
 
       // Lấy giá trị mặc định
       const keys = Object.keys(me.defaultModel);
@@ -91,18 +87,26 @@ export default {
     },
 
     /**
+     * Xử lý sau khi đã mở modal
+     */
+    opened() {
+      const me = this;
+      me.updateTitle(me.editMode);
+    },
+
+    /**
      * Cập nhật title theo Mode
      * @param {Number} mode Mode của màn detail
      */
     updateTitle(mode) {
       const me = this;
-      const titleTmp = me.title.toLowerCase();
+      const title = me.title.toLowerCase();
       switch (mode) {
         case _enum.Mode.Add:
-          me.title = "Thêm " + titleTmp;
+          me.title = me.addText + me.addText ? " " : "" + title;
           break;
         case _enum.Mode.Update:
-          me.title = "Sửa " + titleTmp;
+          me.title = me.updateText + me.updateText ? " " : "" + title;
           break;
         default:
           break;
@@ -139,7 +143,7 @@ export default {
             break;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       } finally {
         me.loading = false;
       }
@@ -149,11 +153,8 @@ export default {
       const me = this;
       try {
         const item = await me.store.insertAsync(me.model);
-        if (item) {
-          showMessage("Thêm mới thành công");
-
-          me.submitSuccess(item);
-        }
+        showMessage("Thêm mới thành công");
+        me.submitSuccess(item);
       } catch (error) {
         console.log(error);
       }
@@ -173,14 +174,16 @@ export default {
           }
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     },
 
     hide() {
       const me = this;
-      if (me.detailForm) {
-        me.$vfm.hide(me.detailForm);
+      debugger;
+      const detailForm = me.detailForm ?? me._formParam?.detailForm;
+      if (detailForm) {
+        me.$vfm.hide(detailForm);
       }
     },
 
@@ -192,6 +195,13 @@ export default {
       }
 
       me.hide();
+    },
+
+    viewForm(formName, param = {}) {
+      if (!formName) {
+        throw new Error("formName is required");
+      }
+      popupUtil.show(formName, param);
     },
   },
 };

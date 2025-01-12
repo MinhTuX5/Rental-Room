@@ -10,7 +10,7 @@ export const useContractList = () => {
     { key: "room_code", title: "Mã phòng" },
     { key: "room_price", title: "Giá phòng", align: "end" },
     { key: "room_deposit", title: "Tiền cọc", align: "end" },
-    { key: "deposit_amount_paid", title: "Tiền cọc đã trả", align: "end" },
+    { key: "deposit_amount_received", title: "Đã nhận", align: "end" },
     { key: "displayed_start_date", title: "Ngày bắt đầu", align: "center" },
     { key: "displayed_end_date", title: "Ngày kết thúc", align: "center" },
     {

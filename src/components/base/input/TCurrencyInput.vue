@@ -1,10 +1,11 @@
 <template>
-  <div class="el-input" :class="[{ 'is-disabled': disabled }]">
+  <div class="el-input t-currency-input" :class="[{ 'is-disabled': disabled }]">
     <div
       :class="[
         'el-input__wrapper',
         { 'is-focus': isFocus },
         { 'is-disabled': disabled },
+        `input--density-${density}`,
       ]"
     >
       <input
@@ -55,6 +56,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    density: {
+      default: 'default',
+      validator: (value) => ['default', 'compact'].includes(value),
+      type: String,
+    }
   },
   setup(props) {
     const { inputRef, setValue } = useCurrencyInput(props.options);
@@ -82,23 +88,34 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 @import "@/styles/element-plus.css";
+.t-currency-input {
+  &.el-input {
+    height: 56px;
 
-.el-input {
-  height: 56px;
-}
+    &.is-disabled {
+      .el-input__wrapper {
+        background-color: unset;
+      }
+    }
+  }
 
-.el-input__wrapper {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.38) inset;
-  padding: 16px;
-}
+  .el-input__wrapper {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.38) inset;
+    padding: 16px;
+  }
 
-.el-input__wrapper:hover {
-  box-shadow: 0 0 0 1px #000 inset;
-}
+  .el-input__wrapper:hover {
+    box-shadow: 0 0 0 1px #000 inset;
+  }
 
-.el-input__inner {
-  color: #000;
+  .el-input__inner {
+    color: #000;
+  }
+
+  .input--density-compact {
+    height: 40px;
+  }
 }
 </style>

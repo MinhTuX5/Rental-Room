@@ -2,8 +2,6 @@ import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
 import { useContextStore } from "@/stores/contextStore";
-// resource
-import { convertCurrencyFormat } from "@/common/commonFunction";
 // enum
 import _enum from "@/common/enum";
 import FilterOperator from "@/common/enum/FilterOperator";
@@ -99,6 +97,14 @@ export const useResidentStore = defineStore("resident", {
       const me = this;
       item = me.getEnumItem(item);
       item = me.getAmountItem(item);
+      switch (item.resident_gender) {
+        case Gender.Male:
+          x.color = "blue";
+          break;
+        case Gender.Female:
+          x.color = "pink";
+          break;
+      }
       return item;
     },
   },

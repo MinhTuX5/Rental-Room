@@ -7,6 +7,7 @@ import LocationType from "@/common/enum/LocationType";
 export const useLocationStore = defineStore("location", {
   state: () => ({
     items: [],
+    idField: "location_id",
     codeField: "location_code",
     nameField: "location_name",
     selectedProvinceCode: "",
@@ -46,17 +47,17 @@ export const useLocationStore = defineStore("location", {
       const me = this;
       me.items = data;
     },
-    selectProvinceByName(name) {
+    selectProvinceById(id) {
       const me = this;
-      const province = me.provinceItems.find((x) => x[me.nameField] === name);
+      const province = me.provinceItems.find((x) => x[me.idField] === id);
       if (province) {
         me.selectedProvinceCode = province[me.codeField];
       }
       return province;
     },
-    selectDistrictByName(name) {
+    selectDistrictById(id) {
       const me = this;
-      const district = me.districtItems.find((x) => x[me.nameField] === name);
+      const district = me.districtItems.find((x) => x[me.idField] === id);
       if (district) {
         me.selectedDistrictCode = district[me.codeField];
       }

@@ -55,6 +55,19 @@ export function initApp() {
     });
   };
 
+  // Prototype của hàm sắp xếp mảng theo trường thông tin muốn sắp xếp tăng dần
+  Array.prototype.sortByField = function (fieldName) {
+    this.sort(function (a, b) {
+      if (a[fieldName] < b[fieldName]) {
+        return -1;
+      }
+      if (a[fieldName] > b[fieldName]) {
+        return 1;
+      }
+      return 0;
+    });
+  };
+
   const setContextData = () => {
     // Kiểm tra xem người dùng đã đăng nhập chưa
     // Trả về true nếu đã đăng nhập, ngược lại trả về false

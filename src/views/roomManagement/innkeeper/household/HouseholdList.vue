@@ -1,9 +1,10 @@
 <template>
-  <v-container class="building-list">
+  <v-container class="household-list">
     <t-feature
       :ref="refToolBar"
       class="pb-4"
-      search-label="Tên, địa chỉ tòa nhà"
+      search-label="Thông tin phòng, chủ trọ"
+      :showAddBtn="false"
       @on-click="viewDetail"
       @search="onSearch"
       @refresh="refresh"
@@ -18,15 +19,12 @@
       item-value="name"
       items-per-page-text="Số bản ghi mỗi trang"
       loading-text="Đang tải dữ liệu"
-      no-data-text="Không có dữ liệu"
+      no-data-text="Tất cả các phòng chưa có người thuê nào"
       :fixed-footer="true"
       :fixed-header="true"
       :style="{ maxHeight: tableMaxHeight + 'px' }"
       @update:options="loadItems"
     >
-      <template v-slot:item.displayed_status="{ item }">
-        <v-chip :color="item.statusColor">{{ item.displayed_status }}</v-chip>
-      </template>
       <template v-slot:item.actions="{ item }">
         <v-row>
           <v-col>
@@ -40,17 +38,6 @@
               mdi-pencil
             </v-icon>
           </v-col>
-          <v-col v-if="item.status != BuildingStatus.Using">
-            <v-icon
-              class="cursor-pointer"
-              color="red"
-              v-tooltip:top="'Xóa'"
-              size="large"
-              @click="deleteItem(item)"
-            >
-              mdi-delete
-            </v-icon>
-          </v-col>
         </v-row>
       </template>
     </v-data-table-server>
@@ -58,17 +45,14 @@
 </template>
 
 <script>
-import { useBuildingList } from "./buildingList";
 import baseDicList from "@/views/base/baseDicList";
-// components
-import TFeature from "@/components/base/views/TFeature.vue";
-import _enum from "../../../../../common/enum";
-import BuildingStatus from "../../../../../common/enum/BuildingStatus";
+// resources
+import { useHouseholdList } from "./householdList.js";
 
 export default {
   extends: baseDicList,
   name: "BuildingList",
-  components: { TFeature },
+  components: {},
   props: {
     heightOfAppHeader: {
       typeof: "number",
@@ -76,8 +60,8 @@ export default {
     },
   },
   setup() {
-    const resource = useBuildingList();
-    return { ...resource, BuildingStatus };
+    const resource = useHouseholdList();
+    return { ...resource };
   },
 };
 </script>

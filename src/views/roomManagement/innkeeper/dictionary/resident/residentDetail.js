@@ -69,5 +69,6 @@ export const useResidentDetail = () => {
     roomStore,
     allRooms,
     bod,
+    Gender
   };
 };

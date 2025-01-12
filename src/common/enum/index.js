@@ -122,10 +122,10 @@ export default {
 
   // Đơn vị dịch vụ
   ServicePriceUnit: {
-    "đồng/người/tháng": 1, // 1
-    "đồng/phòng/tháng": 2, // 1
-    "đồng/số": 3, // số (Ex: số điện)
-    "đồng/m²": 4, //  mét vuông
+    "đồng/người": 1, // 1
+    "đồng/phòng": 2, // 1
+    "đồng/m²": 3, //  mét vuông
+    "đồng/số": 4, // số (Ex: số điện)
     "đồng/m³": 5, // khối (Ex: Khối nước)
   },
 
@@ -141,5 +141,11 @@ export default {
     "Không hiển thị": 3,
     "Đang sử dụng": 1,
     "Không sử dụng": 2,
+  },
+
+  FeeStatus: {
+    "Chưa thanh toán": 0,
+    "Đang thanh toán": 1,
+    "Hoàn thành": 2,
   },
 };

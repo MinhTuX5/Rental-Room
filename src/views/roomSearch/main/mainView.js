@@ -37,7 +37,7 @@ export const useMainView = () => {
     let config = null;
     switch (type) {
       case LocationType.Province:
-        locationStore.selectProvinceByName(selectedVal);
+        locationStore.selectProvinceById(selectedVal);
         config = searchConfig.find(
           (x) => x.locationType === LocationType.District
         );
@@ -48,7 +48,7 @@ export const useMainView = () => {
         }
         break;
       case LocationType.District:
-        locationStore.selectDistrictByName(selectedVal);
+        locationStore.selectDistrictById(selectedVal);
         config = searchConfig.find((x) => x.locationType === LocationType.Ward);
         if (config) {
           config.items = locationStore.wardItems.map((x) => x.location_name);

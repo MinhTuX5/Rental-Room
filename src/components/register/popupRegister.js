@@ -11,6 +11,20 @@ const Calculation = defineAsyncComponent(() =>
   import("@/views/roomManagement/renter/calculation/Calculation.vue")
 );
 
+//#region management
+const HouseholdDetail = defineAsyncComponent(() =>
+  import("@/views/roomManagement/innkeeper/household/HouseholdDetail.vue")
+);
+const PaymentDetail = defineAsyncComponent(() =>
+  import("@/views/roomManagement/innkeeper/fee/PaymentDetail.vue")
+);
+const FeeDetail = defineAsyncComponent(() =>
+  import("@/views/roomManagement/innkeeper/fee/FeeDetail.vue")
+);
+const VehicleDetail = defineAsyncComponent(() =>
+  import("@/views/roomManagement/innkeeper/household/VehicleDetail.vue")
+);
+
 //#region dictionary
 const VehicleFeeDetail = defineAsyncComponent(() =>
   import(
@@ -41,7 +55,7 @@ const ResidentDetail = defineAsyncComponent(() =>
   )
 );
 //#endregion
-
+//#endregion
 export function registerPopup(app) {
   app.component("RoomInfo", RoomInfo);
   app.component("Expense", Expense);
@@ -52,4 +66,8 @@ export function registerPopup(app) {
   app.component("RoomDetail", RoomDetail);
   app.component("ContractDetail", ContractDetail);
   app.component("ResidentDetail", ResidentDetail);
+  app.component("HouseholdDetail", HouseholdDetail);
+  app.component("VehicleDetail", VehicleDetail);
+  app.component("PaymentDetail", PaymentDetail);
+  app.component("FeeDetail", FeeDetail);
 }

@@ -61,15 +61,15 @@ export const useContainer = () => {
       children: [
         {
           title: "Quản lý hộ gia đình",
-          icon: "mdi-home-city",
-          componentId: "BuildingList",
-          value: "BuildingList",
+          icon: "mdi-home-account",
+          componentId: "HouseholdList",
+          value: "HouseholdList",
         },
         {
           title: "Quản lý thu phí",
-          icon: "mdi-home-city",
-          componentId: "BuildingList",
-          value: "BuildingList",
+          icon: "mdi-cash-sync",
+          componentId: "FeeList",
+          value: "FeeList",
         },
       ],
     },

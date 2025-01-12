@@ -6,6 +6,7 @@
       search-label="Mã hợp đồng, mã phòng"
       @on-click="viewDetail"
       @search="onSearch"
+      @refresh="refresh"
     ></t-feature>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"

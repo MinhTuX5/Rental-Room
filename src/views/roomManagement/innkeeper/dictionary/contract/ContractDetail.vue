@@ -2,8 +2,8 @@
   <t-dynamic-popup
     :title="title"
     :width="660"
-    name="roomDetail"
-    class="room-category-detail"
+    name="ContractDetail"
+    class="contract-detail"
     @before-open="beforeOpen"
     @opened="opened"
   >

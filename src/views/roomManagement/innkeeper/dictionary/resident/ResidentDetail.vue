@@ -82,9 +82,9 @@
             inline
             v-model="model.resident_gender"
           >
-            <v-radio label="Nam" :value="_enum.Gender.Male"></v-radio>
-            <v-radio label="Nữ" :value="_enum.Gender.FeMale"></v-radio>
-            <v-radio label="Khác" :value="_enum.Gender.Other"></v-radio>
+            <v-radio label="Nam" :value="Gender.Male"></v-radio>
+            <v-radio label="Nữ" :value="Gender.Female"></v-radio>
+            <v-radio label="Khác" :value="Gender.Other"></v-radio>
           </v-radio-group>
         </v-col>
       </v-row>

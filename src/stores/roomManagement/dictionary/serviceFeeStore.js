@@ -2,10 +2,9 @@ import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
 import { useContextStore } from "@/stores/contextStore";
+import { useAppStore } from "../../appStore";
 // api
 import api from "@/apis/dictionaryAPI/serviceFeeAPI";
-// resource
-import { convertCurrencyFormat } from "@/common/commonFunction";
 // enum
 import _enum from "@/common/enum";
 import FilterOperator from "@/common/enum/FilterOperator";
@@ -29,6 +28,7 @@ export const useServiceFeeStore = defineStore("service-fee", {
         enum: "ServicePriceUnit",
       },
     ],
+    invalidCache: true,
   }),
   getters: {
     defaultSorts(state) {
@@ -53,53 +53,51 @@ export const useServiceFeeStore = defineStore("service-fee", {
     ...store.actions,
     afterGetPaging(result) {
       const me = this;
-      
       me.items = result.data;
-      me.items.forEach((item) => {
-        item = me.standardItem(item);
-      });
       me.totalItems = result.totalCount;
     },
     afterInsertAsync(item) {
       const me = this;
-      item = me.standardItem(item);
       me.items.unshift(item);
       me.totalItems++;
+      me.invalidCache = true;
     },
     afterDeleteAsync(id) {
       const me = this;
       me.items = me.items.filter((x) => x[me.idField] != id);
       me.totalItems--;
+      me.invalidCache = true;
     },
     afterUpdate(item) {
       const me = this;
       const curItem = me.items.find((x) => x[me.idField] == item[me.idField]);
       if (curItem) {
-        item = me.standardItem(item);
         Object.assign(curItem, item);
       }
+      me.invalidCache = true;
     },
-    getEnumItem(item) {
+    async getAllItems() {
       const me = this;
-      me.enumFields.forEach((x) => {
-        const keys = Object.keys(_enum[x.enum]);
-        const key = keys.find((y) => _enum[x.enum][y] == item[x.field]);
-        if (key) item[x.column] = key;
-      });
-      return item;
-    },
-    getAmountItem(item) {
-      const me = this;
-      me.numberFields.forEach((y) => {
-        item[y] = convertCurrencyFormat(item[y]);
-      });
-      return item;
-    },
-    standardItem(item) {
-      const me = this;
-      item = me.getEnumItem(item);
-      item = me.getAmountItem(item);
-      return item;
+      const appStore = useAppStore();
+      if (me.invalidCache) {
+        try {
+          const res = await me.getAll();
+          if (Array.isArray(res)) {
+            me.invalidCache = false;
+            const orderedItems = res.sort(
+              (a, b) => a[me.codeField] < b[me.codeField]
+            );
+            appStore.$state.allServiceFees = orderedItems;
+            return orderedItems;
+          } else {
+            return [];
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        return appStore.$state.allServiceFees;
+      }
     },
   },
 });
