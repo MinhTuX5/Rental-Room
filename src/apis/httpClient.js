@@ -16,10 +16,14 @@ const httpClient = axios.create({
  */
 httpClient.interceptors.request.use(
   (config) => {
-    const userToken = sessionStorage.getItem("userToken");
-    if (userToken) {
-      config.headers["Authorization"] = `Bearer ${userToken}`;
+    const context = localStorage.getItem("context");
+    if (context) {
+      const contextObj = JSON.parse(context);
+      if (contextObj.token) {
+        config.headers["Authorization"] = `Bearer ${contextObj.token}`;
+      }
     }
+
     return config;
   },
   (error) => {

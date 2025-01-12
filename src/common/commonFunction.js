@@ -4,7 +4,6 @@ import moment from "moment";
 import { useAppStore } from "@/stores/appStore";
 // enum
 import _enum from "./enum";
-import { options } from "@fullcalendar/core/preact.js";
 
 // Create a function to introduce a delay
 export const delay = (ms) => {
@@ -13,6 +12,8 @@ export const delay = (ms) => {
 
 export const MessageType = {
   Success: "success",
+  Warning: "warning",
+  Error: "error",
 };
 
 export const showMessage = (
@@ -75,6 +76,7 @@ export const moveToTop = () => {
 export const logout = () => {
   localStorage.removeItem("context");
   contextStore.$reset();
+  window.location.href = '/';
 };
 
 //#region Format
@@ -101,7 +103,6 @@ export const formatDate = (date) => {
   const validDate = date ?? new Date();
   return moment(validDate).format("DD/MM/YYYY");
 };
-//#endregion
 
 export const getEnumItem = (item, enumFields) => {
   item = item ?? {};
@@ -151,3 +152,17 @@ export const standardItem = (item, options = {}) => {
 
   return item;
 };
+//#endregion
+
+export const getContextFromLocalStorage = () => {
+  const context = localStorage.getItem("context");
+  if (context) {
+    try {
+      return JSON.parse(context);
+    } catch (error) {
+      console.error("Error parsing context from local storage:", error);
+      return null;
+    }
+  }
+  return null;
+}

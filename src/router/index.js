@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { getContextFromLocalStorage } from "../common/commonFunction";
+import Role from "../common/enum/Role";
 
 // init routes
 // Thực hiện load động components => Tránh load thừa dữ liệu
@@ -6,11 +9,15 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
+      path: "/dang-nhap",
+      name: "Login",
+      component: () => import("@/views/auth/login/Login.vue"),
+    },
+    {
       name: "Homepage",
       path: "",
       redirect: "/trang-chu",
       component: () => import("@/components/layout/roomSearch/Container.vue"),
-      meta: { requiresAuth: true },
       children: [
         {
           path: "/trang-chu",
@@ -30,11 +37,13 @@ const router = createRouter({
       path: "/tai-khoan",
       redirect: "tai-khoan/dang-bai",
       name: "Account",
+      meta: { requiresAuth: true },
       component: () => import("@/components/layout/account/Container.vue"),
       children: [
         {
           path: "/tai-khoan/dang-bai",
           name: "PostDetailPopup",
+          meta: { roles: [Role.RoomSeeker] },
           component: () =>
             import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
         },
@@ -42,15 +51,18 @@ const router = createRouter({
           path: "/tai-khoan/quan-ly-bai-dang",
           name: "PostManagement",
           query: { tab: 1 },
+          meta: { roles: [Role.RoomSeeker] },
           component: () =>
             import("@/views/roomSearch/postManagement/PostManagement.vue"),
         },
         {
+          meta: { roles: [Role.RoomSeeker] },
           path: "/tai-khoan/quan-ly-tai-khoan",
           name: "InfoUpdating",
           component: () => import("@/views/auth/updating/InfoUpdating.vue"),
         },
         {
+          meta: { roles: [Role.RoomSeeker] },
           path: "/tai-khoan/lich-hen",
           name: "AppointmentSchedule",
           component: () =>
@@ -170,11 +182,6 @@ const router = createRouter({
       component: () => import("@/views/auth/Auth.vue"),
       children: [
         {
-          path: "login",
-          name: "LoginView",
-          component: () => import("@/views/auth/login/Login.vue"),
-        },
-        {
           path: "register",
           name: "RegisterView",
           component: () => import("@/views/auth/register/Register.vue"),
@@ -195,27 +202,67 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
-  // log ra tên trang được mở
-  console.log(to.name);
-
-  if (to.meta.requiresAuth && !isLoggedIn()) {
-    next("/auth/login");
+router.beforeEach(async (to, from, next) => {
+  if (to.matched.some((match) => match.meta.requiresAuth)) {
+    let isSignIn = await isLoggedIn();
+    if (isSignIn) {
+      next();
+    } else {
+      next({ name: "Login" });
+    }
   } else {
-    next();
+    if (to.name == "Login") {
+      let isSignIn = await isLoggedIn();
+      if (isSignIn) {
+        next({ name: from.name });
+      } else {
+        next();
+      }
+    } else {
+      const context = getContextFromLocalStorage();
+      if (
+        (context?.role == Role.Renter || context?.role == Role.Innkeeper) &&
+        !from.name
+      ) {
+        next({ name: "Management" });
+      } else {
+        next();
+      }
+    }
   }
 });
 
-const isLoggedIn = () => {
-  // Kiểm tra xem người dùng đã đăng nhập chưa
-  // Trả về true nếu đã đăng nhập, ngược lại trả về false
-  const context = localStorage.getItem("context");
-  if (context) {
-    const contextObj = JSON.parse(context);
-    if (contextObj.accessToken == "123456789") {
+const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const authListener = onAuthStateChanged(
+      getAuth(),
+      (user) => {
+        authListener();
+        resolve(user);
+      },
+      reject()
+    );
+  });
+};
+
+const isLoggedIn = async () => {
+  try {
+    const context = localStorage.getItem("context");
+    if (context) {
+      const parsedContext = JSON.parse(context);
+      if (parsedContext.token) {
+        return true;
+      }
+    }
+
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
       return true;
     }
+  } catch (error) {
+    console.error(error);
   }
+
   return false;
 };
 

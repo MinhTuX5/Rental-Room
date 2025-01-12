@@ -13,10 +13,11 @@
       </router-link>
     </v-col>
     <v-col cols="5" class="pt-0 pb-0 d-flex justify-center">
-      <v-btn class="mr-2" variant="plain" @click="openManagePage"
-        >Quản lý phòng trọ</v-btn
-      >
-      <v-btn class="mr-2" variant="plain">Giới thiệu</v-btn>
+      <router-link :to="{ name: 'Management' }" class="ml-2">
+        <v-btn class="mr-2" variant="plain" color="black"
+          >Quản lý phòng trọ</v-btn
+        >
+      </router-link>
     </v-col>
 
     <v-col cols="5">
@@ -49,7 +50,10 @@
           ></v-avatar>
         </router-link>
         <router-link :to="{ name: 'PostDetailPopup' }">
-          <v-btn prepend-icon="mdi-note-plus-outline" class="ml-2" color="red"
+          <v-btn
+            prepend-icon="mdi-note-plus-outline"
+            class="ml-2 mr-4"
+            color="red"
             >Đăng bài</v-btn
           >
         </router-link>

@@ -1,67 +1,93 @@
 import { onMounted, reactive, ref, getCurrentInstance } from "vue";
-// Vue validate
-import { useVuelidate } from "@vuelidate/core";
-import { required, minLength, maxLength } from "@vuelidate/validators";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  FacebookAuthProvider,
+} from "firebase/auth";
 // api
 import api from "@/apis/userAPI";
 // resources
-import { showMessage } from "@/common/commonFunction";
+import { showMessage, MessageType } from "@/common/commonFunction";
+import Role from "../../../common/enum/Role";
 
 export const useLogin = () => {
   const { proxy } = getCurrentInstance();
 
-  const initialState = {
+  const model = reactive({
     account: "",
     password: "",
-  };
-
-  const state = reactive({
-    ...initialState,
+    role: Role.Renter,
   });
 
-  const rules = {
-    account: {
-      required,
-      maxLength: maxLength(11),
-      minLength: minLength(10),
-    },
-    password: { required, minLength: minLength(8) },
-  };
+  const form = ref(false);
 
-  const v$ = useVuelidate(rules, state);
-
-  const isManagementPage = ref(false);
+  const overlay = ref(false);
+  const showPassword = ref(false);
 
   const login = async () => {
     const me = proxy;
 
-    if (typeof v$.$validate === "function") {
-      v$.$validate();
-    }
-
     try {
       const payload = {
-        account: state.account,
-        password: state.password,
+        ...me.model,
       };
+
+      overlay.value = true;
       const rs = await api.login(payload);
-      if (rs) {
+
+      if (rs.data && typeof rs.data === "object") {
         const context = {
-          accessToken: "123456789",
-          userID: "05349621-ae36-11ef-a600-c03eba18f2af",
+          ...rs.data,
         };
         localStorage.setItem("context", JSON.stringify(context));
 
         showMessage("Đăng nhập thành công!");
-        // handle login success
-        setTimeout(() => {
-          me.$router.push({ path: "/" });
-        }, 100);
+
+        me.$router.push({ name: "Management" });
       }
     } catch (error) {
       console.error(error);
+      if (error.status === 400) {
+        showMessage(
+          "Tài khoản, mật khẩu hoặc vai trò không hợp lệ!",
+          MessageType.Warning
+        );
+      } else {
+        showMessage("Đã có lỗi xảy ra!", MessageType.Error);
+      }
+    } finally {
+      overlay.value = false;
     }
   };
+
+  const signInWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(getAuth(), provider).then((res) => {
+      console.log(res.user);
+    });
+  };
+
+  const signInWithFb = () => {
+    const provider = new FacebookAuthProvider();
+    signInWithPopup(getAuth(), provider).then((res) => {
+      console.log(res.user);
+    });
+  };
+
+  const phoneNumberRules = [
+    (value) => {
+      if (value?.length >= 10) return true;
+      return "Số điện thoại phải có ít nhất 10 ký tự";
+    },
+  ];
+
+  const passwordRules = [
+    (value) => {
+      if (value?.length >= 8) return true;
+      return "Mật khẩu phải có ít nhất 8 ký tự";
+    },
+  ];
 
   onMounted(() => {
     const previousTabData = window.previousTabData;
@@ -71,5 +97,16 @@ export const useLogin = () => {
     }
   });
 
-  return { state, v$, isManagementPage, login };
+  return {
+    login,
+    signInWithGoogle,
+    signInWithFb,
+    phoneNumberRules,
+    model,
+    passwordRules,
+    showPassword,
+    overlay,
+    form,
+    Role,
+  };
 };

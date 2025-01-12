@@ -180,7 +180,6 @@ export default {
 
     hide() {
       const me = this;
-      debugger;
       const detailForm = me.detailForm ?? me._formParam?.detailForm;
       if (detailForm) {
         me.$vfm.hide(detailForm);

@@ -1,12 +1,10 @@
 import { getCurrentInstance, onMounted, reactive, ref } from "vue";
 // resources
-import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
 import { moveToTop } from "@/common/commonFunction";
+import { logout } from "../../../common/commonFunction";
 
 export const useContainer = () => {
   const { proxy } = getCurrentInstance();
-
-  const { logout } = useRoomSearchCommon();
 
   const headerHeight = 70;
   const navWidth = 200;

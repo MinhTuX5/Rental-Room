@@ -12,11 +12,11 @@ export const useContainer = () => {
 
   const moveToHomePage = () => {
     const me = proxy;
-    me.$router.push({ path: "/" });
+    me.$router.push({ name: "HomePage" });
   };
 
   const menuItems = ref([
-    { title: "Tìm trọ", onClick: moveToHomePage },
+    { title: "Đăng và tìm trọ", onClick: moveToHomePage },
     { title: "Đăng xuất", onClick: logout },
   ]);
 

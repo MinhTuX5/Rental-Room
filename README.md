@@ -111,5 +111,9 @@ npm i @fullcalendar/core @fullcalendar/vue3 @fullcalendar/daygrid @fullcalendar/
   render thì có thể chỉ render 1 hoặc 2 cấp, khi expand node thì mới render cấp tiếp theo.
 
 
-### Viet Nam Location APIs
+## Viet Nam Location APIs
 https://provinces.open-api.vn/api/?depth=3
+
+## Sign In
+https://console.firebase.google.com/
+https://developers.facebook.com/

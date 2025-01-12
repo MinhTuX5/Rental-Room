@@ -74,13 +74,11 @@ export function initApp() {
     const context = localStorage.getItem("context");
     if (context) {
       const contextObj = JSON.parse(context);
-      if (contextObj.accessToken == "123456789") {
-        const store = useContextStore();
-        store.$state = {
-          ...store.$state,
-          ...contextObj,
-        };
-      }
+      const store = useContextStore();
+      store.$state = {
+        ...store.$state,
+        ...contextObj,
+      };
     }
   };
 

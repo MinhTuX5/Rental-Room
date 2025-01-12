@@ -9,8 +9,20 @@ import { registerGlobalComponent } from "@/components/register/globalComponent.j
 import { registerPopup } from "@/components/register/popupRegister.js";
 import { initApp } from "@/common/initApp.js";
 import { vfmPlugin } from "vue-final-modal";
+import { initializeApp } from 'firebase/app';
 
 const app = createApp(App);
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCD7Pgy8XlA1DnlJeJ6atSWXqq6_u8iOpk",
+  authDomain: "rental-room-system-21e0e.firebaseapp.com",
+  projectId: "rental-room-system-21e0e",
+  storageBucket: "rental-room-system-21e0e.firebasestorage.app",
+  messagingSenderId: "363809723938",
+  appId: "1:363809723938:web:9c78bf65994faa0e471c7b"
+};
+
+initializeApp(firebaseConfig)
 
 const pinia = createPinia();
 app.use(pinia);

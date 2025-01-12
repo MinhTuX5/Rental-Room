@@ -16,6 +16,8 @@
 <script>
 import { useAppStore } from "@/stores/appStore";
 import { ModalsContainer } from "vue-final-modal";
+import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { onMounted, ref } from "vue";
 
 export default {
   name: "App",
@@ -24,6 +26,19 @@ export default {
   },
   setup() {
     const store = useAppStore();
+
+    const isLoggedIn = ref(false);
+    onMounted(() => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if(user) {
+          isLoggedIn.value = true;
+        } else {
+          isLoggedIn.value = false;
+        }
+      })
+    })
+
     return {
       store,
     };
