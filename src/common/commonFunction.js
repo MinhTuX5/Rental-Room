@@ -2,6 +2,7 @@
 import moment from "moment";
 // stores
 import { useAppStore } from "@/stores/appStore";
+import { useContextStore } from "../stores/contextStore";
 // enum
 import _enum from "./enum";
 
@@ -74,9 +75,15 @@ export const moveToTop = () => {
  * @description đăng xuất
  */
 export const logout = () => {
+  useContextStore().$reset();
   localStorage.removeItem("context");
-  contextStore.$reset();
-  window.location.href = '/';
+  window.location.href = "/";
+};
+
+export const logoutManagePage = () => {
+  useContextStore().$reset();
+  localStorage.removeItem("context_management");
+  window.location.href = "/";
 };
 
 //#region Format
@@ -154,7 +161,8 @@ export const standardItem = (item, options = {}) => {
 };
 //#endregion
 
-export const getContextFromLocalStorage = () => {
+//#region Get context
+export const getContext = () => {
   const context = localStorage.getItem("context");
   if (context) {
     try {
@@ -165,4 +173,18 @@ export const getContextFromLocalStorage = () => {
     }
   }
   return null;
-}
+};
+
+export const getManagementContext = () => {
+  const context = localStorage.getItem("context_management");
+  if (context) {
+    try {
+      return JSON.parse(context);
+    } catch (error) {
+      console.error("Error parsing context from local storage:", error);
+      return null;
+    }
+  }
+  return null;
+};
+//#endregion

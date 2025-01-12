@@ -1,0 +1,26 @@
+.login-popup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: unset;
+  max-width: unset;
+
+  .background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: black;
+    opacity: 0.5;
+  }
+
+  .v-form {
+    max-width: 500px;
+    z-index: 1;
+
+    .v-col {
+      padding: unset;
+    }
+  }
+}

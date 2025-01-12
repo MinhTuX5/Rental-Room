@@ -1,6 +1,8 @@
 import { getCurrentInstance, onMounted } from "vue";
 // store
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
+import { useAppStore } from "../../../stores/appStore";
+import { useContextStore } from "../../../stores/contextStore";
 // resource
 import { showMessage } from "@/common/commonFunction";
 import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
@@ -10,6 +12,8 @@ export const usePostOverview = () => {
   const { proxy } = getCurrentInstance();
 
   const store = useRoomPostStore();
+  const appStore = useAppStore();
+  const contextStore = useContextStore();
 
   const {featureBtns} = usePostOverviewCommon();
 
@@ -43,6 +47,12 @@ export const usePostOverview = () => {
    */
   const likePost = async (item) => {
     const me = proxy;
+
+    debugger
+    if (!contextStore.$state.token) {
+      appStore.toggleLoginPopup();
+      return;
+    }
 
     const { lovePost } = useRoomSearchCommon();
     const param = {

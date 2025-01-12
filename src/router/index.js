@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { getContextFromLocalStorage } from "../common/commonFunction";
+import { getContext } from "../common/commonFunction";
 import Role from "../common/enum/Role";
 
 // init routes
@@ -14,7 +14,7 @@ const router = createRouter({
       component: () => import("@/views/auth/login/Login.vue"),
     },
     {
-      name: "Homepage",
+      name: "HomePage",
       path: "",
       redirect: "/trang-chu",
       component: () => import("@/components/layout/roomSearch/Container.vue"),
@@ -74,7 +74,7 @@ const router = createRouter({
       path: "/quan-ly",
       name: "Management",
       redirect: "/quan-ly/danh-sach-phong",
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, isManagementPage: true },
       component: () =>
         import("@/components/layout/roomManagement/Container.vue"),
       children: [
@@ -219,7 +219,7 @@ router.beforeEach(async (to, from, next) => {
         next();
       }
     } else {
-      const context = getContextFromLocalStorage();
+      const context = getContext();
       if (
         (context?.role == Role.Renter || context?.role == Role.Innkeeper) &&
         !from.name

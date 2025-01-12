@@ -6,6 +6,7 @@ export const useAppStore = defineStore({
     alertMessage: "",
     alertType: "error", // or 'success', 'info', 'warning'
     showAlert: false,
+    showLoginPopup: false,
     allRoomCategories: [],
     allRooms: [],
     allServiceFees: [],
@@ -18,6 +19,9 @@ export const useAppStore = defineStore({
     },
     hideAlert() {
       this.showAlert = false;
+    },
+    toggleLoginPopup() {
+      this.showLoginPopup = !this.showLoginPopup;
     },
   },
 });

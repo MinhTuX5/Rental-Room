@@ -5,7 +5,7 @@
     :style="{ height: height + 'px' }"
   >
     <v-col cols="2">
-      <router-link :to="{ name: 'Homepage' }" class="ml-2">
+      <router-link :to="{ name: 'HomePage' }" class="ml-2">
         <v-btn class="ma-2" color="orange-darken-2" @click="onClickHomeBtn">
           <v-icon icon="mdi-home" start></v-icon>
           Trang chủ
@@ -13,50 +13,60 @@
       </router-link>
     </v-col>
     <v-col cols="5" class="pt-0 pb-0 d-flex justify-center">
-      <router-link :to="{ name: 'Management' }" class="ml-2">
-        <v-btn class="mr-2" variant="plain" color="black"
-          >Quản lý phòng trọ</v-btn
-        >
-      </router-link>
+      <v-btn class="mr-2" variant="plain" color="black" @click="openManagePage"
+        >Quản lý phòng trọ</v-btn
+      >
     </v-col>
 
     <v-col cols="5">
       <v-sheet class="d-flex justify-end">
-        <router-link :to="{ name: 'PostManagement' }">
-          <v-btn prepend-icon="mdi-text-box-multiple-outline"
-            >Quản lý bài đăng</v-btn
-          >
-        </router-link>
-        <!-- Bài đăng yêu thích -->
-        <router-link
-          :to="{ name: 'PostManagement', query: { tab: 3 } }"
-          class="ml-2"
+        <v-btn
+          prepend-icon="mdi-text-box-multiple-outline"
+          @click="moveToPage('PostManagement')"
+          >Quản lý bài đăng</v-btn
         >
-          <v-btn
-            density="comfortable"
-            class="ml-2"
-            icon="mdi-book-heart-outline"
-            v-tooltip:bottom="'Bài đăng yêu thích'"
-          />
-        </router-link>
+
+        <!-- Bài đăng yêu thích -->
+        <v-btn
+          density="comfortable"
+          class="ml-2"
+          icon="mdi-book-heart-outline"
+          v-tooltip:bottom="'Bài đăng yêu thích'"
+          @click="moveToPage('PostManagement', { tab: 3 })"
+        />
+
         <!-- Thông báo -->
-        <v-btn density="comfortable" class="ml-2" icon="mdi-bell-outline" />
+        <v-btn
+          density="comfortable"
+          class="ml-2 mr-2"
+          icon="mdi-bell-outline"
+          v-tooltip:bottom="'Thông báo'"
+        />
+
         <!-- Tài khoản -->
-        <router-link :to="{ name: 'InfoUpdating' }" class="ml-2">
-          <v-avatar
-            image="https://picsum.photos/1920/1080?random"
-            size="36"
-            v-tooltip:bottom="'Quản lý tài khoản'"
-          ></v-avatar>
-        </router-link>
-        <router-link :to="{ name: 'PostDetailPopup' }">
-          <v-btn
-            prepend-icon="mdi-note-plus-outline"
-            class="ml-2 mr-4"
-            color="red"
-            >Đăng bài</v-btn
-          >
-        </router-link>
+        <v-avatar
+          v-if="avatarLink"
+          :image="avatarLink"
+          size="36"
+          v-tooltip:bottom="'Quản lý tài khoản'"
+          class="cursor-pointer"
+          @click="moveToPage('InfoUpdating')"
+        />
+        <v-btn
+          v-else
+          density="comfortable"
+          icon="mdi-account-circle"
+          v-tooltip:bottom="'Quản lý tài khoản'"
+          @click="moveToPage('InfoUpdating')"
+        ></v-btn>
+
+        <v-btn
+          prepend-icon="mdi-note-plus-outline"
+          class="ml-2 mr-4"
+          color="red"
+          @click="moveToPage('PostDetailPopup')"
+          >Đăng bài</v-btn
+        >
       </v-sheet>
     </v-col>
   </v-row>
@@ -64,6 +74,8 @@
 
 <script>
 import { getCurrentInstance } from "vue";
+import { useContextStore } from "../../../stores/contextStore";
+import { useAppStore } from "../../../stores/appStore";
 
 export default {
   props: {
@@ -75,20 +87,22 @@ export default {
   setup() {
     const { proxy } = getCurrentInstance();
 
+    const contextStore = useContextStore();
+    const appStore = useAppStore();
+
     const tabsConfig = [
       { display: "Tìm trọ" },
       { display: "Quản lý trọ" },
       { display: "Giới thiệu" },
     ];
 
+    /**
+     * @description Quản lý phòng trọ
+     */
     const openManagePage = () => {
       const originLink = window.location.origin;
-      const managementLink = `${originLink}/auth/login`;
-      const newTab = window.open(managementLink, "_blank");
-      newTab.previousTabData = {
-        isManagementPage: true,
-      };
-      newTab.focus();
+      const managementLink = `${originLink}/dang-nhap`;
+      window.open(managementLink, "_blank");
     };
 
     const onClickHomeBtn = () => {
@@ -96,10 +110,25 @@ export default {
       me.$emit("onClickHomeBtn");
     };
 
+    const moveToPage = (pageName, query = {}) => {
+      const me = proxy;
+
+      if (!contextStore.token) {
+        appStore.toggleLoginPopup();
+        return;
+      }
+
+      me.$router.push({ name: pageName, query });
+    };
+
+    const avatarLink = contextStore.$state.user?.user_avatar;
+
     return {
       tabsConfig,
       openManagePage,
       onClickHomeBtn,
+      moveToPage,
+      avatarLink,
     };
   },
 };

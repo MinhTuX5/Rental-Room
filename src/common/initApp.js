@@ -1,4 +1,5 @@
 import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 import { useLocationStore } from "@/stores/location/locationStore";
 
 const indexedDBrequest = indexedDB.open("CacheDB", 1);
@@ -69,12 +70,23 @@ export function initApp() {
   };
 
   const setContextData = () => {
+    let store = {};
     // Kiểm tra xem người dùng đã đăng nhập chưa
     // Trả về true nếu đã đăng nhập, ngược lại trả về false
-    const context = localStorage.getItem("context");
+    let context = localStorage.getItem("context");
     if (context) {
       const contextObj = JSON.parse(context);
-      const store = useContextStore();
+      store = useContextStore();
+      store.$state = {
+        ...store.$state,
+        ...contextObj,
+      };
+    }
+
+    context = localStorage.getItem("context_management");
+    if (context) {
+      const contextObj = JSON.parse(context);
+      store = useContextManageStore();
       store.$state = {
         ...store.$state,
         ...contextObj,
