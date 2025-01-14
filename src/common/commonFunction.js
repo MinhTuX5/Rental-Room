@@ -80,12 +80,6 @@ export const logout = () => {
   window.location.href = "/";
 };
 
-export const logoutManagePage = () => {
-  useContextStore().$reset();
-  localStorage.removeItem("context_management");
-  window.location.href = "/";
-};
-
 //#region Format
 export const formatNumberWithCommas = (number) => {
   if (typeof number === "number") {

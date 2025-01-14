@@ -17,12 +17,12 @@
       @click="likePost(item)"
     ></v-icon>
     <!-- Avatar -->
-    <v-col cols="2" align-self="center" @click="onClickItem">
+    <v-col cols="3" align-self="center" @click="onClickItem">
       <v-img
         src="https://images.cenhomes.vn/2020/03/1585033152-can-ho-mau-eurowindow-river-park.jpg"
       ></v-img>
     </v-col>
-    <v-col :cols="isShowFeatureBtn ? 8 : 10">
+    <v-col :cols="isShowFeatureBtn ? 7 : 9" class="pa-2">
       <v-sheet class="d-flex">
         <!-- Title -->
         <span
@@ -36,7 +36,9 @@
         <v-sheet class="d-flex mt-2 info">
           <v-sheet class="d-flex align-center mr-8">
             <v-icon icon="mdi-cash" v-tooltip="'Giá thuê'"></v-icon>
-            <span>{{ item.room_price/1000000 }} triệu/tháng</span>
+            <span
+              >{{ formatNumberWithCommas(item.room_price) }} đồng/tháng</span
+            >
           </v-sheet>
           <v-sheet class="d-flex align-center mr-8">
             <v-icon icon="mdi-home" v-tooltip="'Diện tích'"></v-icon>
@@ -44,7 +46,10 @@
           </v-sheet>
           <v-sheet class="d-flex align-center">
             <v-icon icon="mdi-calendar-clock" v-tooltip="'Ngày đăng'"></v-icon>
-            <span>{{ moment(item.posted_date).format("hh:mm DD/MM/YYYY") }}</span>
+            <!-- HH => 24h, hh => 12h -->
+            <span>{{
+              moment(item.posted_date).format("HH:mm DD/MM/YYYY")
+            }}</span>
           </v-sheet>
         </v-sheet>
         <v-sheet class="d-flex mt-2">
@@ -71,7 +76,7 @@
           prepend-icon="mdi-trash-can-outline"
           color="red"
           class="w-fit-content"
-          @click="onDeletePost"
+          @click="showDeleteDialog"
           >Xóa</v-btn
         >
         <v-btn
@@ -90,6 +95,23 @@
       </v-sheet>
     </v-col>
   </v-sheet>
+  <v-dialog v-model="showDialog" width="auto">
+    <v-card
+      width="500"
+      :prepend-icon="dialogConfig.icon"
+      :title="dialogConfig.title"
+      :text="dialogConfig.text"
+    >
+      <template v-slot:actions>
+        <v-btn
+          class="ms-auto"
+          color="red"
+          text="Xóa"
+          @click="deletePost"
+        ></v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -115,6 +137,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    detailPageName: {
+      type: String,
+      default: "PostDetail",
+    },
   },
   setup() {
     const resource = usePostOverview();
@@ -126,29 +152,33 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.v-btn {
-  & + .v-btn {
-    margin-top: 16px;
+<style lang="scss">
+.post-over-view {
+  margin-bottom: 8px;
+
+  .v-btn {
+    & + .v-btn {
+      margin-top: 16px;
+    }
   }
-}
 
-.limit-2-line {
-  white-space: nowrap;
-}
-
-.info {
-  .v-icon {
-    margin-right: 4px;
-  }
-}
-
-@media screen and (min-width: 1920px) {
   .limit-2-line {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    white-space: wrap;
+    white-space: nowrap;
+  }
+
+  .info {
+    .v-icon {
+      margin-right: 4px;
+    }
+  }
+
+  @media screen and (min-width: 1920px) {
+    .limit-2-line {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      white-space: wrap;
+    }
   }
 }
 </style>

@@ -1,9 +1,5 @@
 const RoomCategoryConfig = [
   {
-    text: "Tất cả",
-    value: 0,
-  },
-  {
     text: "Phòng trọ",
     value: 1,
   },
@@ -14,6 +10,10 @@ const RoomCategoryConfig = [
   {
     text: "Nhà nguyên căn",
     value: 3,
+  },
+  {
+    text: "Homestay",
+    value: 4,
   },
 ];
 

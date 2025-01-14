@@ -1,6 +1,6 @@
 <template>
-  <v-container class="post-detail">
-    <v-col cols="9">
+  <v-container class="post-detail d-flex">
+    <v-col cols="9" class="pa-0 mr-4">
       <v-sheet class="mb-4">
         <v-carousel show-arrows="hover" :height="300">
           <v-carousel-item
@@ -54,7 +54,7 @@
           </div>
         </v-sheet>
         <!-- Features -->
-        <v-sheet class="features">
+        <v-sheet v-if="!isFromAdmin" class="features">
           <v-btn
             color="red"
             :icon="model.favorite_post_id ? 'mdi-heart' : 'mdi-heart-outline'"
@@ -99,7 +99,7 @@
         </v-textarea>
       </v-sheet>
 
-      <v-sheet>
+      <v-sheet v-if="!isFromAdmin">
         <h3>Bản đồ</h3>
         <p>Địa chỉ: {{ model.address }}</p>
         <iframe
@@ -113,7 +113,39 @@
         ></iframe>
       </v-sheet>
     </v-col>
-    <v-col></v-col>
+    <!-- Thông tin người đăng -->
+    <v-col class="d-flex flex-column align-center pa-0">
+      <v-card class="d-flex flex-column align-center pa-4 w-100">
+        <v-avatar
+          image="https://picsum.photos/1920/1080?random"
+          size="220"
+        ></v-avatar>
+
+        <div class="text-h6 mt-2">Nguyễn Hồng Điệp</div>
+
+        <div class="mt-4 w-100">Số điện thoại 1: 0963689218</div>
+        <div class="mt-2 w-100">Số điện thoại 2: 0963689218</div>
+
+        <div class="mt-4 w-100">Zalo: 0963689218</div>
+        <div class="mt-2 cursor-pointer w-100">
+          <a href="https://www.facebook.com/" target="_blank">Facebook</a>
+        </div>
+      </v-card>
+      <v-row class="d-flex">
+        <v-btn
+          class="mt-4 flex-fill mr-4"
+          color="green"
+          prepend-icon="mdi-check"
+          >Phê duyệt</v-btn
+        >
+        <v-btn
+          class="mt-4 flex-fill"
+          color="red"
+          prepend-icon="mdi-window-close"
+          >Từ chối</v-btn
+        >
+      </v-row>
+    </v-col>
   </v-container>
 </template>
 

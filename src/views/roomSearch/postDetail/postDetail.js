@@ -18,8 +18,31 @@ export const usePostDetail = () => {
 
   const model = ref({});
 
+  /**
+   * @description Yêu thích bài viết
+   */
+  const likePost = async () => {
+    const param = {
+      favorite_post_id: model.value.favorite_post_id,
+      room_post_id: model.value.room_post_id,
+    };
+
+    try {
+      model.value.favorite_post_id = await lovePost(param);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const isFromAdmin = ref(false);
+
   onMounted(async () => {
     const me = proxy;
+
+    if (me.$route.matched.some((x) => x.meta.isAdmin)) {
+      isFromAdmin.value = true;
+    }
+
     const id = me.$route.params.id;
     if (id) {
       try {
@@ -40,27 +63,12 @@ export const usePostDetail = () => {
     window._detail = proxy;
   });
 
-  /**
-   * @description Yêu thích bài viết
-   */
-  const likePost = async () => {
-    const param = {
-      favorite_post_id: model.value.favorite_post_id,
-      room_post_id: model.value.room_post_id,
-    };
-
-    try {
-      model.value.favorite_post_id = await lovePost(param);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return {
     model,
     moment,
     filters,
     contextStore,
     likePost,
+    isFromAdmin
   };
 };

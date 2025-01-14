@@ -1,4 +1,6 @@
 import axios from "axios";
+import LocalContextKey from "@/common/enum/LocalContextKey.js";
+import Role from "@/common/enum/Role";
 
 // Content-Type
 const ApplicationJson = "application/json";
@@ -16,7 +18,16 @@ const httpClient = axios.create({
  */
 httpClient.interceptors.request.use(
   (config) => {
-    const context = localStorage.getItem("context");
+    const pageRole = window.PageRole;
+
+    const contextKey =
+      pageRole == Role.Admin
+        ? LocalContextKey.Admin
+        : pageRole == Role.Renter || pageRole == Role.Innkeeper
+        ? LocalContextKey.Management
+        : "context";
+
+    const context = localStorage.getItem(contextKey);
     if (context) {
       const contextObj = JSON.parse(context);
       if (contextObj.token) {
@@ -28,6 +39,33 @@ httpClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
+  }
+);
+
+// Interceptor để xử lý các yêu cầu
+httpClient.interceptors.response.use(
+  (response) => {
+    return response;
+  }, // Nếu thành công, trả về response
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Xử lý lỗi 401 tại đây
+      console.error("Unauthorized! Redirecting to login...");
+
+      // Xóa context
+      const pageRole = window.PageRole;
+
+      const contextKey =
+        pageRole == Role.Admin
+          ? LocalContextKey.Admin
+          : pageRole == Role.Renter || pageRole == Role.Innkeeper
+          ? LocalContextKey.Management
+          : "context";
+
+      localStorage.removeItem(contextKey);
+      // window.location.href = "/"; // Chuyển đến trang chủ
+    }
+    return Promise.reject(error); // Trả lại lỗi để xử lý tiếp
   }
 );
 

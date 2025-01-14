@@ -165,6 +165,7 @@ export default {
       try {
         const res = await me.store.putAsync(me.model);
         // Show result
+        
         if (res) {
           // show toast
           showMessage("Cập nhật thành công");
@@ -174,6 +175,7 @@ export default {
           }
         }
       } catch (error) {
+        
         console.error(error);
       }
     },
@@ -186,14 +188,21 @@ export default {
       }
     },
 
+    customAfterSubmit(data) {},
+
     submitSuccess(data) {
+      
       const me = this;
-      const callBack = me._formParam.options?.afterSubmit;
+      console.log(1);
+      
+      const callBack = me._formParam?.options?.afterSubmit;
       if (callBack && typeof callBack == "function") {
         callBack(data);
       }
 
-      me.hide();
+      me.customAfterSubmit(data);
+
+      // me.hide();
     },
 
     viewForm(formName, param = {}) {

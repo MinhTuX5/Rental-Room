@@ -1,4 +1,4 @@
-import { getCurrentInstance, onMounted } from "vue";
+import { getCurrentInstance, onMounted, ref, reactive } from "vue";
 // store
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 import { useAppStore } from "../../../stores/appStore";
@@ -7,6 +7,7 @@ import { useContextStore } from "../../../stores/contextStore";
 import { showMessage } from "@/common/commonFunction";
 import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
 import { usePostOverviewCommon } from "./postOverviewCommon";
+import { formatNumberWithCommas } from "../../../common/commonFunction";
 
 export const usePostOverview = () => {
   const { proxy } = getCurrentInstance();
@@ -15,21 +16,36 @@ export const usePostOverview = () => {
   const appStore = useAppStore();
   const contextStore = useContextStore();
 
-  const {featureBtns} = usePostOverviewCommon();
+  const { featureBtns } = usePostOverviewCommon();
 
   const viewDetail = () => {
     const me = proxy;
     me.$router.push({
-      name: "PostDetail",
+      name: me.$props.detailPageName,
       params: { id: me.$props.item.room_post_id },
     });
+  };
+
+  const showDialog = ref(false);
+  const dialogConfig = reactive({
+    title: "",
+    text: "",
+    icon: "",
+  });
+
+  const showDeleteDialog = () => {
+    dialogConfig.title = "Xóa bài viết";
+    dialogConfig.text = "Bạn có chắc muốn xóa bài viết này?";
+    dialogConfig.icon = "mdi-trash-can-outline";
+    showDialog.value = true;
   };
 
   /**
    * @description Xóa bài đăng
    */
-  const onDeletePost = async () => {
+  const deletePost = async () => {
     const me = proxy;
+
     try {
       const postID = me.$props.item.room_post_id;
       if (postID) {
@@ -48,7 +64,7 @@ export const usePostOverview = () => {
   const likePost = async (item) => {
     const me = proxy;
 
-    debugger
+    
     if (!contextStore.$state.token) {
       appStore.toggleLoginPopup();
       return;
@@ -80,9 +96,13 @@ export const usePostOverview = () => {
 
   return {
     viewDetail,
-    onDeletePost,
+    deletePost,
     likePost,
     onClickItem,
-    featureBtns
+    featureBtns,
+    showDialog,
+    dialogConfig,
+    showDeleteDialog,
+    formatNumberWithCommas
   };
 };

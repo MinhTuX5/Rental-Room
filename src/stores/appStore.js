@@ -7,6 +7,7 @@ export const useAppStore = defineStore({
     alertType: "error", // or 'success', 'info', 'warning'
     showAlert: false,
     showLoginPopup: false,
+    moveToPageAfterLogin: "",
     allRoomCategories: [],
     allRooms: [],
     allServiceFees: [],

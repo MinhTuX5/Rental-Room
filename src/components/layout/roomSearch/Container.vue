@@ -4,12 +4,13 @@
   <v-footer />
   <t-login-popup
     v-if="appStore.$state.showLoginPopup"
+    :fromAdmin="fromAdmin"
     containerClass="login-popup-custom"
   />
 </template>
 
 <script>
-import { getCurrentInstance, onMounted } from "vue";
+import { getCurrentInstance, onMounted, ref } from "vue";
 import { useGoTo } from "vuetify";
 import VHeader from "./Header.vue";
 import VFooter from "./Footer.vue";
@@ -37,14 +38,32 @@ export default {
       scrollTo(goTo, 0);
     };
 
+    const fromAdmin = ref(false);
+
     onMounted(() => {
+      const me = proxy;
+
       moveToTop();
-      window._roomSearchContainer = proxy;
+      window._roomSearchContainer = me;
+
+      // Kiểm tra thông tin từ sessionStorage
+      const redirectedFrom = sessionStorage.getItem("redirectFrom");
+      if (redirectedFrom == "Admin") {
+        fromAdmin.value = true; // Thông tin đã đăng nhập từ trang admin
+        appStore.toggleLoginPopup(); // Hiển thị popup đăng nhập nếu đã đăng nhập từ trang admin
+      }
+      
+      // Xóa thông tin sau khi đã sử dụng
+      sessionStorage.removeItem("redirectFrom");
+      setTimeout(() => {
+        fromAdmin.value = false;
+      }, 0);
     });
 
     return {
       scrollToTop,
       appStore,
+      fromAdmin,
     };
   },
 };

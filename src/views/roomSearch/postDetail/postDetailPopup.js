@@ -14,14 +14,17 @@ import RoomCategoryConfig from "@/common/config/roomCategoryConfig";
 import { useLocationStore } from "@/stores/location/locationStore";
 import { useContextStore } from "@/stores/contextStore";
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
+import i18nApp from "@/constant/resource/i18nApp";
 // enum
 import LocationType from "@/common/enum/LocationType";
+import RoomType from "../../../common/enum/RoomType";
 
 export const usePostDetailPopup = () => {
   const { proxy } = getCurrentInstance();
 
   // config
   const isManagement = ref(false);
+  const form = ref(false);
 
   // stores
   const store = useRoomPostStore();
@@ -59,11 +62,7 @@ export const usePostDetailPopup = () => {
     },
   ]);
 
-  const roomCategoryConfig = RoomCategoryConfig.filter((x) => x.value > 0);
-  const roomCategories = computed(() => {
-    return roomCategoryConfig.map((x) => x.text);
-  });
-  const roomCategory = ref("");
+  const roomCategories = RoomCategoryConfig.filter((x) => x.value > 0);
 
   const validImageTypes = ["image/png", "image/jpeg", "image/bmp"];
   const imageRules = [
@@ -81,7 +80,7 @@ export const usePostDetailPopup = () => {
       }
 
       validMessage =
-        value[0].size < 2000000 || "Hình ảnh nên có dung lượng nhỏ hơn 2MB!";
+        value[0].size < 2000000 || "Hình ảnh phải có dung lượng nhỏ hơn 2MB!";
       return validMessage;
     },
   ];
@@ -94,31 +93,31 @@ export const usePostDetailPopup = () => {
    * @param {Number} locationType Loại vị trí đc chọn
    */
   const onSelectLocation = (selectedVal, locationType) => {
-    const me = proxy;
+    let selectedLocation = {};
+
     let config = null;
     switch (locationType) {
       case LocationType.Province:
-        locationStore.selectProvinceById(selectedVal);
+        selectedLocation = locationStore.selectProvinceById(selectedVal);
         config = addressInfo.find(
           (x) => x.locationType === LocationType.District
         );
         if (config) {
-          config.items = locationStore.districtItems.map(
-            (x) => x.location_name
-          );
+          config.items = locationStore.districtItems;
         }
-        updateLocationParts(selectedVal, 5);
+        updateLocationParts(selectedLocation[locationStore.nameField], 5);
         break;
       case LocationType.District:
-        locationStore.selectDistrictById(selectedVal);
+        selectedLocation = locationStore.selectDistrictById(selectedVal);
         config = addressInfo.find((x) => x.locationType === LocationType.Ward);
         if (config) {
-          config.items = locationStore.wardItems.map((x) => x.location_name);
+          config.items = locationStore.wardItems;
         }
-        updateLocationParts(selectedVal, 4);
+        updateLocationParts(selectedLocation[locationStore.nameField], 4);
         break;
       case LocationType.Ward:
-        updateLocationParts(selectedVal, 3);
+        selectedLocation = locationStore.getWardById(selectedVal);
+        updateLocationParts(selectedLocation[locationStore.nameField], 3);
         break;
       default:
         break;
@@ -141,11 +140,8 @@ export const usePostDetailPopup = () => {
         break;
     }
     locationParts[index - 1] = customVal;
+    model.room_address = locationParts.filter((x) => x).join(", ");
   };
-
-  const roomAddress = computed(() => {
-    return locationParts.filter((x) => x).join(", ");
-  });
 
   const formatAmount = (event) => {
     // Xóa ký tự không phải số và dấu thập phân
@@ -172,17 +168,11 @@ export const usePostDetailPopup = () => {
     const me = proxy;
 
     const contextStore = useContextStore();
-    const { userID } = contextStore.$state;
-    me.model.user_id = userID;
+    const { user } = contextStore.$state;
+    me.model.user_id = user?.user_id;
 
     me.model.RoomCharacteristic = cloneDeep(roomCharacteristic.value);
     me.model.room_characteristic = JSON.stringify(roomCharacteristic.value);
-    me.model.room_address = roomAddress.value;
-
-    // Lấy loại phòng cho thuê
-    me.model.room_category = roomCategoryConfig.find(
-      (x) => x.text === roomCategory.value
-    ).value;
 
     // Loại bỏ dấu phẩy trong chuỗi
     const numberWithoutCommas = roomPrice.value.replace(/,/g, "");
@@ -200,12 +190,6 @@ export const usePostDetailPopup = () => {
       // Trạng thái là đăng bài hay lưu bài
       me.model.post_status = postStatus;
       await me.submit();
-
-      // Lưu vị trí
-      store.saveLocation(me.model).catch((error) => {
-        console.error(error);
-      });
-
       if (!isManagement.value) {
         me.$router.push({
           name: "PostManagement",
@@ -215,6 +199,44 @@ export const usePostDetailPopup = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const rules = {
+    required: (v) => !!v || i18nApp.rules.required,
+    min: (v) => v.length >= minLength || i18nApp.rules.min.format(minLength),
+    max255: (v) => v.length <= 255 || i18nApp.rules.max.format(255),
+    min0: (v) => v > 0 || i18nApp.rules.minNumber.format(0),
+  };
+
+  const allowEdit = ref(false);
+  const toggleAllowEdit = () => {
+    allowEdit.value = !allowEdit.value;
+  };
+
+  const model = reactive({
+    room_gender: 0,
+    room_price_unit: 0,
+    no_of_bed_rooms: 1,
+    room_people_limit: 100,
+    room_vehicle_limit: 100,
+    room_type_id: RoomType.RentalRoom,
+  });
+
+  const customAfterSubmit = (data) => {
+    const me = proxy;
+
+    // Lưu vị trí
+    const payload = {
+      province_id: me.model.province_id,
+      district_id: me.model.district_id,
+      ward_id: me.model.ward_id,
+      street_name: me.model.street_name,
+      house_number: me.model.house_number,
+      room_post_id: data.room_post_id,
+    };
+    store.saveLocation(payload).catch((error) => {
+      console.error(error);
+    });
   };
 
   onMounted(() => {
@@ -227,18 +249,7 @@ export const usePostDetailPopup = () => {
       me.addText = "";
     }
 
-    me.model = {
-      ...me.model,
-      room_gender: 0,
-      room_price_unit: 0,
-      no_of_bed_rooms: 1,
-      room_people_limit: 0,
-      room_vehicle_limit: 0,
-    };
-
     priceUnit.value = unitList[0];
-
-    roomCategory.value = roomCategoryConfig[0].text;
   });
 
   onUnmounted(() => {
@@ -252,7 +263,6 @@ export const usePostDetailPopup = () => {
     validImageTypes,
     locationStore,
     onSelectLocation,
-    roomAddress,
     locationParts,
     updateLocationParts,
     formatAmount,
@@ -265,6 +275,11 @@ export const usePostDetailPopup = () => {
     submitPopup,
     title,
     roomCategories,
-    roomCategory,
+    form,
+    model,
+    rules,
+    allowEdit,
+    toggleAllowEdit,
+    customAfterSubmit,
   };
 };

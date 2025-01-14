@@ -16,8 +16,12 @@ export const useContainer = () => {
   };
 
   const menuItems = ref([
-    { title: "Đăng và tìm trọ", onClick: moveToHomePage },
-    { title: "Đăng xuất", onClick: logout },
+    {
+      title: "Đăng và tìm trọ",
+      onClick: moveToHomePage,
+      icon: "mdi-home-search",
+    },
+    { title: "Đăng xuất", onClick: logout, icon: "mdi-logout" },
   ]);
 
   const features = ref([]);
@@ -136,8 +140,7 @@ export const useContainer = () => {
   const open = [];
 
   const getMenu = () => {
-    const { role } = contextStore.$state;
-    switch (role) {
+    switch (window.PageRole) {
       case Role.Innkeeper:
         features.value = innkeeperFeatures;
         break;

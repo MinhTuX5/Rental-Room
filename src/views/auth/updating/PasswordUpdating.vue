@@ -1,6 +1,6 @@
 <template>
-  <v-col cols="6">
-    <form @submit.prevent="submit">
+  <v-col cols="6" class="password-updating">
+    <v-form v-model="form" @submit.prevent="submit">
       <v-text-field
         v-model="model.currentPassword.value"
         :counter="20"
@@ -11,7 +11,7 @@
         @click:append="
           showPassword.currentPassword = !showPassword.currentPassword
         "
-        :rules="[rules.required, rules.min]"
+        :rules="[rules.required]"
         class="mb-2"
       ></v-text-field>
 
@@ -44,8 +44,8 @@
         class="mb-2"
       ></v-text-field>
 
-      <v-btn type="submit"> Cập nhật </v-btn>
-    </form>
+      <v-btn type="submit" :disabled="form" color="blue"> Cập nhật </v-btn>
+    </v-form>
   </v-col>
 </template>
 

@@ -62,7 +62,10 @@
         <a href="#">Đăng ký</a>
       </div>
 
-      <v-col v-if="model.role != Role.Admin" class="d-flex flex-column justify-center">
+      <v-col
+        v-if="model.role != Role.Admin"
+        class="d-flex flex-column justify-center"
+      >
         <v-btn
           class="mx-auto mt-4"
           color="red-lighten-1"
@@ -108,11 +111,21 @@ import { showMessage, MessageType } from "@/common/commonFunction";
 import Role from "@/common/enum/Role";
 // store
 import { useAppStore } from "../../../stores/appStore";
+import { useContextStore } from "../../../stores/contextStore";
+import { useContextAdminStore } from "../../../stores/contextAdminStore";
+import { useContextManageStore } from "../../../stores/contextManageStore";
+// base
+import baseView from "../../../views/base/baseView";
 
 export default {
+  extends: baseView,
   name: "LoginView",
   props: {
     isManagementPage: {
+      default: false,
+      type: Boolean,
+    },
+    fromAdmin: {
       default: false,
       type: Boolean,
     },
@@ -147,22 +160,7 @@ export default {
 
         overlay.value = true;
         const rs = await api.login(payload);
-
-        if (rs.data && typeof rs.data === "object") {
-          const context = {
-            ...rs.data,
-          };
-
-          if (me.$props.isManagementPage) {
-            localStorage.setItem("context_management", JSON.stringify(context));
-          } else {
-            localStorage.setItem("context", JSON.stringify(context));
-          }
-
-          showMessage("Đăng nhập thành công!");
-
-          me.$router.push({ name: "Management" });
-        }
+        handleAfterLogin(rs);
       } catch (error) {
         console.error(error);
         if (error.status === 400) {
@@ -178,18 +176,97 @@ export default {
       }
     };
 
+    const handleAfterLogin = (rs) => {
+      const me = proxy;
+      if (rs.data && typeof rs.data === "object") {
+        const context = {
+          ...rs.data,
+        };
+
+        let store = {};
+        let localStorageKey = "";
+        if (me.$props.isManagementPage) {
+          store = useContextManageStore();
+          localStorageKey = "context_management";
+          window.PageRole = context.role;
+        } else {
+          if (context.role == Role.Admin) {
+            localStorageKey = "context_admin";
+            store = useContextAdminStore();
+            window.PageRole = context.role;
+          } else {
+            localStorageKey = "context";
+            store = useContextStore();
+          }
+        }
+
+        store.$state = {
+          ...store.$state,
+          ...context,
+        };
+
+        localStorage.setItem(localStorageKey, JSON.stringify(context));
+
+        showMessage("Đăng nhập thành công!");
+
+        if (me.$props.isManagementPage) {
+          me.$router.push({ name: "Management" });
+          window.PageRole = context.role;
+        } else {
+          appStore.toggleLoginPopup();
+          if (appStore.$state.moveToPageAfterLogin) {
+            me.$router.push({ name: appStore.$state.moveToPageAfterLogin });
+            appStore.$state.moveToPageAfterLogin = "";
+          }
+          if (context.role == Role.Admin) {
+            openAdminPage();
+          }
+        }
+      }
+    };
+
+    const openAdminPage = () => {
+      const originLink = window.location.origin;
+      const newLink = `${originLink}/admin`;
+      window.open(newLink, "_blank");
+    };
+
     const signInWithGoogle = () => {
       const provider = new GoogleAuthProvider();
       signInWithPopup(getAuth(), provider).then((res) => {
-        console.log(res.user);
+        loginCallback(res);
       });
     };
 
     const signInWithFb = () => {
       const provider = new FacebookAuthProvider();
       signInWithPopup(getAuth(), provider).then((res) => {
-        console.log(res.user);
+        loginCallback(res);
       });
+    };
+
+    const loginCallback = (res) => {
+      overlay.value = true;
+      let user = {};
+      if (res.uid) {
+        user = res;
+      } else {
+        user = res.user;
+      }
+      if (user.uid) {
+        const payload = {
+          UserOauth2Id: user.uid,
+          UserName: user.displayName,
+          UserEmail: user.email,
+          role: proxy.model.role,
+        };
+        api
+          .loginCallback(payload)
+          .then((res) => handleAfterLogin(res))
+          .finally(() => {
+            overlay.value = false;
+          });
+      }
     };
 
     const phoneNumberRules = [
@@ -214,6 +291,8 @@ export default {
       const me = proxy;
       if (me.$props.isManagementPage) {
         me.model.role = Role.Renter;
+      } else if (me.$props.fromAdmin) {
+        me.model.role = Role.Admin;
       }
     });
 

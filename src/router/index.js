@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { getContext } from "../common/commonFunction";
 import Role from "../common/enum/Role";
 
 // init routes
@@ -25,7 +23,7 @@ const router = createRouter({
           component: () => import("@/views/roomSearch/main/MainView.vue"),
         },
         {
-          path: "/post/:id",
+          path: "bai-dang/:id",
           name: "PostDetail",
           meta: { requiresAuth: true },
           component: () =>
@@ -74,7 +72,7 @@ const router = createRouter({
       path: "/quan-ly",
       name: "Management",
       redirect: "/quan-ly/danh-sach-phong",
-      meta: { requiresAuth: true, isManagementPage: true },
+      meta: { requiresAuth: true, localContextKey: "context_management" },
       component: () =>
         import("@/components/layout/roomManagement/Container.vue"),
       children: [
@@ -86,12 +84,12 @@ const router = createRouter({
               "@/views/roomManagement/roomListOverview/RoomListOverview.vue"
             ),
         },
-        {
-          path: "chi-tiet-phong/:roomID",
-          name: "Management_PostDetail",
-          component: () =>
-            import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
-        },
+        // {
+        //   path: "chi-tiet-phong/:roomID",
+        //   name: "Management_PostDetail",
+        //   component: () =>
+        //     import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
+        // },
         {
           path: "thong-tin-phong",
           name: "RoomInfo",
@@ -195,6 +193,30 @@ const router = createRouter({
       ],
     },
     {
+      path: "/admin",
+      name: "Admin",
+      // redirect: "/phe-duyet",
+      meta: {
+        requiresAuth: true,
+        localContextKey: "context_admin",
+        isAdmin: true,
+      },
+      component: () => import("@/components/layout/admin/Container.vue"),
+      children: [
+        {
+          path: "phe-duyet",
+          name: "PostApproval",
+          component: () => import("@/views/admin/PostApproval.vue"),
+        },
+        {
+          path: "phe-duyet-bai-dang/:id",
+          name: "PostDetailApproval",
+          component: () =>
+            import("@/views/roomSearch/postDetail/PostDetail.vue"),
+        },
+      ],
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "not-found",
       component: () => import("@/pages/NotFound.vue"),
@@ -203,66 +225,56 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.matched.some((match) => match.meta.requiresAuth)) {
-    let isSignIn = await isLoggedIn();
+  
+  const requireAuth = to.matched.find((match) => match.meta.requiresAuth);
+  if (requireAuth) {
+    let isSignIn = isLoggedIn(requireAuth.meta.localContextKey);
     if (isSignIn) {
       next();
     } else {
-      next({ name: "Login" });
+      if (requireAuth.meta.isAdmin) {
+        next({ name: "HomePage" });
+        sessionStorage.setItem("redirectFrom", to.name);
+      } else {
+        next({ name: "Login" });
+      }
     }
   } else {
     if (to.name == "Login") {
-      let isSignIn = await isLoggedIn();
+      let isSignIn = isLoggedIn("context_management");
       if (isSignIn) {
-        next({ name: from.name });
-      } else {
-        next();
-      }
-    } else {
-      const context = getContext();
-      if (
-        (context?.role == Role.Renter || context?.role == Role.Innkeeper) &&
-        !from.name
-      ) {
         next({ name: "Management" });
       } else {
         next();
       }
+    } else {
+      next();
     }
   }
 });
 
-const getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const authListener = onAuthStateChanged(
-      getAuth(),
-      (user) => {
-        authListener();
-        resolve(user);
-      },
-      reject()
-    );
-  });
-};
+// const getCurrentUser = () => {
+//   return new Promise((resolve, reject) => {
+//     const authListener = onAuthStateChanged(
+//       getAuth(),
+//       (user) => {
+//         authListener();
+//         resolve(user);
+//       },
+//       reject()
+//     );
+//   });
+// };
 
-const isLoggedIn = async () => {
-  try {
-    const context = localStorage.getItem("context");
-    if (context) {
-      const parsedContext = JSON.parse(context);
-      if (parsedContext.token) {
-        return true;
-      }
-    }
-
-    const currentUser = await getCurrentUser();
-    if (currentUser) {
+const isLoggedIn = (localContextKey = "context") => {
+  const context = localStorage.getItem(localContextKey);
+  if (context) {
+    const parsedContext = JSON.parse(context);
+    if (parsedContext.token) {
+      window.PageRole = parsedContext.role;
       return true;
     }
-  } catch (error) {
-    console.error(error);
   }
-
   return false;
 };
 

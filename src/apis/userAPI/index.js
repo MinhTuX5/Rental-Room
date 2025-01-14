@@ -22,6 +22,18 @@ class UserAPI extends BaseAPI {
   }
 
   /**
+   * API đăng nhập
+   */
+  loginCallback(payload) {
+    try {
+      const res = this.postAsync(payload, "login-callback");
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /**
    * API đăng ký
    * @params user is an object, include
    * @returns res is a promise

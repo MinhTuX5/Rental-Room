@@ -16,7 +16,8 @@ export default class BaseAPI {
   }
 
   async postAsync(payload, apiPath = "") {
-    return await httpClient.post(this.endPoint + apiPath, payload);
+    const response = await httpClient.post(this.endPoint + apiPath, payload);
+    return response;
   }
 
   async deleteAsync(id) {

@@ -9,7 +9,10 @@ const LocationConfig = [
   {
     label: "Chọn Tỉnh/Thành phố",
     locationType: LocationType.Province,
-    items: locationStore.provinceItems.map((x) => x.location_name),
+    idField: locationStore.$state.idField,
+    nameField: locationStore.$state.nameField,
+    modelField: "province_id",
+    items: locationStore.provinceItems,
     noDataText: "Không có dữ liệu",
   },
   {
@@ -17,12 +20,18 @@ const LocationConfig = [
     locationType: LocationType.District,
     items: [],
     noDataText: "Chưa có Tỉnh/Thành phố nào được chọn",
+    idField: locationStore.$state.idField,
+    nameField: locationStore.$state.nameField,
+    modelField: "district_id",
   },
   {
     label: "Chọn Phường/Xã",
     locationType: LocationType.Ward,
-    items: locationStore.wardItems.map((x) => x.location_name),
+    items: [],
     noDataText: "Chưa có Quận/Huyện nào được chọn",
+    idField: locationStore.$state.idField,
+    nameField: locationStore.$state.nameField,
+    modelField: "ward_id",
   },
 ];
 

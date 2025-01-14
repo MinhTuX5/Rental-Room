@@ -1,4 +1,4 @@
-import { reactive, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import i18nApp from "@/constant/resource/i18nApp";
 
 export const usePasswordUpdating = () => {
@@ -28,5 +28,7 @@ export const usePasswordUpdating = () => {
     console.log("Form submitted:", model);
   };
 
-  return { model, submit, showPassword, rules, minWidth };
+  const form = ref(false);
+
+  return { model, submit, showPassword, rules, minWidth, form };
 };

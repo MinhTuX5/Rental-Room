@@ -1,5 +1,5 @@
 <template>
-  <v-layout class="room-management-container">
+  <v-layout class="admin-container">
     <!-- Header -->
     <v-app-bar
       ref="VHeader"
@@ -13,10 +13,10 @@
       </template>
 
       <template v-slot:prepend>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon @click.stop="rail = !rail" />
       </template>
 
-      <v-app-bar-title>Quản lý phòng trọ</v-app-bar-title>
+      <v-app-bar-title>Quản trị viên</v-app-bar-title>
 
       <v-spacer></v-spacer>
 
@@ -32,15 +32,22 @@
             :value="index"
             @click="item.onClick"
           >
-            <v-list-item-title
-              ><v-icon :icon="item.icon" class="mr-2"/> {{ item.title }}</v-list-item-title
+            <v-list-item-title>
+              <v-icon :icon="item.icon" /> {{ item.title }}</v-list-item-title
             >
           </v-list-item>
         </v-list>
       </v-menu>
     </v-app-bar>
+
     <!-- left nav -->
-    <v-navigation-drawer ref="nav" theme="dark" permanent>
+    <v-navigation-drawer
+      ref="nav"
+      theme="dark"
+      permanent
+      :rail="rail"
+      @click="rail = false"
+    >
       <v-list nav :opened="open" @update:selected="handleSelected">
         <div v-for="item in features" :key="item.title">
           <v-list-item
@@ -48,6 +55,7 @@
             :title="item.title"
             :value="item.componentId"
             :active="item.active"
+            v-tooltip:end="item.title"
           >
             <template v-slot:prepend>
               <v-icon :icon="item.icon"></v-icon> </template
@@ -79,19 +87,31 @@
     <v-main ref="main" class="h-screen">
       <router-view :height-of-app-header="$refs.VHeader?.$el.clientHeight" />
     </v-main>
+    <v-dialog v-model="showPopup" width="auto">
+      <v-card width="500" prepend-icon="mdi-lock-reset" title="Đổi mật khẩu">
+        <v-card-item>
+          <PasswordUpdating class="admin-password-updating" />
+        </v-card-item>
+        <template v-slot:actions>
+          <v-btn class="ms-auto" text="Ok" @click="dialog = false"></v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
 <script>
-// base
-import baseView from "@/views/base/baseView";
-// resources
+import PasswordUpdating from "@/views/auth/updating/PasswordUpdating.vue";
+
 import { useContainer } from "./container";
+import baseView from "../../../views/base/baseView";
 
 export default {
   extends: baseView,
-  name: "AccountContainer",
-  components: {},
+  name: "AdminContainer",
+  components: {
+    PasswordUpdating,
+  },
 
   setup() {
     const resource = useContainer();
@@ -101,9 +121,7 @@ export default {
 </script>
 
 <style lang="scss">
-.room-management-container {
-  .v-list-item__spacer {
-    width: 8px !important;
-  }
+.admin-password-updating {
+  max-width: unset;
 }
 </style>

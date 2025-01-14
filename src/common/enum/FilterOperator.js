@@ -5,4 +5,6 @@ export default {
   LessThan: 3,
   Contains: 4,
   IN: 5,
+  GreaterThanOrEqual: 6,
+  LessThanOrEqual: 7,
 };

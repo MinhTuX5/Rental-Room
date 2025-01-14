@@ -10,49 +10,196 @@
         thực.</v-sheet
       >
     </v-col>
-    <v-col>
-      <v-sheet>
-        <h2>Khu vực nổi bật</h2>
-      </v-sheet>
-      <v-row align-content="space-around">
-        <v-col v-for="item in popularPlaces" :key="item.location">
-          <h3 class="text-center">{{ item.location }}</h3>
-          <v-img aspect-ratio="16/9" cover :src="item.image"></v-img>
-        </v-col>
-      </v-row>
-    </v-col>
     <v-row align="center" class="above-filter">
       <v-col
         v-for="item in searchConfig"
         :key="item.label"
-        cols="2"
         align-self="center"
         class="filter-item"
       >
         <v-autocomplete
-          density="compact"
+          clearable
+          :multiple="item.multiple"
           :auto-select-first="true"
-          :hide-details="false"
+          :hide-details="true"
           :no-data-text="item.noDataText"
           :label="item.label"
           :items="item.items"
-          :autofocus="item.autofocus"
-          :disabled="viewing"
+          :item-value="item.idField"
+          :item-title="item.nameField"
+          v-model="filterModel[item.modelField]"
           @update:modelValue="onSelectFilter($event, item.locationType)"
-        ></v-autocomplete>
+        />
       </v-col>
-      <!-- <v-col cols="">
-        <v-btn color="blue-accent-1">Tìm kiếm</v-btn>
-      </v-col> -->
+    </v-row>
+    <v-row class="d-flex align-end mb-4 mt-4">
+      <v-col class="mr-4">
+        <v-btn id="price-range" variant="outlined" class="w-100">{{
+          priceRangeBtn
+        }}</v-btn>
+        <v-menu
+          activator="#price-range"
+          width="400"
+          :close-on-content-click="false"
+        >
+          <v-list>
+            <v-list-item :value="1">
+              <v-list-item-title @click="priceRangeBtn = 'Dưới 1 triệu'"
+                >Dưới 1 triệu</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item :value="2" @click="selectPriceRange">
+              <v-list-item-title class="mb-8"
+                >Từ 1 đến 20 triệu</v-list-item-title
+              >
+              <v-range-slider
+                v-model="priceRange"
+                thumb-label="always"
+                :max="20"
+                :min="1"
+                :step="0.5"
+                class="align-center ml-4 mr-4"
+                hide-details
+              ></v-range-slider>
+            </v-list-item>
+            <v-list-item :value="3">
+              <v-list-item-title @click="priceRangeBtn = 'Trên 20 triệu'"
+                >Trên 20 triệu</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item :value="4">
+              <v-list-item-title @click="priceRangeBtn = 'Mức giá'"
+                >Đặt lại</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-col>
+
+      <v-col class="mr-4">
+        <v-btn id="area-range" variant="outlined" class="w-100">{{
+          areaRangeBtn
+        }}</v-btn>
+        <v-menu
+          activator="#area-range"
+          width="400"
+          :close-on-content-click="false"
+        >
+          <v-list>
+            <v-list-item :value="1">
+              <v-list-item-title @click="areaRangeBtn = 'Dưới 10 m²'"
+                >Dưới 10 m²</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item :value="2" @click="selectAreaRange">
+              <v-list-item-title class="mb-8"
+                >Từ 10 đến 100 m²</v-list-item-title
+              >
+              <v-range-slider
+                v-model="areaRange"
+                thumb-label="always"
+                :max="100"
+                :min="10"
+                :step="1"
+                class="align-center ml-4 mr-4"
+                hide-details
+              ></v-range-slider>
+            </v-list-item>
+            <v-list-item :value="3">
+              <v-list-item-title @click="areaRangeBtn = 'Trên 100 m²'"
+                >Trên 100 m²</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item :value="4">
+              <v-list-item-title @click="areaRangeBtn = 'Diện tích'"
+                >Đặt lại</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-col>
+
+      <v-col class="mr-4">
+        <v-number-input
+          clearable
+          hide-details
+          density="compact"
+          control-variant="stacked"
+          label="Số người ở"
+          class="mt-2"
+          variant="outlined"
+          type="number"
+          :min="1"
+          :max="100"
+          v-model="filterModel.noOfRenters"
+        />
+      </v-col>
+
+      <v-col class="mr-4">
+        <v-number-input
+          clearable
+          hide-details
+          density="compact"
+          control-variant="stacked"
+          label="Số xe"
+          class="mt-2"
+          variant="outlined"
+          type="number"
+          :min="0"
+          :max="100"
+          v-model="filterModel.noOfVehicles"
+        />
+      </v-col>
+
+      <v-col>
+        <v-number-input
+          clearable
+          hide-details
+          density="compact"
+          control-variant="stacked"
+          label="Số phòng ngủ"
+          class="mt-2"
+          variant="outlined"
+          type="number"
+          :min="1"
+          :max="100"
+          v-model="filterModel.noOfBedRooms"
+        />
+      </v-col>
     </v-row>
     <v-row>
       <v-col id="list" cols="9" class="border-thin pa-4">
         <h3>Tổng {{ totalCount ?? 0 }} kết quả</h3>
-        <v-sheet class="d-flex align-center">
+        <v-sheet class="d-flex align-center mb-4 mt-2">
           <h3 class="mr-1">Sắp xếp:</h3>
-          <span class="mr-4">Mới nhất</span>
-          <span class="mr-4">Giá cả</span>
-          <span>Số lượng tương tác</span>
+          <v-btn
+            variant="solo"
+            :append-icon="sortByNew ? 'mdi-star' : ''"
+            @click="onSortByNewest"
+            >Mới nhất</v-btn
+          >
+          <v-btn
+            variant="solo"
+            id="price-menu-activator"
+            :append-icon="sortIcon"
+            >Giá cả</v-btn
+          >
+          <v-menu activator="#price-menu-activator">
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in priceMenuItems"
+                :key="index"
+                :value="index"
+                @click="sortPrice(item)"
+              >
+                <v-list-item-title
+                  ><v-icon :icon="item.icon" class="mr-2" />
+                  {{ item.title }}</v-list-item-title
+                >
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <!-- <v-btn variant="solo">Số lượng tương tác</v-btn> -->
         </v-sheet>
         <v-virtual-scroll
           v-if="postDetails.length"
@@ -74,12 +221,12 @@
           text="Không tìm thấy bài đăng!"
           image="/src/assets/imgs/common/empty.png"
         ></v-empty-state>
-        <v-row>
-          <v-col class="d-flex align-center">
+        <v-row class="mt-2">
+          <v-col class="d-flex align-center justify-end">
             <v-select
               label="Số bài mỗi trang"
-              density="compact"
               :items="[10, 20, 50]"
+              :max-width="200"
               hide-details
               v-model="pageSize"
               @update:modelValue="changePage(1)"
@@ -90,7 +237,7 @@
               ref="pagination"
               v-model="pageIndex"
               :length="pageTotal"
-              :total-visible="5"
+              :total-visible="3"
               :showFirstLastPage="true"
               @update:modelValue="changePage"
             >
@@ -118,7 +265,22 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col class="border-thin ml-2">
+      <v-col class="border-thin ml-2 pa-4">
+        <v-row class="d-flex align-center mb-4">
+          <v-btn
+            class="flex-fill mr-4"
+            color="blue-accent-1"
+            @click="changePage(1)"
+            >Tìm kiếm</v-btn
+          >
+          <v-icon
+            icon="mdi-filter-off-outline"
+            class="cursor-pointer"
+            v-tooltip:top="'Bỏ lọc'"
+            @click="clearFilters"
+          />
+        </v-row>
+
         <v-sheet class="d-flex flex-column justify-space-between">
           <v-sheet ref="filter" class="flex-column">
             <v-sheet v-for="(filter, index) in filters" :key="index" cols="3">
@@ -126,9 +288,9 @@
               <ul>
                 <li v-for="item in filter.children" :key="item.label">
                   <v-checkbox
+                    density="compact"
                     hide-details
                     color="success"
-                    density="compact"
                     :label="item.label"
                     :value="item.value"
                     v-model="filterVals"
@@ -137,9 +299,6 @@
               </ul>
             </v-sheet>
           </v-sheet>
-          <v-btn class="mt-4" color="blue-accent-1" @click="changePage(1)"
-            >Tìm kiếm</v-btn
-          >
         </v-sheet>
       </v-col>
     </v-row>
@@ -209,7 +368,7 @@ export default {
   }
 
   .filter-item {
-    &+.filter-item {
+    & + .filter-item {
       margin-left: 12px;
     }
   }

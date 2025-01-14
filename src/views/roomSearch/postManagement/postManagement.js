@@ -1,4 +1,4 @@
-import { computed, getCurrentInstance, onMounted, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, reactive, ref } from "vue";
 // store
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 import { useContextStore } from "@/stores/contextStore";
@@ -9,7 +9,6 @@ export const usePostManagement = () => {
 
   const store = useRoomPostStore();
   const contextStore = useContextStore();
-  const { userID } = contextStore.$state;
 
   const { featureBtns } = usePostOverviewCommon();
 
@@ -45,6 +44,7 @@ export const usePostManagement = () => {
   const favoritePosts = ref([]);
   const onChangeTab = async (tabIndex) => {
     const me = proxy;
+    
     // replace: true => Không lưu lịch sử
     me.$router.push({ query: { tab: tabIndex }, replace: true });
 
@@ -53,12 +53,14 @@ export const usePostManagement = () => {
 
   const loadData = async () => {
     const me = proxy;
-    if (userID) {
+    const { user } = contextStore.$state;
+
+    if (user?.user_id) {
       if (tabIndex.value == tabVals.favoritePosts) {
         if (!favoritePosts.value.length) {
           me.loading = true;
           try {
-            const res = await store.getMyFavoritePosts(userID);
+            const res = await store.getMyFavoritePosts(user.user_id);
             if (Array.isArray(res) && res.length) {
               favoritePosts.value = res;
             }
@@ -72,7 +74,7 @@ export const usePostManagement = () => {
         if (!postDetails.value.length) {
           me.loading = true;
           try {
-            var res = await store.getMyPosts(userID);
+            var res = await store.getMyPosts(user.user_id);
             if (Array.isArray(res)) {
               postDetails.value = res;
             }
@@ -102,6 +104,9 @@ export const usePostManagement = () => {
   onMounted(async () => {
     const me = proxy;
 
+    
+    console.log(me.$route);
+    
     if (me.$route.query) {
       const { tab } = me.$route.query;
       if (!isNaN(parseInt(tab))) {
@@ -124,6 +129,6 @@ export const usePostManagement = () => {
     store,
     onUnLikePost,
     loadData,
-    featureBtns
+    featureBtns,
   };
 };

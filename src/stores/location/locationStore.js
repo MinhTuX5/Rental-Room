@@ -57,11 +57,17 @@ export const useLocationStore = defineStore("location", {
     },
     selectDistrictById(id) {
       const me = this;
+
       const district = me.districtItems.find((x) => x[me.idField] === id);
       if (district) {
         me.selectedDistrictCode = district[me.codeField];
       }
       return district;
+    },
+    getWardById(id) {
+      const me = this;
+      const item = me.wardItems.find((x) => x[me.idField] === id);
+      return item;
     },
     async getAllLocations() {
       const me = this;

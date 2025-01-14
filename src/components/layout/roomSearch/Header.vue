@@ -113,8 +113,9 @@ export default {
     const moveToPage = (pageName, query = {}) => {
       const me = proxy;
 
-      if (!contextStore.token) {
+      if (!contextStore.$state.token) {
         appStore.toggleLoginPopup();
+        appStore.$state.moveToPageAfterLogin = pageName;
         return;
       }
 

@@ -93,7 +93,7 @@ export const useRoomSearchCommon = () => {
     if (typeof roomPostStore.lovePost === "function") {
       const payload = {
         ...param,
-        user_id: contextStore.$state.userID,
+        user_id: contextStore.$state.user?.user_id,
       };
 
       if (!payload.room_post_id || !payload.user_id) {
@@ -122,6 +122,7 @@ export const useRoomSearchCommon = () => {
   const logout = () => {
     localStorage.removeItem("context");
     contextStore.$reset();
+    
     router.push("/");
   };
 

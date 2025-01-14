@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
-export const useContextManageStore = defineStore({
-  id: "context_management",
+export const useContextAdminStore = defineStore({
+  id: "context_admin",
   state: () => ({
     token: "",
     user: {},

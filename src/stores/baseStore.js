@@ -44,6 +44,7 @@ export default class BaseStore {
        */
       async insertAsync(config) {
         const me = this;
+        
         const response = await api.postAsync(config);
         me.afterInsertAsync(response.data);
         return response.data;
