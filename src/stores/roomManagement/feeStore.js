@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
-import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 // api
 import api from "../../apis/roomManagementAPI/feeAPI";
 // resource
@@ -9,11 +9,12 @@ import FilterOperator from "@/common/enum/FilterOperator";
 import FeeStatus from "../../common/enum/FeeStatus";
 
 const store = new BaseDicStore(api);
+const contextStore = useContextManageStore();
 
 export const useFeeStore = defineStore("fee", {
   state: () => ({
     ...store.state,
-    buildingID: useContextStore().$state.buildingID,
+    building_id: contextStore.$state.user.building_id,
     idField: "fee_id",
     searchFields: ["room_code", "contract_code"],
     dateFields: ["expired_date"],
@@ -31,7 +32,7 @@ export const useFeeStore = defineStore("fee", {
       return [
         {
           Field: "building_id",
-          Value: state.buildingID,
+          Value: state.building_id,
           Operator: FilterOperator.Equal,
         },
       ];

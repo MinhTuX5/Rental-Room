@@ -63,7 +63,7 @@ httpClient.interceptors.response.use(
           : "context";
 
       localStorage.removeItem(contextKey);
-      // window.location.href = "/"; // Chuyển đến trang chủ
+      window.location.href = "/"; // Chuyển đến trang chủ
     }
     return Promise.reject(error); // Trả lại lỗi để xử lý tiếp
   }

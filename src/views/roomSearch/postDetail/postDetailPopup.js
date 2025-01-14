@@ -1,12 +1,6 @@
-import {
-  onMounted,
-  reactive,
-  ref,
-  onUnmounted,
-  computed,
-  getCurrentInstance,
-} from "vue";
-import { cloneDeep } from "lodash";
+import axios from "axios";
+import { onMounted, reactive, ref, onUnmounted, getCurrentInstance } from "vue";
+import { cloneDeep, forEach } from "lodash";
 // Resources
 import { useRoomSearchCommon } from "../roomSearchCommon";
 import RoomCategoryConfig from "@/common/config/roomCategoryConfig";
@@ -18,6 +12,7 @@ import i18nApp from "@/constant/resource/i18nApp";
 // enum
 import LocationType from "@/common/enum/LocationType";
 import RoomType from "../../../common/enum/RoomType";
+import PostStatus from "../../../common/enum/PostStatus";
 
 export const usePostDetailPopup = () => {
   const { proxy } = getCurrentInstance();
@@ -184,20 +179,25 @@ export const usePostDetailPopup = () => {
     }
   };
 
-  const submitPopup = async (postStatus = true) => {
+  const submitPopup = async (postStatus) => {
     const me = proxy;
+    overlay.value = true;
     try {
       // Trạng thái là đăng bài hay lưu bài
       me.model.post_status = postStatus;
+
       await me.submit();
+
       if (!isManagement.value) {
         me.$router.push({
           name: "PostManagement",
-          query: { tab: postStatus ? 1 : 2 },
+          query: { tab: postStatus },
         });
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      overlay.value = false;
     }
   };
 
@@ -222,8 +222,11 @@ export const usePostDetailPopup = () => {
     room_type_id: RoomType.RentalRoom,
   });
 
-  const customAfterSubmit = (data) => {
+  const customAfterSubmit = async (data) => {
     const me = proxy;
+
+    // Lưu hình ảnh
+    saveImages(data);
 
     // Lưu vị trí
     const payload = {
@@ -237,6 +240,38 @@ export const usePostDetailPopup = () => {
     store.saveLocation(payload).catch((error) => {
       console.error(error);
     });
+  };
+
+  const overlay = ref(false);
+  const files = ref([]);
+  const imageLinks = ref([]);
+
+  const saveImages = async (data) => {
+    const formData = new FormData();
+
+    const api = `https://api.cloudinary.com/v1_1/dbm4qpzc1/image/upload`;
+
+    formData.append("upload_preset", "rentalRoomSystemProject");
+
+    for (let i = 0; i < files.value.length; i++) {
+      formData.append("file", files.value[i]);
+      let rs = await axios.post(api, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (rs?.data?.secure_url) {
+        imageLinks.value.push(rs.data.secure_url);
+      }
+    }
+
+    if (imageLinks.value.length) {
+      const payload = {
+        ...data,
+        images: imageLinks.value.join(","),
+      };
+      store.putAsync(payload).catch((err) => {
+        console.error(err);
+      });
+    }
   };
 
   onMounted(() => {
@@ -281,5 +316,9 @@ export const usePostDetailPopup = () => {
     allowEdit,
     toggleAllowEdit,
     customAfterSubmit,
+    files,
+    saveImages,
+    PostStatus,
+    overlay,
   };
 };

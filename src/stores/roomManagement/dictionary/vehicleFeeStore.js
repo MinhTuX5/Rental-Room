@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 // base
 import BaseDicStore from "@/stores/baseDicStore";
-import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 // api
 import api from "@/apis/dictionaryAPI/vehicleFeeAPI";
 // resource
@@ -11,12 +11,12 @@ import FilterOperator from "@/common/enum/FilterOperator";
 import _enum from "@/common/enum";
 
 const store = new BaseDicStore(api);
-const contextStore = useContextStore();
+const contextStore = useContextManageStore();
 
 export const useVehicleFeeStore = defineStore("vehicle-fee", {
   state: () => ({
     ...store.state,
-    buildingID: contextStore.$state.buildingID,
+    building_id: contextStore.$state.user.building_id,
     idField: "vehicle_fee_id",
     codeField: "vehicle_fee_code",
     nameField: "vehicle_type",
@@ -43,7 +43,7 @@ export const useVehicleFeeStore = defineStore("vehicle-fee", {
       return [
         {
           Field: "building_id",
-          Value: state.buildingID,
+          Value: state.building_id,
           Operator: FilterOperator.Equal,
         },
       ];

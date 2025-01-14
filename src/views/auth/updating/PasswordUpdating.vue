@@ -44,7 +44,9 @@
         class="mb-2"
       ></v-text-field>
 
-      <v-btn type="submit" :disabled="form" color="blue"> Cập nhật </v-btn>
+      <v-row class="submit-btn">
+        <v-btn type="submit" :disabled="form" color="blue"> Cập nhật </v-btn>
+      </v-row>
     </v-form>
   </v-col>
 </template>

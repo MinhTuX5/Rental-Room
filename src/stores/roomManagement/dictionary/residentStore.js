@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
-import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 // enum
 import _enum from "@/common/enum";
 import FilterOperator from "@/common/enum/FilterOperator";
@@ -9,12 +9,12 @@ import FilterOperator from "@/common/enum/FilterOperator";
 import api from "../../../apis/dictionaryAPI/residentAPI";
 
 const store = new BaseDicStore(api);
-const contextStore = useContextStore();
+const contextStore = useContextManageStore();
 
 export const useResidentStore = defineStore("resident", {
   state: () => ({
     ...store.state,
-    buildingID: contextStore.$state.buildingID,
+    building_id: contextStore.$state.user.building_id,
     idField: "resident_id",
     codeField: "resident_code",
     nameField: "resident_name",
@@ -41,7 +41,7 @@ export const useResidentStore = defineStore("resident", {
       return [
         {
           Field: "building_id",
-          Value: state.buildingID,
+          Value: state.building_id,
           Operator: FilterOperator.Equal,
         },
       ];

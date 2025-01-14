@@ -55,10 +55,12 @@
             :title="item.title"
             :value="item.componentId"
             :active="item.active"
-            v-tooltip:end="item.title"
           >
             <template v-slot:prepend>
-              <v-icon :icon="item.icon"></v-icon> </template
+              <v-icon
+                :icon="item.icon"
+                v-tooltip:end="item.title"
+              ></v-icon> </template
           ></v-list-item>
           <v-list-group v-else :value="item.parentVal">
             <template #activator="{ props }">
@@ -92,9 +94,6 @@
         <v-card-item>
           <PasswordUpdating class="admin-password-updating" />
         </v-card-item>
-        <template v-slot:actions>
-          <v-btn class="ms-auto" text="Ok" @click="dialog = false"></v-btn>
-        </template>
       </v-card>
     </v-dialog>
   </v-layout>
@@ -123,5 +122,10 @@ export default {
 <style lang="scss">
 .admin-password-updating {
   max-width: unset;
+
+  .submit-btn {
+    display: flex;
+    justify-content: center;
+  }
 }
 </style>

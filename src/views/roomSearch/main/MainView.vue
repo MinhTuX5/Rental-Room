@@ -211,6 +211,7 @@
             <post-overview
               :key="item.room_post_id"
               :item="item"
+              :imageCols="3"
               class="mb-1"
               @onClickItem="scrollToIndex(item.sort_order)"
             />

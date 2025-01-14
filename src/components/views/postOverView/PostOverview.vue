@@ -17,12 +17,13 @@
       @click="likePost(item)"
     ></v-icon>
     <!-- Avatar -->
-    <v-col cols="3" align-self="center" @click="onClickItem">
-      <v-img
-        src="https://images.cenhomes.vn/2020/03/1585033152-can-ho-mau-eurowindow-river-park.jpg"
-      ></v-img>
+    <v-col :cols="imageCols" align-self="center" @click="onClickItem">
+      <v-img :src="item.images?.split(',')?.[0]" :aspect-ratio="1"></v-img>
     </v-col>
-    <v-col :cols="isShowFeatureBtn ? 7 : 9" class="pa-2">
+    <v-col
+      :cols="isShowFeatureBtn ? 12 - imageCols - 2 : 12 - imageCols"
+      class="pa-2"
+    >
       <v-sheet class="d-flex">
         <!-- Title -->
         <span
@@ -140,6 +141,10 @@ export default {
     detailPageName: {
       type: String,
       default: "PostDetail",
+    },
+    imageCols: {
+      type: Number,
+      default: 2,
     },
   },
   setup() {

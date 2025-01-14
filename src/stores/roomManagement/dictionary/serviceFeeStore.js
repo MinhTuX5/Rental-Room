@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
-import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 import { useAppStore } from "../../appStore";
 // api
 import api from "@/apis/dictionaryAPI/serviceFeeAPI";
@@ -10,7 +10,7 @@ import _enum from "@/common/enum";
 import FilterOperator from "@/common/enum/FilterOperator";
 
 const store = new BaseDicStore(api);
-const contextStore = useContextStore();
+const contextStore = useContextManageStore();
 
 export const useServiceFeeStore = defineStore("service-fee", {
   state: () => ({
@@ -43,7 +43,7 @@ export const useServiceFeeStore = defineStore("service-fee", {
       return [
         {
           Field: "building_id",
-          Value: state.buildingID,
+          Value: state.building_id,
           Operator: FilterOperator.Equal,
         },
       ];

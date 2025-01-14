@@ -49,16 +49,34 @@
           :image="avatarLink"
           size="36"
           v-tooltip:bottom="'Quản lý tài khoản'"
-          class="cursor-pointer"
+          class="cursor-pointer account"
           @click="moveToPage('InfoUpdating')"
         />
         <v-btn
           v-else
+          class="account"
           density="comfortable"
           icon="mdi-account-circle"
           v-tooltip:bottom="'Quản lý tài khoản'"
           @click="moveToPage('InfoUpdating')"
         ></v-btn>
+
+        <v-menu activator=".account">
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in menuItems"
+              :key="index"
+              :value="index"
+              class="cursor-pointer"
+              @click="item.onClick"
+            >
+              <v-list-item-title
+                ><v-icon :icon="item.icon" class="mr-2" />
+                {{ item.title }}</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
         <v-btn
           prepend-icon="mdi-note-plus-outline"
@@ -124,12 +142,29 @@ export default {
 
     const avatarLink = contextStore.$state.user?.user_avatar;
 
+    const openAdminPage = () => {};
+    const linkToInnkeeper = () => {};
+
+    const menuItems = ref([
+      {
+        title: "Quản trị bài đăng",
+        onClick: openAdminPage,
+        icon: "mdi-home-search",
+      },
+      {
+        title: "Liên kết đến chủ trọ",
+        onClick: linkToInnkeeper,
+        icon: "mdi-link",
+      },
+    ]);
+
     return {
       tabsConfig,
       openManagePage,
       onClickHomeBtn,
       moveToPage,
       avatarLink,
+      menuItems,
     };
   },
 };

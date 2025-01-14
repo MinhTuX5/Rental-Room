@@ -219,14 +219,17 @@
             v-model="model.room_description"
           ></v-textarea>
           <!-- Hình ảnh -->
-          <!-- :rules="imageRules" -->
           <v-file-input
             multiple
+            chips
+            :rules="imageRules"
             label="Chọn các hình ảnh miêu tả cho phòng trọ"
             prepend-icon="mdi-camera"
             variant="filled"
             show-size
+            counter
             :accept="validImageTypes"
+            v-model="files"
           ></v-file-input>
         </v-sheet>
       </v-col>
@@ -237,7 +240,7 @@
             color="light-blue-accent-4"
             type="submit"
             :disabled="!form"
-            @click.prevent="submitPopup(false)"
+            @click.prevent="submitPopup(PostStatus.Saved)"
             >Lưu</v-btn
           >
         </v-col>
@@ -246,13 +249,20 @@
             color="green-lighten-1"
             type="submit"
             :disabled="!form"
-            @click.prevent="submitPopup(true)"
+            @click.prevent="submitPopup(PostStatus.WaitingForApproval)"
             >Đăng bài</v-btn
           >
         </v-col>
       </v-row>
     </v-form>
   </v-container>
+  <v-overlay :model-value="overlay" class="align-center justify-center">
+    <v-progress-circular
+      color="primary"
+      size="64"
+      indeterminate
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <script>

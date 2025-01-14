@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
-import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 import { useAppStore } from "../../appStore";
 // enum
 import _enum from "@/common/enum";
@@ -10,12 +10,12 @@ import FilterOperator from "@/common/enum/FilterOperator";
 import api from "../../../apis/dictionaryAPI/roomAPI";
 
 const store = new BaseDicStore(api);
-const contextStore = useContextStore();
+const contextStore = useContextManageStore();
 
 export const useRoomStore = defineStore("room", {
   state: () => ({
     ...store.state,
-    buildingID: contextStore.$state.buildingID,
+    building_id: contextStore.$state.user.building_id,
     idField: "room_id",
     codeField: "room_code",
     nameField: "room_name",
@@ -36,7 +36,7 @@ export const useRoomStore = defineStore("room", {
       return [
         {
           Field: "building_id",
-          Value: state.buildingID,
+          Value: state.building_id,
           Operator: FilterOperator.Equal,
         },
       ];
@@ -81,9 +81,9 @@ export const useRoomStore = defineStore("room", {
           const res = await me.getAll();
           if (Array.isArray(res)) {
             me.invalidCache = false;
-            const orderedItems = res.sort(
-              (a, b) => a[me.codeField] < b[me.codeField]
-            );
+            const orderedItems = res
+              .sort((a, b) => a[me.codeField] < b[me.codeField])
+              .filter((x) => x.building_id == me.building_id);
             appStore.$state.allRooms = orderedItems;
             return orderedItems;
           } else {

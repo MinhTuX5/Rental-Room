@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
-import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 // resource
 import BuildingStatus from "../../../common/enum/BuildingStatus";
 import FilterOperator from "@/common/enum/FilterOperator";

@@ -1,8 +1,10 @@
-import { computed, getCurrentInstance, onMounted, reactive, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, ref } from "vue";
 // store
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 import { useContextStore } from "@/stores/contextStore";
 import { usePostOverviewCommon } from "@/components/views/postOverView/postOverviewCommon.js";
+// enum
+import PostStatus from "../../../common/enum/PostStatus";
 
 export const usePostManagement = () => {
   const { proxy } = getCurrentInstance();
@@ -14,9 +16,7 @@ export const usePostManagement = () => {
 
   const tabIndex = ref(1);
   const tabVals = {
-    postedPosts: 1,
-    savedPosts: 2,
-    favoritePosts: 3,
+    favoritePosts: 5,
   };
   const heightOfList = "calc(100vh - 32px - 48px - 16px)";
 
@@ -28,6 +28,12 @@ export const usePostManagement = () => {
 
   const savedPosts = computed(() => {
     return postDetails.value.filter((x) => x.post_status == 0);
+  });
+
+  const waitingPosts = computed(() => {
+    return postDetails.value.filter(
+      (x) => x.post_status === PostStatus.WaitingForApproval
+    );
   });
 
   /**
@@ -44,7 +50,7 @@ export const usePostManagement = () => {
   const favoritePosts = ref([]);
   const onChangeTab = async (tabIndex) => {
     const me = proxy;
-    
+
     // replace: true => Không lưu lịch sử
     me.$router.push({ query: { tab: tabIndex }, replace: true });
 
@@ -104,9 +110,8 @@ export const usePostManagement = () => {
   onMounted(async () => {
     const me = proxy;
 
-    
     console.log(me.$route);
-    
+
     if (me.$route.query) {
       const { tab } = me.$route.query;
       if (!isNaN(parseInt(tab))) {
@@ -130,5 +135,7 @@ export const usePostManagement = () => {
     onUnLikePost,
     loadData,
     featureBtns,
+    waitingPosts,
+    PostStatus
   };
 };

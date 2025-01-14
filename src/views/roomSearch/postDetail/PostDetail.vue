@@ -2,28 +2,20 @@
   <v-container class="post-detail d-flex">
     <v-col cols="9" class="pa-0 mr-4">
       <v-sheet class="mb-4">
-        <v-carousel show-arrows="hover" :height="300">
+        <v-carousel v-if="imageLinks.length" show-arrows="hover" :height="300">
           <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-            cover
-          ></v-carousel-item>
-
-          <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/hotel.jpg"
-            cover
-          ></v-carousel-item>
-
-          <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+            v-for="(item, index) in imageLinks"
+            :key="index"
+            :src="item"
             cover
           ></v-carousel-item>
         </v-carousel>
       </v-sheet>
 
       <v-sheet class="d-flex flex-column mb-4">
-        <h2 :style="{ fontFamily: 'Lexend Medium,Roboto,Arial' }">
+        <h3 :style="{ fontFamily: 'Lexend Medium,Roboto,Arial' }">
           {{ model.post_title }}
-        </h2>
+        </h3>
         <div class="d-flex align-center">
           <v-icon icon="mdi-map-marker-outline" color="red"></v-icon>
           <span class="sub-title">{{ model.room_address }}</span>
@@ -33,9 +25,9 @@
       <v-sheet class="d-flex justify-space-between align-center">
         <v-sheet class="d-flex room-info mb-1">
           <div class="d-flex flex-column info-item">
-            <span class="title text-center">Mức giá</span>
+            <span class="title">Mức giá</span>
             <span class="info"
-              >{{ model.room_price / 10 ** 6 }} triệu/tháng</span
+              >{{ formatNumberWithCommas(model.room_price) }} đồng/tháng</span
             >
           </div>
           <div class="d-flex flex-column info-item">
@@ -47,9 +39,9 @@
             <span class="info text-center">{{ model.no_of_bed_rooms }}</span>
           </div>
           <div class="d-flex flex-column info-item">
-            <span class="title text-center">Ngày đăng</span>
+            <span class="title text-center">Giờ đăng</span>
             <span class="info">{{
-              moment(model.posted_date).format("DD/MM/YYYY")
+              moment(model.posted_date).format("HH:mm DD/MM/YYYY")
             }}</span>
           </div>
         </v-sheet>
@@ -74,12 +66,47 @@
         </v-sheet>
       </v-sheet>
 
-      <v-row class="filters mb-1">
+      <v-row class="mt-4 room-info">
+        <!-- Đối tượng cho thuê -->
+        <v-col col="4" class="info-item d-flex flex-column">
+          <span class="title">Đối tượng cho thuê</span>
+          <span class="info">{{
+            model.room_gender == 0
+              ? "Tất cả"
+              : model.room_gender == 1
+              ? "Nam"
+              : "Nữ"
+          }}</span>
+        </v-col>
+        <v-col
+          v-if="model.room_people_limit < 100"
+          col="4"
+          class="info-item d-flex flex-column"
+        >
+          <span class="title">Giới hạn số lượng người thuê</span>
+          <span class="info">{{ model.room_people_limit }}</span>
+        </v-col>
+        <v-col
+          v-if="model.room_vehicle_limit < 100"
+          col="4"
+          class="info-item d-flex flex-column"
+        >
+          <span class="title">Giới hạn số lượng gửi xe</span>
+          <span class="info">{{ model.room_vehicle_limit }}</span>
+        </v-col>
+      </v-row>
+
+      <v-row class="filters mb-1 mt-4">
         <v-col v-for="(filter, index) in filters" :key="index" cols="3">
           <h3>{{ filter.label }}</h3>
           <ul>
             <li v-for="item in filter.children" :key="item.label">
               <v-checkbox
+                :class="{
+                  'disable-custom': model.room_characteristic?.includes(
+                    item.value
+                  ),
+                }"
                 :label="item.label"
                 hide-details
                 color="success"
@@ -93,9 +120,14 @@
         </v-col>
       </v-row>
 
-      <v-sheet class="mb-4">
+      <v-sheet v-if="model.room_description" class="mb-4">
         <h3>Mô tả thêm</h3>
-        <v-textarea label="" :model-value="model.room_description" auto-grow>
+        <v-textarea
+          label=""
+          :model-value="model.room_description"
+          auto-grow
+          disabled
+        >
         </v-textarea>
       </v-sheet>
 
@@ -121,17 +153,31 @@
           size="220"
         ></v-avatar>
 
-        <div class="text-h6 mt-2">Nguyễn Hồng Điệp</div>
+        <div class="text-h6 mt-2">{{ model.user_name }}</div>
 
-        <div class="mt-4 w-100">Số điện thoại 1: 0963689218</div>
-        <div class="mt-2 w-100">Số điện thoại 2: 0963689218</div>
+        <div v-if="model.phone_number" class="mt-4 w-100">
+          Số điện thoại 1: {{ model.phone_number }}
+        </div>
+        <div v-if="model.second_phone_number" class="mt-2 w-100">
+          Số điện thoại 2: {{ model.second_phone_number }}
+        </div>
 
-        <div class="mt-4 w-100">Zalo: 0963689218</div>
-        <div class="mt-2 cursor-pointer w-100">
-          <a href="https://www.facebook.com/" target="_blank">Facebook</a>
+        <div v-if="model.user_zalo" class="mt-4 w-100">
+          Zalo: {{ model.user_zalo }}
+        </div>
+        <div v-if="model.user_facebook" class="mt-2 w-100">
+          <span>Facebook: </span>
+          <a
+            :href="model.user_facebook"
+            target="_blank"
+            class="cursor-pointer"
+            >{{
+              model.user_facebook?.replace("https://www.facebook.com/", "")
+            }}</a
+          >
         </div>
       </v-card>
-      <v-row class="d-flex">
+      <v-row v-if="isFromAdmin" class="d-flex">
         <v-btn
           class="mt-4 flex-fill mr-4"
           color="green"
@@ -150,6 +196,7 @@
 </template>
 
 <script>
+import { formatNumberWithCommas } from "../../../common/commonFunction.js";
 import { usePostDetail } from "./postDetail.js";
 // base
 import baseView from "@/views/base/baseView";
@@ -159,7 +206,7 @@ export default {
   extends: baseView,
   setup() {
     const resource = usePostDetail();
-    return resource;
+    return { ...resource, formatNumberWithCommas };
   },
 };
 </script>

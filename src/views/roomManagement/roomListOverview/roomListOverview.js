@@ -1,6 +1,7 @@
 import { getCurrentInstance, onMounted, ref } from "vue";
 // stores
 import { useRoomStore } from "../../../stores/roomManagement/dictionary/roomStore";
+import Role from "../../../common/enum/Role";
 
 export const useRoomManagementList = () => {
   const { proxy } = getCurrentInstance();
@@ -20,13 +21,19 @@ export const useRoomManagementList = () => {
     });
   };
 
+  const isShowUpdateBtn = ref(true);
+
   onMounted(async () => {
     items.value = await store.getAllItems();
     overlay.value = false;
     if (Array.isArray(items.value)) {
       items.value.sortByField("room_name");
     }
+
+    if (window.PageRole === Role.Renter) {
+      isShowUpdateBtn.value = false;
+    }
   });
 
-  return { items, show, showRoomPost, overlay };
+  return { items, show, showRoomPost, overlay, isShowUpdateBtn };
 };

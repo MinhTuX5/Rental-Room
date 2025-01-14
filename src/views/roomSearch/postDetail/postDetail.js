@@ -1,4 +1,4 @@
-import { getCurrentInstance, onMounted, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, ref } from "vue";
 import moment from "moment";
 // Resources
 import { useRoomSearchCommon } from "../roomSearchCommon";
@@ -33,6 +33,10 @@ export const usePostDetail = () => {
       console.log(error);
     }
   };
+
+  const imageLinks = computed(() => {
+    return proxy.model?.images?.split(",") ?? [];
+  });
 
   const isFromAdmin = ref(false);
 
@@ -69,6 +73,7 @@ export const usePostDetail = () => {
     filters,
     contextStore,
     likePost,
-    isFromAdmin
+    isFromAdmin,
+    imageLinks,
   };
 };

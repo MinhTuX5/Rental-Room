@@ -52,7 +52,6 @@ export default class BaseStore {
 
       afterUpdate(item) {},
       /**;
-       * @description Thêm mới
        * @param {Object} config
        */
       async putAsync(config) {

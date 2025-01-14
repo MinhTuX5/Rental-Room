@@ -41,9 +41,7 @@ $button-icon-font-size: 28px;
         padding-right: 0;
       }
 
-      .v-checkbox {
-        margin-left: -6px;
-
+      .disable-custom {
         .v-selection-control--disabled {
           opacity: 1;
 
@@ -52,6 +50,14 @@ $button-icon-font-size: 28px;
           }
         }
       }
+
+      .v-checkbox {
+        margin-left: -6px;
+      }
     }
+  }
+
+  .v-carousel__controls {
+    z-index: unset;
   }
 }

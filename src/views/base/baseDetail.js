@@ -103,10 +103,10 @@ export default {
       const title = me.title.toLowerCase();
       switch (mode) {
         case _enum.Mode.Add:
-          me.title = me.addText + me.addText ? " " : "" + title;
+          me.title = me.addText + (me.addText ? " " : "") + title;
           break;
         case _enum.Mode.Update:
-          me.title = me.updateText + me.updateText ? " " : "" + title;
+          me.title = me.updateText + (me.updateText ? " " : "") + title;
           break;
         default:
           break;
@@ -122,7 +122,7 @@ export default {
     handleCommon() {
       const me = this;
       if (me.store?.$state?.buildingID) {
-        me.model.building_id = me.store.$state.buildingID;
+        me.model.building_id = me.store.$state.user.building_id;
       }
     },
     customBeforeSubmit() {},
@@ -154,7 +154,7 @@ export default {
       try {
         const item = await me.store.insertAsync(me.model);
         showMessage("Thêm mới thành công");
-        me.submitSuccess(item);
+        await me.submitSuccess(item);
       } catch (error) {
         console.log(error);
       }
@@ -165,17 +165,16 @@ export default {
       try {
         const res = await me.store.putAsync(me.model);
         // Show result
-        
+
         if (res) {
           // show toast
           showMessage("Cập nhật thành công");
           // Xử lý sau khi lưu thành công
           if (res) {
-            me.submitSuccess(res);
+            await me.submitSuccess(res);
           }
         }
       } catch (error) {
-        
         console.error(error);
       }
     },
@@ -190,19 +189,17 @@ export default {
 
     customAfterSubmit(data) {},
 
-    submitSuccess(data) {
-      
+    async submitSuccess(data) {
       const me = this;
-      console.log(1);
-      
+
       const callBack = me._formParam?.options?.afterSubmit;
       if (callBack && typeof callBack == "function") {
         callBack(data);
       }
 
-      me.customAfterSubmit(data);
+      await me.customAfterSubmit(data);
 
-      // me.hide();
+      me.hide();
     },
 
     viewForm(formName, param = {}) {

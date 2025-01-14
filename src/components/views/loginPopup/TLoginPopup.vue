@@ -113,7 +113,7 @@ import Role from "@/common/enum/Role";
 import { useAppStore } from "../../../stores/appStore";
 import { useContextStore } from "../../../stores/contextStore";
 import { useContextAdminStore } from "../../../stores/contextAdminStore";
-import { useContextManageStore } from "../../../stores/contextManageStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 // base
 import baseView from "../../../views/base/baseView";
 

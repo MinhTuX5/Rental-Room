@@ -84,12 +84,12 @@ const router = createRouter({
               "@/views/roomManagement/roomListOverview/RoomListOverview.vue"
             ),
         },
-        // {
-        //   path: "chi-tiet-phong/:roomID",
-        //   name: "Management_PostDetail",
-        //   component: () =>
-        //     import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
-        // },
+        {
+          path: "chi-tiet-phong/:roomID",
+          name: "Management_PostDetail",
+          component: () =>
+            import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
+        },
         {
           path: "thong-tin-phong",
           name: "RoomInfo",
@@ -195,7 +195,7 @@ const router = createRouter({
     {
       path: "/admin",
       name: "Admin",
-      // redirect: "/phe-duyet",
+      redirect: "/phe-duyet",
       meta: {
         requiresAuth: true,
         localContextKey: "context_admin",
@@ -225,7 +225,6 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  
   const requireAuth = to.matched.find((match) => match.meta.requiresAuth);
   if (requireAuth) {
     let isSignIn = isLoggedIn(requireAuth.meta.localContextKey);
