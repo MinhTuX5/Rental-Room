@@ -19,7 +19,7 @@ export const useRoomInfo = () => {
     },
     {
       title: "Giá thuê",
-      value: "4000000",
+      value: "4.000.000",
     },
     {
       title: "Diện tích",
@@ -43,11 +43,11 @@ export const useRoomInfo = () => {
   const serviceInfoView = ref([
     {
       title: "Tiền điện",
-      value: "4000/số",
+      value: "4.000 đồng/số",
     },
     {
       title: "Tiền nước",
-      value: "100000/người",
+      value: "100.000/người",
     },
   ]);
 
@@ -73,14 +73,14 @@ export const useRoomInfo = () => {
       if (dataConfig.roomInfo.isView) {
         dataConfig.roomInfo.buttonType = buttonTypes.edit;
       } else {
-        dataConfig.roomInfo.buttonType = 'Hủy';
+        dataConfig.roomInfo.buttonType = "Hủy";
       }
     } else if (btnType === buttonTypes.addAndEdit) {
       dataConfig.serviceInfo.isView = !dataConfig.serviceInfo.isView;
       if (dataConfig.serviceInfo.isView) {
         dataConfig.serviceInfo.buttonType = buttonTypes.addAndEdit;
       } else {
-        dataConfig.serviceInfo.buttonType = 'Hủy';
+        dataConfig.serviceInfo.buttonType = "Hủy";
       }
     }
   };
@@ -94,6 +94,6 @@ export const useRoomInfo = () => {
     serviceInfoView,
     buttonTypes,
     dataConfig,
-    handleEdit
+    handleEdit,
   };
 };

@@ -35,8 +35,8 @@
       </v-card-actions>
     </v-card>
 
-    <v-row>
-      <v-col>
+    <v-row class="mt-4">
+      <v-col class="mr-4">
         <div class="d-flex justify-space-between align-center">
           <legend>Thông tin chung</legend>
           <v-btn

@@ -25,6 +25,14 @@ export const useRoomSearchCommon = () => {
           label: "Giờ giấc tự do",
           value: 2,
         },
+        {
+          label: "Bảo vệ 24/7",
+          value: 13,
+        },
+        {
+          label: "Đầy đủ PCCC",
+          value: 16,
+        },
       ],
     },
     {
@@ -32,7 +40,7 @@ export const useRoomSearchCommon = () => {
       label: "Tiện ích",
       children: [
         {
-          label: "Chỗ để xe",
+          label: "Chỗ để xe miễn phí",
           value: 3,
         },
         {
@@ -46,6 +54,10 @@ export const useRoomSearchCommon = () => {
         {
           label: "Camera",
           value: 6,
+        },
+        {
+          label: "Thang máy",
+          value: 12,
         },
       ],
     },
@@ -68,6 +80,10 @@ export const useRoomSearchCommon = () => {
           label: "Giường/Tủ",
           value: 10,
         },
+        {
+          label: "Kệ bếp",
+          value: 14,
+        },
       ],
     },
     {
@@ -76,6 +92,10 @@ export const useRoomSearchCommon = () => {
         {
           label: "Gần chợ",
           value: 11,
+        },
+        {
+          label: "Gần công viên",
+          value: 15,
         },
       ],
     },
@@ -122,7 +142,7 @@ export const useRoomSearchCommon = () => {
   const logout = () => {
     localStorage.removeItem("context");
     contextStore.$reset();
-    
+
     router.push("/");
   };
 

@@ -39,7 +39,7 @@
             <span class="info text-center">{{ model.no_of_bed_rooms }}</span>
           </div>
           <div class="d-flex flex-column info-item">
-            <span class="title text-center">Giờ đăng</span>
+            <span class="title">Giờ đăng</span>
             <span class="info">{{
               moment(model.posted_date).format("HH:mm DD/MM/YYYY")
             }}</span>
@@ -83,16 +83,16 @@
           col="4"
           class="info-item d-flex flex-column"
         >
-          <span class="title">Giới hạn số lượng người thuê</span>
-          <span class="info">{{ model.room_people_limit }}</span>
+          <span class="title text-center">Giới hạn số lượng người thuê</span>
+          <span class="info text-center">{{ model.room_people_limit }}</span>
         </v-col>
         <v-col
           v-if="model.room_vehicle_limit < 100"
           col="4"
           class="info-item d-flex flex-column"
         >
-          <span class="title">Giới hạn số lượng gửi xe</span>
-          <span class="info">{{ model.room_vehicle_limit }}</span>
+          <span class="title text-center">Giới hạn số lượng gửi xe</span>
+          <span class="info text-center">{{ model.room_vehicle_limit }}</span>
         </v-col>
       </v-row>
 
@@ -126,7 +126,7 @@
           label=""
           :model-value="model.room_description"
           auto-grow
-          disabled
+          readonly
         >
         </v-textarea>
       </v-sheet>

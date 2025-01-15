@@ -82,8 +82,7 @@ export const useRoomStore = defineStore("room", {
           if (Array.isArray(res)) {
             me.invalidCache = false;
             const orderedItems = res
-              .sort((a, b) => a[me.codeField] < b[me.codeField])
-              .filter((x) => x.building_id == me.building_id);
+              .sort((a, b) => a[me.codeField] < b[me.codeField]);
             appStore.$state.allRooms = orderedItems;
             return orderedItems;
           } else {

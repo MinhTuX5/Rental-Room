@@ -195,7 +195,7 @@ const router = createRouter({
     {
       path: "/admin",
       name: "Admin",
-      redirect: "/phe-duyet",
+      redirect: "admin/phe-duyet",
       meta: {
         requiresAuth: true,
         localContextKey: "context_admin",

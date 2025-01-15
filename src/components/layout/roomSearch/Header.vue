@@ -44,24 +44,24 @@
         />
 
         <!-- Tài khoản -->
+
         <v-avatar
           v-if="avatarLink"
           :image="avatarLink"
           size="36"
-          v-tooltip:bottom="'Quản lý tài khoản'"
           class="cursor-pointer account"
+          v-tooltip="'Quản lý tài khoản'"
           @click="moveToPage('InfoUpdating')"
-        />
+          />
         <v-btn
           v-else
           class="account"
           density="comfortable"
           icon="mdi-account-circle"
-          v-tooltip:bottom="'Quản lý tài khoản'"
+          v-tooltip="'Quản lý tài khoản'"
           @click="moveToPage('InfoUpdating')"
-        ></v-btn>
-
-        <v-menu activator=".account">
+        />
+        <v-menu open-on-hover activator=".account">
           <v-list>
             <v-list-item
               v-for="(item, index) in menuItems"
@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import { getCurrentInstance } from "vue";
+import { getCurrentInstance, ref } from "vue";
 import { useContextStore } from "../../../stores/contextStore";
 import { useAppStore } from "../../../stores/appStore";
 
@@ -149,7 +149,7 @@ export default {
       {
         title: "Quản trị bài đăng",
         onClick: openAdminPage,
-        icon: "mdi-home-search",
+        icon: "mdi-shield-account-outline",
       },
       {
         title: "Liên kết đến chủ trọ",
