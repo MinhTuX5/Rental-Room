@@ -1,5 +1,14 @@
 <template>
   <v-container class="post-detail-popup">
+    <v-row class="d-flex align-center">
+      <div class="text-h4 ps-3">{{ title }}</div>
+      <span
+        v-show="model.post_code"
+        class="text-h5 ml-2 cursor-default"
+        v-tooltip:end="'Mã tin'"
+        >({{ model.post_code }})</span
+      >
+    </v-row>
     <v-form v-model="form">
       <v-col>
         <v-sheet class="mb-4 w-25">
@@ -10,7 +19,7 @@
             item-title="text"
             :items="roomCategories"
             hide-details
-            v-model="model.room_type_id"
+            v-model="model.room_type"
           ></v-select>
         </v-sheet>
         <!-- Địa chỉ cho thuê -->
@@ -23,6 +32,7 @@
               align-self="center"
             >
               <v-autocomplete
+                clearable
                 v-model="model[item.valueField]"
                 density="compact"
                 :auto-select-first="true"

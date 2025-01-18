@@ -63,7 +63,12 @@ httpClient.interceptors.response.use(
           : "context";
 
       localStorage.removeItem(contextKey);
-      window.location.href = "/"; // Chuyển đến trang chủ
+
+      if (pageRole == Role.Renter || pageRole == Role.Innkeeper) {
+        window.location.href = "/dang-nhap"; // Chuyển đến đăng nhập
+      } else {
+        window.location.href = "/"; // Chuyển đến trang chủ
+      }
     }
     return Promise.reject(error); // Trả lại lỗi để xử lý tiếp
   }

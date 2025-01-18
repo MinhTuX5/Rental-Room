@@ -6,6 +6,8 @@ import baseView from "./baseView";
 import { showMessage } from "@/common/commonFunction";
 import { convertCurrencyFormat } from "@/common/commonFunction";
 import popupUtil from "../../common/popupUtil";
+// store
+import { useContextManageStore } from "@/stores/contextManageStore";
 
 export default {
   name: "BaseDetail",
@@ -121,8 +123,8 @@ export default {
 
     handleCommon() {
       const me = this;
-      if (me.store?.$state?.buildingID) {
-        me.model.building_id = me.store.$state.user.building_id;
+      if (me.store?.$state?.building_id) {
+        me.model.building_id = useContextManageStore().$state.user.building_id;
       }
     },
     customBeforeSubmit() {},

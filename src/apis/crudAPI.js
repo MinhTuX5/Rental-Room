@@ -10,4 +10,9 @@ export default class CrudAPI extends BaseAPI {
     var response = await this.postAsync(config, `/list`);
     return response.data;
   }
+
+  async getNew() {
+    var response = await this.getAsync({}, `/new`);
+    return response.data;
+  }
 }

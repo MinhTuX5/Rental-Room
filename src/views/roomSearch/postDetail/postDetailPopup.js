@@ -80,7 +80,7 @@ export const usePostDetailPopup = () => {
     },
   ];
 
-  const locationParts = reactive(new Array(5).fill(""));
+  const locationParts = ref(new Array(5).fill(""));
 
   /**
    * @description Lựa chọn combobox vị trí
@@ -89,7 +89,6 @@ export const usePostDetailPopup = () => {
    */
   const onSelectLocation = (selectedVal, locationType) => {
     let selectedLocation = {};
-
     let config = null;
     switch (locationType) {
       case LocationType.Province:
@@ -114,8 +113,6 @@ export const usePostDetailPopup = () => {
         selectedLocation = locationStore.getWardById(selectedVal);
         updateLocationParts(selectedLocation[locationStore.nameField], 3);
         break;
-      default:
-        break;
     }
   };
 
@@ -133,9 +130,19 @@ export const usePostDetailPopup = () => {
         if (!lowerCaseVal.includes("đường") && !lowerCaseVal.includes("phố"))
           customVal = `Đường ${value}`;
         break;
+      case 3:
+      case 4:
+        for (var i = 1; i < index; i++) {
+          locationParts.value[i - 1] = "";
+        }
+        break;
+      case 5:
+        locationParts.value = new Array(5).fill("");
+        break;
     }
-    locationParts[index - 1] = customVal;
-    model.room_address = locationParts.filter((x) => x).join(", ");
+
+    locationParts.value[index - 1] = customVal;
+    model.room_address = locationParts.value.filter((x) => x).join(", ");
   };
 
   const formatAmount = (event) => {
@@ -219,7 +226,7 @@ export const usePostDetailPopup = () => {
     no_of_bed_rooms: 1,
     room_people_limit: 100,
     room_vehicle_limit: 100,
-    room_type_id: RoomType.RentalRoom,
+    room_type: RoomType.RentalRoom,
   });
 
   const customAfterSubmit = async (data) => {
@@ -276,6 +283,14 @@ export const usePostDetailPopup = () => {
 
   onMounted(() => {
     const me = proxy;
+
+    store.getNew().then((newPost) => {
+      if (newPost && typeof newPost === "object") {
+        Object.keys(newPost).forEach((key) => {
+          model[key] = newPost[key];
+        });
+      }
+    });
 
     if (me.$route.name === "Management_PostDetail") {
       isManagement.value = true;

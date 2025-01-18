@@ -1,39 +1,26 @@
-import { ref, onMounted, getCurrentInstance, computed, reactive } from "vue";
+import { ref, onMounted, getCurrentInstance, watch } from "vue";
+import { useExpenseStore } from "@/stores/roomManagement/expenseStore.js";
+import { useContextManageStore } from "@/stores/contextManageStore";
 
 export const useExpense = () => {
   const { proxy } = getCurrentInstance();
-  const headers = ref([
-    { title: "Ngày chi tiêu", key: "spendingDate" },
-    { title: "Người chi", key: "spender" },
-    { title: "Số tiền", key: "amount" },
-    { title: "Ghi chú", key: "note" },
-  ]);
 
-  const items = [
+  const store = useExpenseStore();
+
+  const headers = [
+    { key: "expense_category_name", title: "Tên loại chi", align: "start" },
+    { key: "expense_amount", title: "Số tiền chi", align: "end" },
+    { key: "displayed_expense_date", title: "Ngày chi", align: "center" },
+    { key: "displayed_created_at", title: "Ngày tạo", align: "center" },
+    { key: "expense_description", title: "Ghi chú", align: "start" },
     {
-      spendingDate: new Date().toISOString().split("T")[0],
-      spender: "John Doe",
-      amount: 200000,
-      note: "Chi tiêu tháng 1",
+      title: "Chức năng",
+      key: "actions",
+      sortable: false,
+      align: "center",
+      width: 120,
     },
   ];
-
-  const contentHeight = ref(0);
-  const getContentOfMainHeight = () => {
-    const me = proxy;
-    const element = me.$refs["child-container"];
-
-    if (!element) return 0;
-
-    const elementStyle = getComputedStyle(element.$el, null);
-    if (!elementStyle) return 0;
-
-    const contentHeight =
-      parseFloat(elementStyle.height) -
-      parseFloat(elementStyle.paddingTop) -
-      parseFloat(elementStyle.paddingBottom);
-    return contentHeight ?? 0;
-  };
 
   const tabValues = {
     general: 1,
@@ -57,10 +44,70 @@ export const useExpense = () => {
   ];
 
   const tab = ref();
+  const roomKey = ref(1);
+  const personKey = ref(1);
+  watch(tab, (newVal) => {});
+
+  const searchLabel = "Loại phí chi, ghi chú";
+
+  const gradients = [
+    ["#222"],
+    ["#42b3f4"],
+    ["red", "orange", "yellow"],
+    ["purple", "violet"],
+    ["#00c6ff", "#F0F", "#FF0"],
+    ["#f72047", "#ffd200", "#1feaea"],
+  ];
+
+  const width = ref(1);
+  const radius = ref(10);
+  const padding = ref(10);
+  const lineCap = ref("round");
+  const gradient = ref(gradients[5]);
+  const labels = ["22/10", "18/08", "25/06", "15/04", "10/02"];
+  const value = [450000, 550000, 400000, 900000, 600000];
+  const gradientDirection = ref("top");
+  const fill = ref(false);
+  const type = ref("trend");
+  const autoLineWidth = ref(false);
+  const chartCols = ref(9);
+
+  const roomLabels = ref([]);
+  const roomValues = ref([]);
+
+  const timeStep = ref("10:10");
+  const allowedStep = (m) => m % 10 === 0;
 
   onMounted(() => {
-    contentHeight.value = getContentOfMainHeight();
+    const payload = {
+      year: new Date().getFullYear(),
+      userId: useContextManageStore().$state.user.user_id,
+    };
+    store.getExpenseStatistic(payload);
   });
 
-  return { headers, items, contentHeight, tabConfig, tab, tabValues };
+  return {
+    headers,
+    tabConfig,
+    tab,
+    tabValues,
+    store,
+    searchLabel,
+    roomKey,
+    personKey,
+    width,
+    // radius,
+    padding,
+    lineCap,
+    gradient,
+    gradientDirection,
+    fill,
+    type,
+    autoLineWidth,
+    value,
+    labels,
+    chartCols,
+    timeStep,
+    allowedStep,
+  };
 };

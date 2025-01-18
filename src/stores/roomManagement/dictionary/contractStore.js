@@ -28,7 +28,6 @@ export const useContractStore = defineStore("contract", {
       return [
         {
           Field: state.codeField,
-          IsAscending: true,
         },
       ];
     },

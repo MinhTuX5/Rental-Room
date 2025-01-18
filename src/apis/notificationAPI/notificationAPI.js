@@ -1,6 +1,5 @@
 import CrudAPI from "@/apis/crudAPI";
 import FilterOperator from "../../common/enum/FilterOperator";
-import { sortBy } from "lodash";
 
 const END_POINT = "Notifications";
 class NotificationAPI extends CrudAPI {
@@ -11,6 +10,15 @@ class NotificationAPI extends CrudAPI {
   sendNotify(notification) {
     try {
       const res = this.postAsync(notification);
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  readNotify(notificationId) {
+    try {
+      const res = this.getAsync({}, `/${notificationId}`);
       return res;
     } catch (error) {
       console.log(error);

@@ -96,5 +96,9 @@ export default {
   .fc-button-group button span::before {
     // vertical-align: unset !important;
   }
+
+  .fc-view-harness {
+    max-height: calc(-158px + 100vh);
+  }
 }
 </style>

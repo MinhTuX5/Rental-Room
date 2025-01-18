@@ -5,6 +5,7 @@ import { useAppStore } from "@/stores/appStore";
 import { useContextStore } from "../stores/contextStore";
 // enum
 import _enum from "./enum";
+import notificationAPI from "@/apis/notificationAPI/notificationAPI";
 
 // Create a function to introduce a delay
 export const delay = (ms) => {
@@ -182,3 +183,7 @@ export const getManagementContext = () => {
   return null;
 };
 //#endregion
+
+export const readNotify = (notificationId) => {
+  notificationAPI.readNotify(notificationId);
+};

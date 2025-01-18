@@ -2,14 +2,9 @@ import { reactive, ref } from "vue";
 
 export const useInfoUpdating = () => {
   const model = reactive({
-    name: {
-      value: "nvthinh",
-    },
-    email: { value: "nvthinh@gmail.com" },
-    phone: { value: "0987654321" },
-    address: "123/45 Lý Thái Tổ, P.12, Q.1, TP. HCM",
-    jobTitle: "Nhân viên kinh doanh",
-    department: "Marketing",
+    user_name: 'Nguyễn Văn Đông',
+    user_email: 'abc@gmail.com',
+    phone_number: '0964895540',
   });
 
   const submit = () => {

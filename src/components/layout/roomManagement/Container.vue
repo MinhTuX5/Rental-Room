@@ -21,7 +21,12 @@
       <v-spacer></v-spacer>
 
       <!-- Thông báo -->
-      <v-badge color="error" :content="notificationList.length" class="mr-4" @click="getNotifications">
+      <v-badge
+        color="error"
+        :content="newNotifications.length"
+        class="mr-4"
+        @click="getNotifications"
+      >
         <v-icon
           id="notification"
           size="large"
@@ -31,12 +36,52 @@
         >
       </v-badge>
 
-      <v-menu activator="#notification">
+      <v-menu activator="#notification" :close-on-content-click="false">
         <v-card class="mx-auto" max-width="450">
-          <v-list :items="notificationList" lines="three" item-props>
+          <!-- <v-list
+            :items="notificationList"
+            lines="three"
+            item-props
+            class="cursor-pointer"
+            item-value="notification_id"
+            @click:select="onClickNotify"
+          >
             <template v-slot:subtitle="{ subtitle }">
-              <div v-html="subtitle"></div>
+              <div v-html="subtitle" />
             </template>
+          </v-list> -->
+          <v-list lines="three" @click:select="onClickNotify">
+            <v-list-item
+              v-for="(item, i) in notificationList"
+              :key="i"
+              :value="item.notification_id"
+            >
+              <template #prepend>
+                <v-avatar
+                  image="https://picsum.photos/1920/1080?random"
+                ></v-avatar>
+              </template>
+
+              <template #title>
+                <div
+                  v-text="item.notification_title"
+                  class="font-weight-bold"
+                />
+              </template>
+
+              <template #subtitle>
+                <div v-html="item.notification_message" />
+              </template>
+
+              <template #default>
+                <div
+                  v-if="item.read_at"
+                  class="d-flex justify-end font-italic opacity-50 text-subtitle-2"
+                >
+                  Đã đọc: {{ moment(item.read_at).format("HH:mm DD/MM/YYYY") }}
+                </div>
+              </template>
+            </v-list-item>
           </v-list>
         </v-card>
       </v-menu>
@@ -52,7 +97,7 @@
             :key="index"
             :value="index"
             class="cursor-pointer"
-            @click="item.onClick"
+            @click="onClickMenu(item)"
           >
             <v-list-item-title
               ><v-icon :icon="item.icon" class="mr-2" />
@@ -70,13 +115,19 @@
       :rail="rail"
       @click="rail = false"
     >
-      <v-list nav :opened="open" @update:selected="handleSelected">
+      <v-list
+        v-model="selectedMenu"
+        nav
+        :opened="open"
+        @update:selected="handleSelected"
+      >
         <div v-for="item in features" :key="item.title">
           <v-list-item
             v-if="!item.isGroup && !item.isHide"
             :title="item.title"
             :value="item.componentId"
             :active="item.active"
+            :to="item.path"
           >
             <template v-slot:prepend>
               <v-icon
@@ -114,13 +165,13 @@
   </v-layout>
   <v-dialog v-model="showPopup" width="auto">
     <v-card
-      width="500"
-      prepend-icon="mdi-link"
-      title="Liên kết đến tòa nhà"
-      text="Yêu cầu sẽ được gửi đến chủ trọ để chờ xác nhận"
+      :width="dialogConfig.width ?? 500"
+      :prepend-icon="dialogConfig.icon"
+      :title="dialogConfig.title"
+      :text="dialogConfig.text"
     >
       <v-card-item>
-        <v-row>
+        <v-row v-if="dialogConfig.key == featureConfig.LinkToBuilding.key">
           <v-col>
             <v-text-field
               clearable
@@ -134,21 +185,33 @@
           <v-col class="ml-4">
             <v-text-field
               clearable
-              label="Mã tòa nhà"
+              label="Mã phòng"
               class="mt-2"
               variant="outlined"
               color="blue-lighten-3"
-              v-model="buildingCode"
+              v-model="roomCode"
             />
           </v-col>
+        </v-row>
+        <v-row v-if="dialogConfig.key == featureConfig.FeedBack.key">
+          <v-col>
+            <v-text-field
+              clearable
+              label="Nhập phản hồi"
+              class="mt-2"
+              variant="outlined"
+              color="blue-lighten-3"
+              :autofocus="true"
+              v-model="feedBackText"
+          /></v-col>
         </v-row>
       </v-card-item>
       <template v-slot:actions>
         <v-btn
           class="ms-auto"
-          text="Gửi yêu cầu"
+          :text="dialogConfig.btnText"
           color="orange-lighten-2"
-          @click="onLinkToBuilding"
+          @click="onSubmitDialog"
         ></v-btn>
       </template>
     </v-card>
@@ -160,6 +223,7 @@
 import baseView from "@/views/base/baseView";
 // resources
 import { useContainer } from "./container";
+import moment from "moment";
 
 export default {
   extends: baseView,
@@ -168,7 +232,7 @@ export default {
 
   setup() {
     const resource = useContainer();
-    return resource;
+    return { ...resource, moment };
   },
 };
 </script>

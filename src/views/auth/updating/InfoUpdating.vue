@@ -10,37 +10,52 @@
           <v-col>
             <form @submit.prevent="submit">
               <v-text-field
-                v-model="model.name.value"
-                :counter="10"
-                :error-messages="model.name.errorMessage"
+                v-model="model.user_name"
+                :counter="255"
                 label="Tên liên hệ"
               ></v-text-field>
 
               <v-text-field
-                v-model="model.phone.value"
-                :counter="7"
-                :error-messages="model.phone.errorMessage"
-                label="Số điện thoại"
+                v-model="model.phone_number"
+                :counter="10"
+                label="Số điện thoại chính"
               ></v-text-field>
 
               <v-text-field
-                v-model="model.email.value"
-                :error-messages="model.email.errorMessage"
+                v-model="model.second_phone_number"
+                :counter="10"
+                label="Số điện thoại phụ"
+              ></v-text-field>
+
+              <v-text-field
+                v-model="model.user_email"
                 label="E-mail"
               ></v-text-field>
 
-              <v-btn class="me-4" @click="handleReset"> Hoãn </v-btn>
-              <v-btn type="submit"> Cập nhật </v-btn>
+              <v-text-field
+                v-model="model.user_facebook"
+                label="Facebook"
+              ></v-text-field>
+
+              <v-text-field
+                v-model="model.user_zalo"
+                label="Zalo"
+              ></v-text-field>
+
+              <v-row class="d-flex justify-end mb-2 mr-4">
+                <v-btn class="me-4" @click="handleReset"> Hủy </v-btn>
+                <v-btn type="submit" color="blue-lighten-1"> Cập nhật </v-btn>
+              </v-row>
             </form>
           </v-col>
-          <v-col class="justify-space-between d-flex flex-column align-center">
+          <v-col class="d-flex flex-column align-center">
             <v-sheet class="justify-center d-flex">
               <v-avatar
                 image="https://picsum.photos/1920/1080?random"
                 size="220"
               ></v-avatar>
             </v-sheet>
-            <v-btn class="w-fit-content"> Đổi ảnh đại diện </v-btn>
+            <v-btn class="w-fit-content mt-4" prepend-icon="mdi-camera"> Đổi ảnh đại diện </v-btn>
           </v-col>
         </v-row>
       </v-tabs-window-item>

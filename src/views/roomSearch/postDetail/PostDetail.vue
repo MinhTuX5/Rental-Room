@@ -15,6 +15,7 @@
       <v-sheet class="d-flex flex-column mb-4">
         <h3 :style="{ fontFamily: 'Lexend Medium,Roboto,Arial' }">
           {{ model.post_title }}
+          <span class="font-italic ml-2 font-weight-thin">(Mã phòng: {{ model.post_code }})</span>
         </h3>
         <div class="d-flex align-center">
           <v-icon icon="mdi-map-marker-outline" color="red"></v-icon>

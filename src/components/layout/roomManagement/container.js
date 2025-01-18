@@ -1,9 +1,9 @@
-import { getCurrentInstance, onMounted, reactive, ref } from "vue";
+import { getCurrentInstance, onMounted, reactive, ref, computed } from "vue";
 // resources
 import Role from "@/common/enum/Role";
 import { useContextManageStore } from "@/stores/contextManageStore";
 import renterAPI from "../../../apis/roomManagementAPI/renterAPI";
-import { showMessage } from "../../../common/commonFunction";
+import { readNotify, showMessage } from "../../../common/commonFunction";
 import notificationAPI from "../../../apis/notificationAPI/notificationAPI";
 import NotificationType from "../../../common/enum/NotificationType";
 
@@ -11,6 +11,33 @@ export const useContainer = () => {
   const { proxy } = getCurrentInstance();
 
   const contextStore = useContextManageStore();
+  const user = computed(() => contextStore.$state.user);
+
+  const featureConfig = {
+    LinkToBuilding: {
+      icon: user?.innkeeper_id ? "mdi-link-off" : "mdi-link",
+      title: user?.innkeeper_id
+        ? "Hủy liên kết tới tòa nhà"
+        : "Liên kết tới tòa nhà",
+      text: "Yêu cầu sẽ được gửi đến chủ trọ để chờ xác nhận",
+      btnText: "Gửi yêu cầu",
+      key: "LinkToBuilding",
+    },
+    FeedBack: {
+      icon: "mdi-message-alert-outline",
+      title: "Gửi phản hồi",
+      text: "Thông báo sẽ được gửi đến chủ trọ",
+      btnText: "Gửi phản hồi",
+      key: "FeedBack",
+      width: 500,
+    },
+    GoToHomePage: {
+      key: "GoToHomePage",
+    },
+    Logout: {
+      key: "Logout",
+    },
+  };
 
   const rail = ref(false);
   const showPopup = ref(false);
@@ -30,53 +57,76 @@ export const useContainer = () => {
   const menuItems = ref([
     {
       title: "Đăng và tìm trọ",
-      onClick: openHomePage,
       icon: "mdi-home-search",
+      key: featureConfig.GoToHomePage.key,
     },
-    { title: "Đăng xuất", onClick: logout, icon: "mdi-logout" },
+    {
+      title: "Đăng xuất",
+      icon: "mdi-logout",
+      key: featureConfig.Logout.key,
+    },
   ]);
 
-  const onShowPopup = () => {
-    showPopup.value = true;
-  };
   const renterMenuItems = ref([
     {
-      title: contextStore?.$state.user?.building_linking_id
-        ? "Hủy liên kết tới tòa nhà"
-        : "Liên kết tới tòa nhà",
-      icon: contextStore?.$state.user?.building_linking_id
-        ? "mdi-link-off"
-        : "mdi-link",
-      onClick: onShowPopup,
+      ...featureConfig.LinkToBuilding,
+    },
+    {
+      ...featureConfig.FeedBack,
     },
   ]);
 
   const features = ref([]);
-  const linkingBuildingId = ref("");
 
   const renterFeatures = reactive([
     {
       title: "Thông tin phòng",
       componentId: "RoomInfo",
       icon: "mdi-information-variant-circle-outline",
+      path: "/quan-ly/thong-tin-phong",
     },
     {
       title: "Danh sách phòng",
       componentId: "RoomListOverview",
       icon: "mdi-list-box-outline",
       value: "RoomListOverview",
+      path: "/quan-ly/danh-sach-phong",
     },
     {
       title: "Lịch biểu",
       componentId: "AppointmentSchedule",
       icon: "mdi-calendar-account-outline",
+      value: "AppointmentSchedule",
+      path: "/quan-ly/lich-bieu",
     },
     {
       title: "Quản lý chi tiêu",
       componentId: "Expense",
       icon: "mdi-calendar-account-outline",
+      path: "/quan-ly/chi-tieu",
     },
-    { title: "Tính toán", componentId: "Calculation", icon: "mdi-calculator" },
+    {
+      title: "Tính toán",
+      componentId: "Calculation",
+      icon: "mdi-calculator",
+      path: "/quan-ly/tinh-toan",
+    },
+    {
+      title: "Danh mục",
+      icon: "mdi-book-alphabet",
+      isGroup: true,
+      parentVal: "dictionary",
+      path: "quan-ly/danh-muc",
+      children: [
+        {
+          title: "Loại chi phí",
+          icon: "mdi-invoice-list-outline",
+          value: "ExpenseCategoryList",
+          componentId: "ExpenseCategoryList",
+          path: "quan-ly/danh-muc/loai-chi-phi",
+        },
+      ],
+    },
   ]);
 
   const innkeeperFeatures = reactive([
@@ -176,10 +226,7 @@ export const useContainer = () => {
       case Role.Renter:
         menuItems.value.splice(1, 0, ...renterMenuItems.value);
         renterFeatures.forEach((x) => {
-          if (
-            x.componentId === "RoomListOverview" &&
-            !linkingBuildingId.value
-          ) {
+          if (x.componentId === "RoomListOverview" && !user.innkeeper_id) {
             x.isHide = true;
           }
         });
@@ -217,28 +264,47 @@ export const useContainer = () => {
     }
   };
 
-  const buildingCode = ref("");
+  const roomCode = ref("");
   const phoneNumber = ref("");
 
   const onLinkToBuilding = async () => {
     const payload = {
-      BuildingCode: buildingCode.value,
+      roomCode: roomCode.value,
       PhoneNumber: phoneNumber.value,
     };
     try {
-      const innkeeper = await renterAPI.linkToBuilding(payload);
-      if (innkeeper) {
+      const res = await renterAPI.linkToBuilding(payload);
+      if (res) {
         showMessage("Đã gửi yêu cầu đến chủ phòng!");
 
         const notification = {
           from_user_id: contextStore.$state.user.user_id,
-          to_user_id: innkeeper.user_id,
-          notification_message: `Người thuê <b>${innkeeper.user_name}</b> muốn liên kết tới tòa nhà có mã <b>${buildingCode.value}</b>.`,
+          to_user_id: res.user_id,
+          notification_message: `Người thuê <b>${res.user_name}</b> muốn liên kết tới tòa nhà có mã <b>${roomCode.value}</b>.`,
           notification_type: NotificationType.confirmation,
+          notification_title: "Yêu cầu liên kết đến tòa nhà",
+          notification_data: {
+            room_id: res.room_id,
+          },
         };
         notificationAPI.sendNotify(notification);
       }
-      showPopup.value = false;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onFeedBack = () => {
+    const user = contextStore.$state.user;
+    try {
+      const notification = {
+        from_user_id: user.user_id,
+        to_user_id: user.innkeeper_id,
+        notification_title: `Phản hồi từ người thuê`,
+        notification_message: `Người thuê <b>${user.user_name}</b> tại phòng <b>${user.room_name}</b> thuộc tòa nhà <b>${user.building_name}</b>: ${feedBackText.value}`,
+        notification_type: NotificationType.confirmation,
+      };
+      notificationAPI.sendNotify(notification);
     } catch (error) {
       console.error(error);
     }
@@ -250,55 +316,74 @@ export const useContainer = () => {
       contextStore.$state.user.user_id
     );
     if (Array.isArray(res.data)) {
-      notificationList.value = res.data.map((x) => {
-        return {
-          prependAvatar: "https://picsum.photos/1920/1080?random",
-          title: x.notification_title,
-          subtitle: x.notification_message,
-        };
-      });
+      notificationList.value = res.data;
     }
   };
-  const items = [
-    {
-      prependAvatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-      title: "Brunch this weekend?",
-      subtitle: `<span class="text-primary">Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
-    },
-    { type: "divider", inset: true },
-    {
-      prependAvatar: "https://cdn.vuetifyjs.com/images/lists/2.jpg",
-      title: "Summer BBQ",
-      subtitle: `<span class="text-primary">to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend.`,
-    },
-    { type: "divider", inset: true },
-    {
-      prependAvatar: "https://cdn.vuetifyjs.com/images/lists/3.jpg",
-      title: "Oui oui",
-      subtitle:
-        '<span class="text-primary">Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?',
-    },
-    { type: "divider", inset: true },
-    {
-      prependAvatar: "https://cdn.vuetifyjs.com/images/lists/4.jpg",
-      title: "Birthday gift",
-      subtitle:
-        '<span class="text-primary">Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?',
-    },
-    { type: "divider", inset: true },
-    {
-      prependAvatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-      title: "Recipe to try",
-      subtitle:
-        '<span class="text-primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-    },
-  ];
+
+  const selectedMenu = ref();
+  const dialogConfig = ref({
+    icon: "",
+    title: "",
+    text: "",
+    feature: "",
+    btnText: "",
+    width: 500,
+  });
+
+  const feedBackText = ref();
+
+  const onSubmitDialog = () => {
+    const me = proxy;
+    try {
+      switch (dialogConfig.value.feature) {
+        case featureConfig.FeedBack.key:
+          onFeedBack();
+          break;
+        case featureConfig.LinkToBuilding.key:
+          onLinkToBuilding();
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      showPopup.value = false;
+    }
+  };
+
+  const onClickMenu = (item) => {
+    switch (item.key) {
+      case featureConfig.FeedBack.key:
+        dialogConfig.value = { ...featureConfig.FeedBack };
+        break;
+      case featureConfig.LinkToBuilding.key:
+        dialogConfig.value = { ...featureConfig.LinkToBuilding };
+        break;
+      case featureConfig.GoToHomePage.key:
+        openHomePage();
+        break;
+      case featureConfig.Logout.key:
+        logout();
+        break;
+    }
+    showPopup.value = true;
+  };
+
+  const onClickNotify = (item) => {
+    var notify = notificationList.value.find(
+      (x) => x.notification_id == item.id
+    );
+    if (notify) {
+      notify.read_at = new Date();
+      notificationAPI.readNotify(notify.notification_id);
+    }
+  };
+
+  const newNotifications = computed(() => {
+    return notificationList.value.filter((x) => !x.read_at);
+  });
 
   onMounted(() => {
-    if (contextStore.$state.user?.building_linking_id) {
-      linkingBuildingId.value = contextStore.$state.user.building_linking_id;
-    }
-
     getMenu();
 
     getNotifications();
@@ -313,10 +398,17 @@ export const useContainer = () => {
     open,
     rail,
     showPopup,
-    buildingCode,
+    roomCode,
     phoneNumber,
     onLinkToBuilding,
-    items,
     notificationList,
+    selectedMenu,
+    onSubmitDialog,
+    dialogConfig,
+    featureConfig,
+    onClickMenu,
+    feedBackText,
+    onClickNotify,
+    newNotifications,
   };
 };

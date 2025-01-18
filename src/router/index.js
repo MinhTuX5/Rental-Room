@@ -97,6 +97,18 @@ const router = createRouter({
             import("@/views/roomManagement/renter/roomInfo/RoomInfo.vue"),
         },
         {
+          path: "lich-bieu",
+          name: "AppointmentSchedule",
+          component: () =>
+            import("@/views/auth/schedule/AppointmentSchedule.vue"),
+        },
+        {
+          path: "chi-tieu",
+          name: "Expense",
+          component: () =>
+            import("@/views/roomManagement/renter/expense/Expense.vue"),
+        },
+        {
           path: "ho-gia-dinh",
           name: "HouseholdList",
           component: () =>
@@ -115,6 +127,14 @@ const router = createRouter({
           name: "Dictionary",
           redirect: "danh-muc/toa-nha",
           children: [
+            {
+              path: "loai-chi-phi",
+              name: "ExpenseCategoryList",
+              component: () =>
+                import(
+                  "@/views/roomManagement/renter/dictionary/ExpenseCategoryList.vue"
+                ),
+            },
             {
               path: "toa-nha",
               name: "BuildingList",
@@ -229,7 +249,15 @@ router.beforeEach(async (to, from, next) => {
   if (requireAuth) {
     let isSignIn = isLoggedIn(requireAuth.meta.localContextKey);
     if (isSignIn) {
-      next();
+      if (
+        window.PageRole === Role.Renter &&
+        to.name === "RoomListOverview" &&
+        from.name === "Login"
+      ) {
+        next({ name: "RoomInfo" });
+      } else {
+        next();
+      }
     } else {
       if (requireAuth.meta.isAdmin) {
         next({ name: "HomePage" });

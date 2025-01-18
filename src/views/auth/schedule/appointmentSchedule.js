@@ -1,23 +1,23 @@
-import { getCurrentInstance, onMounted } from "vue";
-import { useDate } from 'vuetify'
+import { getCurrentInstance, onMounted, ref, computed } from "vue";
+import { useDate } from "vuetify";
 
 export const useAppointmentSchedule = () => {
   const { proxy } = getCurrentInstance();
 
   const getEvents = ({ start, end }) => {
-    const events = []
+    const events = [];
 
-    const min = start
-    const max = end
-    const days = (max.getTime() - min.getTime()) / 86400000
-    const eventCount = proxy.rnd(days, days + 20)
+    const min = start;
+    const max = end;
+    const days = (max.getTime() - min.getTime()) / 86400000;
+    const eventCount = proxy.rnd(days, days + 20);
 
     for (let i = 0; i < eventCount; i++) {
-      const allDay = proxy.rnd(0, 3) === 0
-      const firstTimestamp = proxy.rnd(min.getTime(), max.getTime())
-      const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-      const secondTimestamp = proxy.rnd(2, allDay ? 288 : 8) * 900000
-      const second = new Date(first.getTime() + secondTimestamp)
+      const allDay = proxy.rnd(0, 3) === 0;
+      const firstTimestamp = proxy.rnd(min.getTime(), max.getTime());
+      const first = new Date(firstTimestamp - (firstTimestamp % 900000));
+      const secondTimestamp = proxy.rnd(2, allDay ? 288 : 8) * 900000;
+      const second = new Date(first.getTime() + secondTimestamp);
 
       events.push({
         title: proxy.titles[proxy.rnd(0, proxy.titles.length - 1)],
@@ -25,24 +25,55 @@ export const useAppointmentSchedule = () => {
         end: second,
         color: proxy.colors[proxy.rnd(0, proxy.colors.length - 1)],
         allDay: !allDay,
-      })
+      });
     }
 
-    proxy.events = events
-  }
+    proxy.events = [events[0]];
+  };
 
   const getEventColor = (event) => {
-    return event.color
+    return event.color;
   };
 
   const rnd = (a, b) => {
-    return Math.floor((b - a + 1) * Math.random()) + a
-  }
+    return Math.floor((b - a + 1) * Math.random()) + a;
+  };
+
+  const selectedEvent = ref({});
+  const selectedElement = ref();
+  const showEvent = ({ nativeEvent, event }) => {
+    const me = proxy;
+    const open = () => {
+      me.selectedEvent = event;
+      me.selectedElement = nativeEvent.target;
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => (me.selectedOpen = true))
+      );
+    };
+
+    if (me.selectedOpen) {
+      me.selectedOpen = false;
+      requestAnimationFrame(() => requestAnimationFrame(() => open()));
+    } else {
+      open();
+    }
+
+    nativeEvent.stopPropagation();
+  };
+
+  const eventsMap = computed(() => {
+    const map = {};
+    proxy.events.forEach((e) => (map[e.date] = map[e.date] || []).push(e));
+    return map;
+  });
 
   onMounted(() => {
-    const adapter = useDate()
-      proxy.getEvents({ start: adapter.startOfDay(adapter.startOfMonth(new Date())), end: adapter.endOfDay(adapter.endOfMonth(new Date())) })
-  }) 
+    const adapter = useDate();
+    getEvents({
+      start: adapter.startOfDay(adapter.startOfMonth(new Date())),
+      end: adapter.endOfDay(adapter.endOfMonth(new Date())),
+    });
+  });
 
   return {
     type: "month",
@@ -77,6 +108,10 @@ export const useAppointmentSchedule = () => {
     ],
     getEventColor,
     rnd,
-    getEvents
+    getEvents,
+    showEvent,
+    selectedEvent,
+    selectedElement,
+    eventsMap,
   };
 };

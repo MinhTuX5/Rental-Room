@@ -44,7 +44,7 @@ export default class BaseStore {
        */
       async insertAsync(config) {
         const me = this;
-        
+
         const response = await api.postAsync(config);
         me.afterInsertAsync(response.data);
         return response.data;
@@ -70,6 +70,11 @@ export default class BaseStore {
         const me = this;
         const response = await api.deleteAsync(id);
         me.afterDeleteAsync(id);
+        return response;
+      },
+
+      async getNew() {
+        const response = await api.getNew();
         return response;
       },
     };

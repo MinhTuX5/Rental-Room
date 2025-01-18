@@ -11,6 +11,7 @@
 
 <script>
 import { getCurrentInstance } from "vue";
+import Role from "../common/enum/Role";
 
 export default {
   name: "NotFound",
@@ -19,7 +20,14 @@ export default {
     const onClickAction = () => {
       const me = proxy;
       // Redirect to home page
-      me.$router.push("/");
+      if (
+        window.PageRole === Role.Innkeeper ||
+        window.PageRole === Role.Renter
+      ) {
+        me.$router.push("/quan-ly");
+      } else {
+        me.$router.push("/");
+      }
     };
 
     return {
