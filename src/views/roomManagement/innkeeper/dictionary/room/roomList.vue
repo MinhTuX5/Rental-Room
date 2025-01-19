@@ -65,13 +65,11 @@
 <script>
 import { useRoomList } from "./roomList";
 import baseDicList from "@/views/base/baseDicList";
-// components
-import TFeature from "@/components/base/views/TFeature.vue";
 
 export default {
   extends: baseDicList,
   name: "RoomList",
-  components: { TFeature },
+  components: {},
   props: {
     heightOfAppHeader: {
       typeof: "number",

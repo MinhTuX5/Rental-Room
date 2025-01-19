@@ -38,18 +38,6 @@
 
       <v-menu activator="#notification" :close-on-content-click="false">
         <v-card class="mx-auto" max-width="450">
-          <!-- <v-list
-            :items="notificationList"
-            lines="three"
-            item-props
-            class="cursor-pointer"
-            item-value="notification_id"
-            @click:select="onClickNotify"
-          >
-            <template v-slot:subtitle="{ subtitle }">
-              <div v-html="subtitle" />
-            </template>
-          </v-list> -->
           <v-list lines="three" @click:select="onClickNotify">
             <v-list-item
               v-for="(item, i) in notificationList"

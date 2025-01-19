@@ -87,6 +87,10 @@ export const useBuildingStore = defineStore("building", {
           break;
       }
 
+      item.province_name = item.province_name.replace('Thành phố ', '');
+      item.district_name = item.district_name.replace('Quận ', '');
+      item.ward_name = item.ward_name.replace('Phường ', '');
+
       return item;
     },
   },

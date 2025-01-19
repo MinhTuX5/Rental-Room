@@ -5,7 +5,15 @@
         <v-card class="mx-auto">
           <v-img
             height="200px"
-            src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+            :src="
+              index == 0
+                ? 'https://res.cloudinary.com/dbm4qpzc1/image/upload/v1736859172/lnwvcgb0qc1qgy4enxye.jpg'
+                : index == 1
+                ? 'https://res.cloudinary.com/dbm4qpzc1/image/upload/v1736859174/vqob8oc0jafyt2raoifz.jpg'
+                : index == 2
+                ? 'https://res.cloudinary.com/dbm4qpzc1/image/upload/v1736859175/t7dktqsmr5vcff5rtasw.jpg'
+                : 'https://res.cloudinary.com/dbm4qpzc1/image/upload/v1737295010/dplpcufl18smxlgrkmvw.jpg'
+            "
             cover
           ></v-img>
 
@@ -38,7 +46,7 @@
           <v-expand-transition>
             <div v-show="room.show">
               <v-divider></v-divider>
-              <v-card class='pa-4'>
+              <v-card class="pa-4">
                 <v-row
                   ><div class="text-h6">
                     <b>Giá phòng:</b>

@@ -34,6 +34,9 @@
         ></v-empty-state>
       </v-tabs-window-item>
       <v-tabs-window-item :value="PostStatus.Saved">
+        <v-row v-if="isLinked" class="d-flex justify-end mb-4"
+          ><v-btn color="blue">Lấy dữ liệu</v-btn></v-row
+        >
         <v-virtual-scroll
           v-if="savedPosts.length > 0"
           :items="savedPosts"

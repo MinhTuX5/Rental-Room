@@ -11,6 +11,11 @@ export const usePostManagement = () => {
 
   const store = useRoomPostStore();
   const contextStore = useContextStore();
+  const isLinked = ref(false);
+  if (contextStore.$state.user.innkeeper_id) {
+    isLinked.value = true;
+  }
+  
 
   const { featureBtns } = usePostOverviewCommon();
 
@@ -134,6 +139,7 @@ export const usePostManagement = () => {
     loadData,
     featureBtns,
     waitingPosts,
-    PostStatus
+    PostStatus,
+    isLinked
   };
 };

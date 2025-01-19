@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { getCurrentInstance, onMounted, ref } from "vue";
+import { getCurrentInstance, onMounted, ref, reactive } from "vue";
 import { useContextStore } from "../../../stores/contextStore";
 import { useAppStore } from "../../../stores/appStore";
 import notificationAPI from "../../../apis/notificationAPI/notificationAPI";
@@ -142,10 +142,11 @@ export default {
 
     const contextStore = useContextStore();
     const user = contextStore.$state.user;
+
     const appStore = useAppStore();
     const adminContext = useContextAdminStore();
 
-    const featureConfig = {
+    const featureConfig = reactive({
       LinkToInnkeeper: {
         icon: user?.innkeeper_id ? "mdi-link-off" : "mdi-link",
         title: user?.innkeeper_id
@@ -158,7 +159,7 @@ export default {
       MoveToAdminPage: {
         key: "MoveToAdminPage",
       },
-    };
+    });
 
     const tabsConfig = [
       { display: "Tìm trọ" },

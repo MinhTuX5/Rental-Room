@@ -374,7 +374,7 @@ export const useContainer = () => {
     var notify = notificationList.value.find(
       (x) => x.notification_id == item.id
     );
-    if (notify) {
+    if (!notify.read_at) {
       notify.read_at = new Date();
       notificationAPI.readNotify(notify.notification_id);
     }

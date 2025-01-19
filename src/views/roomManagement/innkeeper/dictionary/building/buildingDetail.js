@@ -1,18 +1,28 @@
 import { getCurrentInstance, onMounted, ref, watch } from "vue";
 // store
+import { useLocationStore } from "@/stores/location/locationStore";
 import { useRoomCategoryStore } from "@/stores/roomManagement/dictionary/roomCategoryStore";
+import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
 
 export const useVehicleFeeDetail = () => {
   const { proxy } = getCurrentInstance();
 
+  const locationStore = useLocationStore();
   const store = useRoomCategoryStore();
+
+  const { addressInfo, onSelectLocation } = useRoomSearchCommon();
 
   const title = ref("Loại phòng");
 
+  const selectLocation = (selectedVal, locationType) => {
+    const me = proxy;
+    me.model.building_address = onSelectLocation(selectedVal, locationType);
+  };
+
   const defaultModel = {
     no_of_bed_rooms: 1,
-    room_area: 0
-  }
+    room_area: 0,
+  };
 
   const feePrice = ref(0);
   watch(feePrice, (newVal) => {
@@ -30,6 +40,9 @@ export const useVehicleFeeDetail = () => {
     title,
     store,
     feePrice,
-    defaultModel
+    defaultModel,
+    addressInfo,
+    selectLocation,
+    locationStore
   };
 };

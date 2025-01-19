@@ -1,6 +1,6 @@
 import axios from "axios";
 import { onMounted, reactive, ref, onUnmounted, getCurrentInstance } from "vue";
-import { cloneDeep, forEach } from "lodash";
+import { cloneDeep } from "lodash";
 // Resources
 import { useRoomSearchCommon } from "../roomSearchCommon";
 import RoomCategoryConfig from "@/common/config/roomCategoryConfig";
@@ -90,6 +90,7 @@ export const usePostDetailPopup = () => {
   const onSelectLocation = (selectedVal, locationType) => {
     let selectedLocation = {};
     let config = null;
+    let result = "";
     switch (locationType) {
       case LocationType.Province:
         selectedLocation = locationStore.selectProvinceById(selectedVal);
@@ -99,7 +100,10 @@ export const usePostDetailPopup = () => {
         if (config) {
           config.items = locationStore.districtItems;
         }
-        updateLocationParts(selectedLocation[locationStore.nameField], 5);
+        result = updateLocationParts(
+          selectedLocation[locationStore.nameField],
+          5
+        );
         break;
       case LocationType.District:
         selectedLocation = locationStore.selectDistrictById(selectedVal);
@@ -107,11 +111,17 @@ export const usePostDetailPopup = () => {
         if (config) {
           config.items = locationStore.wardItems;
         }
-        updateLocationParts(selectedLocation[locationStore.nameField], 4);
+        result = updateLocationParts(
+          selectedLocation[locationStore.nameField],
+          4
+        );
         break;
       case LocationType.Ward:
         selectedLocation = locationStore.getWardById(selectedVal);
-        updateLocationParts(selectedLocation[locationStore.nameField], 3);
+        result = updateLocationParts(
+          selectedLocation[locationStore.nameField],
+          3
+        );
         break;
     }
   };
@@ -120,6 +130,7 @@ export const usePostDetailPopup = () => {
     if (index < 1 || index > 5) {
       return;
     }
+
     const lowerCaseVal = value.toLowerCase();
     let customVal = value;
     switch (index) {
@@ -335,5 +346,6 @@ export const usePostDetailPopup = () => {
     saveImages,
     PostStatus,
     overlay,
+    isManagement,
   };
 };

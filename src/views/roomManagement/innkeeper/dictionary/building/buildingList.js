@@ -6,8 +6,11 @@ export const useBuildingList = () => {
   const store = useBuildingStore();
 
   const headers = [
-    { key: "building_name", title: "Tên tòa nhà" },
+    { key: "building_name", title: "Tòa nhà" },
     { key: "building_address", title: "Địa chỉ" },
+    { key: "province_name", title: "Tỉnh/TP" },
+    { key: "district_name", title: "Quận/Huyện" },
+    { key: "ward_name", title: "Xã/Phường" },
     {
       key: "displayed_status",
       title: "Trạng thái",

@@ -30,7 +30,7 @@
               :item-title="locationStore.$state.nameField"
               :autofocus="item.autofocus"
               :rules="[rules.required]"
-              @update:modelValue="onSelectLocation($event, item.locationType)"
+              @update:modelValue="selectLocation($event, item.locationType)"
             ></v-autocomplete>
           </v-col>
         </v-row>

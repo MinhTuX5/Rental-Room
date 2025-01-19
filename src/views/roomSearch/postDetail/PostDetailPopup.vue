@@ -244,7 +244,7 @@
         </v-sheet>
       </v-col>
       <v-row>
-        <v-col cols="6" class="d-flex justify-center">
+        <v-col :cols="isManagement ? 12 : 6" class="d-flex justify-center">
           <!-- Nếu không ngăn chặn sự kiện => submit sẽ thực hiện hành động mặc định của nó => tự điều hướng về màn hiện tại -->
           <v-btn
             color="light-blue-accent-4"
@@ -254,7 +254,7 @@
             >Lưu</v-btn
           >
         </v-col>
-        <v-col cols="6" class="d-flex justify-center">
+        <v-col cols="6" class="d-flex justify-center" v-if="!isManagement">
           <v-btn
             color="green-lighten-1"
             type="submit"

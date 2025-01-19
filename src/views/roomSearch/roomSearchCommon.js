@@ -1,11 +1,15 @@
+import { reactive, ref } from "vue";
 // resources
 import { showMessage } from "@/common/commonFunction";
 // store
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 import { useContextStore } from "@/stores/contextStore";
+import LocationType from "@/common/enum/LocationType";
+import { useLocationStore } from "@/stores/location/locationStore";
 
 export const useRoomSearchCommon = () => {
   const contextStore = useContextStore();
+  const locationStore = useLocationStore();
 
   const filters = [
     {
@@ -194,7 +198,6 @@ export const useRoomSearchCommon = () => {
   };
 
   const locationParts = ref(new Array(5).fill(""));
-
   const updateLocationParts = (value, index) => {
     if (index < 1 || index > 5) {
       return;
@@ -224,5 +227,5 @@ export const useRoomSearchCommon = () => {
     model.room_address = locationParts.value.filter((x) => x).join(", ");
   };
 
-  return { filters, lovePost, logout, addressInfo, onSelectLocation };
+  return { filters, lovePost, addressInfo, onSelectLocation };
 };
