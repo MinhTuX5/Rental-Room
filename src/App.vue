@@ -31,13 +31,13 @@ export default {
     onMounted(() => {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
-        if(user) {
+        if (user) {
           isLoggedIn.value = true;
         } else {
           isLoggedIn.value = false;
         }
-      })
-    })
+      });
+    });
 
     return {
       store,

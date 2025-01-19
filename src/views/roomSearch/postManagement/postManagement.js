@@ -110,8 +110,6 @@ export const usePostManagement = () => {
   onMounted(async () => {
     const me = proxy;
 
-    console.log(me.$route);
-
     if (me.$route.query) {
       const { tab } = me.$route.query;
       if (!isNaN(parseInt(tab))) {

@@ -40,5 +40,12 @@ export const useRoomPostStore = defineStore("RoomPost", {
     saveLocation: async (entity) => {
       return await api.saveLocation(entity);
     },
+
+    linkToInnkeeper: async (payload) => {
+      return await api.linkToInnkeeper(payload);
+    },
+    async cancelLinkToInnkeeper() {
+      return await api.cancelLinkToInnkeeper();
+    },
   },
 });

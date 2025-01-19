@@ -1,4 +1,4 @@
-import { useBuildingStore } from "@/stores/roomManagement/dictionary/BuildingStore";
+import { useBuildingStore } from "../../../../../stores/roomManagement/dictionary/buildingStore";
 
 export const useBuildingList = () => {
   const detailForm = "BuildingDetail";

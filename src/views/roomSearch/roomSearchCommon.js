@@ -1,5 +1,3 @@
-// router
-import router from "@/router";
 // resources
 import { showMessage } from "@/common/commonFunction";
 // store
@@ -136,15 +134,95 @@ export const useRoomSearchCommon = () => {
     }
   };
 
-  /**
-   * @description đăng xuất
-   */
-  const logout = () => {
-    localStorage.removeItem("context");
-    contextStore.$reset();
+  const addressInfo = reactive([
+    {
+      label: "Chọn Tỉnh/Thành phố",
+      locationType: LocationType.Province,
+      items: locationStore.provinceItems,
+      noDataText: "Không có dữ liệu",
+      autofocus: true,
+      valueField: "province_id",
+    },
+    {
+      label: "Chọn Quận/Huyện",
+      locationType: LocationType.District,
+      items: [],
+      noDataText: "Chưa có Tỉnh/Thành phố nào được chọn",
+      valueField: "district_id",
+    },
+    {
+      label: "Chọn Phường/Xã",
+      locationType: LocationType.Ward,
+      items: locationStore.wardItems,
+      noDataText: "Chưa có Quận/Huyện nào được chọn",
+      valueField: "ward_id",
+    },
+  ]);
 
-    router.push("/");
+  /**
+   * @description Lựa chọn combobox vị trí
+   * @param {String} selectedVal tên vị trí được chọn
+   * @param {Number} locationType Loại vị trí đc chọn
+   */
+  const onSelectLocation = (selectedVal, locationType) => {
+    let selectedLocation = {};
+    let config = null;
+    switch (locationType) {
+      case LocationType.Province:
+        selectedLocation = locationStore.selectProvinceById(selectedVal);
+        config = addressInfo.find(
+          (x) => x.locationType === LocationType.District
+        );
+        if (config) {
+          config.items = locationStore.districtItems;
+        }
+        updateLocationParts(selectedLocation[locationStore.nameField], 5);
+        break;
+      case LocationType.District:
+        selectedLocation = locationStore.selectDistrictById(selectedVal);
+        config = addressInfo.find((x) => x.locationType === LocationType.Ward);
+        if (config) {
+          config.items = locationStore.wardItems;
+        }
+        updateLocationParts(selectedLocation[locationStore.nameField], 4);
+        break;
+      case LocationType.Ward:
+        selectedLocation = locationStore.getWardById(selectedVal);
+        updateLocationParts(selectedLocation[locationStore.nameField], 3);
+        break;
+    }
   };
 
-  return { filters, lovePost, logout };
+  const locationParts = ref(new Array(5).fill(""));
+
+  const updateLocationParts = (value, index) => {
+    if (index < 1 || index > 5) {
+      return;
+    }
+    const lowerCaseVal = value.toLowerCase();
+    let customVal = value;
+    switch (index) {
+      case 1:
+        if (!lowerCaseVal.includes("số")) customVal = `Số ${value}`;
+        break;
+      case 2:
+        if (!lowerCaseVal.includes("đường") && !lowerCaseVal.includes("phố"))
+          customVal = `Đường ${value}`;
+        break;
+      case 3:
+      case 4:
+        for (var i = 1; i < index; i++) {
+          locationParts.value[i - 1] = "";
+        }
+        break;
+      case 5:
+        locationParts.value = new Array(5).fill("");
+        break;
+    }
+
+    locationParts.value[index - 1] = customVal;
+    model.room_address = locationParts.value.filter((x) => x).join(", ");
+  };
+
+  return { filters, lovePost, logout, addressInfo, onSelectLocation };
 };

@@ -31,7 +31,7 @@ export default {
       return this.editMode == _enum.Mode.View;
     },
     numberFields() {
-      return this.store.$state.numberFields ?? [];
+      return this.store.$state?.numberFields ?? [];
     },
     detailForm() {
       return this.$.type.name ?? "";
@@ -86,7 +86,11 @@ export default {
           me.model = { ...me.model, ...currentModel };
         }
       }
+
+      me.customAfterBeforeOpen();
     },
+
+    customAfterBeforeOpen() {},
 
     /**
      * Xử lý sau khi đã mở modal

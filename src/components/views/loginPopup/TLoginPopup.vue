@@ -97,7 +97,7 @@
 
 
 <script>
-import { onMounted, reactive, ref, getCurrentInstance } from "vue";
+import { onMounted, reactive, ref, getCurrentInstance, onUnmounted } from "vue";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -214,10 +214,17 @@ export default {
           window.PageRole = context.role;
         } else {
           appStore.toggleLoginPopup();
+
           if (appStore.$state.moveToPageAfterLogin) {
             me.$router.push({ name: appStore.$state.moveToPageAfterLogin });
             appStore.$state.moveToPageAfterLogin = "";
           }
+
+          if (typeof appStore.$state.callBackAfterLogin === "function") {
+            appStore.$state.callBackAfterLogin();
+            appStore.$state.callBackAfterLogin = null;
+          }
+
           if (context.role == Role.Admin) {
             openAdminPage();
           }
@@ -291,9 +298,13 @@ export default {
       const me = proxy;
       if (me.$props.isManagementPage) {
         me.model.role = Role.Renter;
-      } else if (me.$props.fromAdmin) {
+      } else if (appStore.$state.LoginWithRole === Role.Admin) {
         me.model.role = Role.Admin;
       }
+    });
+
+    onUnmounted(() => {
+      appStore.$state.LoginWithRole = Role.RoomSeeker;
     });
 
     return {

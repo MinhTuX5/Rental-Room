@@ -1,5 +1,6 @@
-import { getCurrentInstance, onMounted, ref, computed } from "vue";
+import { getCurrentInstance, onMounted, onUpdated } from "vue";
 import { useDate } from "vuetify";
+import _ from "lodash";
 
 export const useAppointmentSchedule = () => {
   const { proxy } = getCurrentInstance();
@@ -28,7 +29,7 @@ export const useAppointmentSchedule = () => {
       });
     }
 
-    proxy.events = [events[0]];
+    proxy.events = events;
   };
 
   const getEventColor = (event) => {
@@ -39,40 +40,16 @@ export const useAppointmentSchedule = () => {
     return Math.floor((b - a + 1) * Math.random()) + a;
   };
 
-  const selectedEvent = ref({});
-  const selectedElement = ref();
-  const showEvent = ({ nativeEvent, event }) => {
-    const me = proxy;
-    const open = () => {
-      me.selectedEvent = event;
-      me.selectedElement = nativeEvent.target;
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => (me.selectedOpen = true))
-      );
-    };
-
-    if (me.selectedOpen) {
-      me.selectedOpen = false;
-      requestAnimationFrame(() => requestAnimationFrame(() => open()));
-    } else {
-      open();
-    }
-
-    nativeEvent.stopPropagation();
-  };
-
-  const eventsMap = computed(() => {
-    const map = {};
-    proxy.events.forEach((e) => (map[e.date] = map[e.date] || []).push(e));
-    return map;
-  });
-
   onMounted(() => {
     const adapter = useDate();
-    getEvents({
+    proxy.getEvents({
       start: adapter.startOfDay(adapter.startOfMonth(new Date())),
       end: adapter.endOfDay(adapter.endOfMonth(new Date())),
     });
+  });
+
+  onUpdated(() => {
+    console.log(123);
   });
 
   return {
@@ -109,9 +86,5 @@ export const useAppointmentSchedule = () => {
     getEventColor,
     rnd,
     getEvents,
-    showEvent,
-    selectedEvent,
-    selectedElement,
-    eventsMap,
   };
 };

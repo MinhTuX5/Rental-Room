@@ -11,11 +11,11 @@ import _enum from "@/common/enum";
 import api from "../../../apis/dictionaryAPI/buildingAPI";
 
 const store = new BaseDicStore(api);
+const contextStore = useContextManageStore();
 
 export const useBuildingStore = defineStore("building", {
   state: () => ({
     ...store.state,
-    userID: useContextStore().$state.userID,
     idField: "building_id",
     nameField: "building_name",
     searchFields: ["building_name", "building_address"],
@@ -37,11 +37,11 @@ export const useBuildingStore = defineStore("building", {
         },
       ];
     },
-    defaultFilters(state) {
+    defaultFilters() {
       return [
         {
           Field: "user_id",
-          Value: state.userID,
+          Value: contextStore.$state.user.user_id,
           Operator: FilterOperator.Equal,
         },
       ];
@@ -76,22 +76,8 @@ export const useBuildingStore = defineStore("building", {
         Object.assign(curItem, item);
       }
     },
-    getEnumItem(item) {
-      const me = this;
-      me.enumFields.forEach((x) => {
-        const keys = Object.keys(_enum[x.enum]);
-        const key = keys.find((y) => _enum[x.enum][y] == item[x.field]);
-        if (key) {
-          const col = `displayed_${x.field}`;
-          item[col] = key;
-        }
-      });
-      return item;
-    },
-    standardItem(item) {
-      const me = this;
-      item = me.getEnumItem(item);
 
+    standardItem(item) {
       switch (item.status) {
         case BuildingStatus.Using:
           item.statusColor = "green";

@@ -154,6 +154,13 @@ export const standardItem = (item, options = {}) => {
 
   return item;
 };
+
+export const capitalizeWords = (str) => {
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
 //#endregion
 
 //#region Get context
@@ -187,3 +194,15 @@ export const getManagementContext = () => {
 export const readNotify = (notificationId) => {
   notificationAPI.readNotify(notificationId);
 };
+
+//#region Generate
+export function generateUUID() {
+  // Tạo một chuỗi UUID
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+//#endregion

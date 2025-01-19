@@ -55,6 +55,10 @@ ul {
 }
 
 /* Text */
+span.required {
+  color: red;
+}
+
 .text-limit {
   overflow: hidden;
   text-overflow: ellipsis;

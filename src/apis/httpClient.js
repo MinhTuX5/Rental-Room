@@ -1,6 +1,7 @@
 import axios from "axios";
 import LocalContextKey from "@/common/enum/LocalContextKey.js";
 import Role from "@/common/enum/Role";
+import { useAppStore } from "../stores/appStore";
 
 // Content-Type
 const ApplicationJson = "application/json";
@@ -68,6 +69,9 @@ httpClient.interceptors.response.use(
         window.location.href = "/dang-nhap"; // Chuyển đến đăng nhập
       } else {
         window.location.href = "/"; // Chuyển đến trang chủ
+        setTimeout(() => {
+          useAppStore().$state.toggleLoginPopup();
+        }, 0);
       }
     }
     return Promise.reject(error); // Trả lại lỗi để xử lý tiếp

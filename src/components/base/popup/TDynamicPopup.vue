@@ -20,7 +20,7 @@
     transition="vfm"
     overlay-transition="vfm"
     :z-index-auto="true"
-    :z-index-base="2000"
+    :z-index-base="zIndexBase"
     :z-index="false"
     :focus-retain="true"
     :focus-trap="false"
@@ -91,6 +91,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    zIndexBase: {
+      type: Number,
+      default: 2000,
+    }
   },
   components: {},
   emits: ["before-open", "opened"],

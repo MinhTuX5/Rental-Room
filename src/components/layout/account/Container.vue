@@ -20,7 +20,7 @@
           :key="item.title"
           :title="item.title"
           :value="item.componentId"
-          :active="item.active"
+          :to="item.path"
         ></v-list-item>
       </v-list>
       <template #append>

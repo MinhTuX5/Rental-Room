@@ -3,7 +3,7 @@ import { getCurrentInstance, onMounted, reactive, ref, computed } from "vue";
 import Role from "@/common/enum/Role";
 import { useContextManageStore } from "@/stores/contextManageStore";
 import renterAPI from "../../../apis/roomManagementAPI/renterAPI";
-import { readNotify, showMessage } from "../../../common/commonFunction";
+import { MessageType, showMessage } from "../../../common/commonFunction";
 import notificationAPI from "../../../apis/notificationAPI/notificationAPI";
 import NotificationType from "../../../common/enum/NotificationType";
 
@@ -282,15 +282,16 @@ export const useContainer = () => {
           to_user_id: res.user_id,
           notification_message: `Người thuê <b>${res.user_name}</b> muốn liên kết tới tòa nhà có mã <b>${roomCode.value}</b>.`,
           notification_type: NotificationType.confirmation,
-          notification_title: "Yêu cầu liên kết đến tòa nhà",
-          notification_data: {
+          notification_title: "Yêu cầu liên kết",
+          notification_data: JSON.stringify({
             room_id: res.room_id,
-          },
+          }),
         };
         notificationAPI.sendNotify(notification);
       }
     } catch (error) {
       console.error(error);
+      showMessage("Không tìm thấy phòng hoặc chủ phòng!", MessageType.Error);
     }
   };
 

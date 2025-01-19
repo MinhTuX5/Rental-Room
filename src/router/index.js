@@ -98,7 +98,7 @@ const router = createRouter({
         },
         {
           path: "lich-bieu",
-          name: "AppointmentSchedule",
+          name: "AppointmentSchedule1",
           component: () =>
             import("@/views/auth/schedule/AppointmentSchedule.vue"),
         },

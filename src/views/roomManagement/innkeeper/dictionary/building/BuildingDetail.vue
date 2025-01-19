@@ -9,6 +9,54 @@
   >
     <!-- Nội dung popup -->
     <template #content>
+      <!-- Địa chỉ cho thuê -->
+      <v-sheet>
+        <v-sheet class="text-h5 mb-4">Địa chỉ cho thuê</v-sheet>
+        <v-row align="center" class="address mb-2">
+          <v-col
+            v-for="item in addressInfo"
+            :key="item.label"
+            align-self="center"
+          >
+            <v-autocomplete
+              clearable
+              v-model="model[item.valueField]"
+              density="compact"
+              :auto-select-first="true"
+              :no-data-text="item.noDataText"
+              :label="item.label"
+              :items="item.items"
+              :item-value="locationStore.$state.idField"
+              :item-title="locationStore.$state.nameField"
+              :autofocus="item.autofocus"
+              :rules="[rules.required]"
+              @update:modelValue="onSelectLocation($event, item.locationType)"
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
+        <!-- 02 -->
+        <v-row class="address">
+          <v-col>
+            <v-text-field
+              label="Đường/Phố"
+              density="compact"
+              :disabled="viewing"
+              v-model="model.street_name"
+              @update:modelValue="updateLocationParts($event, 2)"
+            ></v-text-field>
+          </v-col>
+          <v-col>
+            <v-text-field
+              label="Số nhà"
+              density="compact"
+              :disabled="viewing"
+              v-model="model.house_number"
+              @update:modelValue="updateLocationParts($event, 1)"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-sheet>
+
       <v-row>
         <v-col cols="5">
           <label> Mã loại phòng </label>
@@ -17,7 +65,7 @@
             variant="outlined"
             color="blue-lighten-3"
             placeholder="Nhập mã loại phòng"
-            :autofocus=true
+            :autofocus="true"
             :disabled="viewing"
             v-model="model.room_category_code"
         /></v-col>
@@ -56,12 +104,12 @@
             class="mt-2 hide-spin-buttons"
             variant="outlined"
             controlVariant=""
-            type='number'
+            type="number"
             :reverse="false"
             :inset="false"
             :min="0"
             :hide-spin-buttons="true"
-            suffix='m²'
+            suffix="m²"
             v-model="model.room_area"
           ></v-number-input>
         </v-col>

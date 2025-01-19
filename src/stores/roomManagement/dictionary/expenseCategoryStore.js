@@ -73,7 +73,7 @@ export const useExpenseCategoryStore = defineStore("ExpenseCategory", {
             const orderedItems = res.sort(
               (a, b) => a[me.nameField] < b[me.nameField]
             );
-            appStore.$state.AllExpenseCategories = orderedItems;
+            appStore.$state.allExpenseCategories = orderedItems;
             return orderedItems;
           } else {
             return [];
@@ -82,7 +82,7 @@ export const useExpenseCategoryStore = defineStore("ExpenseCategory", {
           console.error(error);
         }
       } else {
-        return appStore.$state.AllExpenseCategories;
+        return appStore.$state.allExpenseCategories;
       }
     },
   },

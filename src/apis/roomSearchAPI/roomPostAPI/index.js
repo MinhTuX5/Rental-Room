@@ -1,4 +1,6 @@
 import CrudAPI from "@/apis/crudAPI";
+import httpClient from "../../httpClient";
+import { useContextStore } from "../../../stores/contextStore";
 
 const END_POINT = "RoomPosts";
 class RoomPostAPI extends CrudAPI {
@@ -57,6 +59,27 @@ class RoomPostAPI extends CrudAPI {
   async saveLocation(entity) {
     try {
       const response = await this.postAsync(entity, "/location");
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async linkToInnkeeper(payload) {
+    try {
+      var response = await this.postAsync(payload, `/linking`);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async cancelLinkToInnkeeper() {
+    try {
+      const userId = useContextStore().$state.user.user_id;
+      var response = await httpClient.delete(
+        `${this.endPoint}/linking/${userId}`
+      );
       return response.data;
     } catch (error) {
       console.error(error);

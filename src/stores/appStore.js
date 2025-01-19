@@ -8,10 +8,22 @@ export const useAppStore = defineStore({
     showAlert: false,
     showLoginPopup: false,
     moveToPageAfterLogin: "",
+    callBackAfterLogin: null,
+    LoginWithRole: 3,
+    showDialog: false,
+    dialogConfig: {
+      icon: "",
+      title: "",
+      text: "",
+      feature: "",
+      btnText: "",
+      width: 500,
+      type: "",
+    },
     allRoomCategories: [],
     allRooms: [],
     allServiceFees: [],
-    AllExpenseCategories: [],
+    allExpenseCategories: [],
   }),
   actions: {
     setAlert({ message, type }) {

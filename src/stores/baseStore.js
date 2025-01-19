@@ -20,6 +20,10 @@ export default class BaseStore {
         }
       },
 
+      customPagingPayload(config) {
+        return config;
+      },
+
       /**
        * @description Phân trang
        * @param {Object} config {Skip, Take, Columns, Filters}
@@ -27,6 +31,7 @@ export default class BaseStore {
        */
       async getPaging(config) {
         const me = this;
+
         const response = await api.getPaging(config);
         var result = {
           data: response.data,

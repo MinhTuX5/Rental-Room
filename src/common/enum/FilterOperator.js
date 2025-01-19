@@ -7,4 +7,5 @@ export default {
   IN: 5,
   GreaterThanOrEqual: 6,
   LessThanOrEqual: 7,
+  Between: 8,
 };

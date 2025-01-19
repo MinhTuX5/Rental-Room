@@ -78,7 +78,7 @@
                   v-if="item.read_at"
                   class="d-flex justify-end font-italic opacity-50 text-subtitle-2"
                 >
-                  Đã đọc: {{ moment(item.read_at).format("HH:mm DD/MM/YYYY") }}
+                  Đã xem: {{ moment(item.read_at).format("HH:mm DD/MM/YYYY") }}
                 </div>
               </template>
             </v-list-item>

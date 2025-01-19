@@ -11,17 +11,26 @@ export const useContainer = () => {
   const drawer = ref();
 
   const features = reactive([
-    { title: "Đăng bài", componentId: "PostDetailPopup" },
+    {
+      title: "Đăng bài",
+      componentId: "PostDetailPopup",
+      path: "/tai-khoan/dang-bai",
+    },
     {
       title: "Quản lý bài đăng",
       componentId: "PostManagement",
+      path: "/tai-khoan/quan-ly-bai-dang",
     },
     {
       title: "Quản lý thông tin",
       componentId: "InfoUpdating",
-      path: "cap-nhat-thong-tin",
+      path: "/tai-khoan/quan-ly-tai-khoan",
     },
-    { title: "Lịch hẹn", componentId: "AppointmentSchedule", path: "lich-hen" },
+    {
+      title: "Lịch hẹn",
+      componentId: "AppointmentSchedule",
+      path: "/tai-khoan/lich-hen",
+    },
   ]);
 
   const onClickTab = (value) => {

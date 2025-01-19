@@ -30,6 +30,8 @@ import { INITIAL_EVENTS, createEventId } from "./event-utils.js";
 // css
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack config!
+import { capitalizeWords } from "../../../../common/commonFunction.js";
+import _ from "lodash";
 
 export default {
   name: "Calendar",
@@ -64,9 +66,30 @@ export default {
       firstDay: 1, // Sunday=0, Monday=1, Tuesday=2, etc.
       theme: "Flatly",
       headerToolbar: {
-        center: "title",
-        left: "prev today next",
-        right: "",
+        center: "addEventButton",
+        left: "prev,next today",
+        right: "title",
+      },
+      customButtons: {
+        addEventButton: {
+          text: "add event...",
+          click: function () {
+            var dateStr = prompt("Enter a date in YYYY-MM-DD format");
+            var date = new Date(dateStr + "T00:00:00"); // will be in local time
+
+            if (!isNaN(date.valueOf())) {
+              // valid?
+              calendar.addEvent({
+                title: "dynamic event",
+                start: date,
+                allDay: true,
+              });
+              alert("Great. Now, update your database...");
+            } else {
+              alert("Invalid date.");
+            }
+          },
+        },
       },
       views: {
         dayGridMonth: {},
@@ -76,6 +99,10 @@ export default {
         today: "Hôm nay",
       },
       select: handleSelect,
+      title: "okla",
+      titleFormat: (config) => {
+        return `Tháng ${config.date.month + 1} Năm ${config.date.year}`;
+      },
     });
 
     onMounted(() => {});

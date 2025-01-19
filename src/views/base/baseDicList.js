@@ -27,7 +27,7 @@ export default {
   computed: {
     items() {
       const me = this;
-      const data = this.store?.$state.items ?? [];
+      const data = this.store?.$state?.items ?? [];
       data.forEach((item) => {
         item = me.getDateItem(item, me.store?.$state.dateFields);
         item = me.getNumberItem(item, me.store?.$state.numberFields);
@@ -36,7 +36,7 @@ export default {
       return data;
     },
     totalItems() {
-      return this.store.$state.totalItems ?? 0;
+      return this.store.$state?.totalItems ?? 0;
     },
     searchFields() {
       return this.store?.$state.searchFields ?? [];
@@ -96,7 +96,10 @@ export default {
       enumFields.forEach((x) => {
         const keys = Object.keys(_enum[x.enum]);
         const key = keys.find((y) => _enum[x.enum][y] == item[x.field]);
-        if (key) item[x.column] = key;
+        if (key) {
+          const col = `displayed_${x.field}`;
+          item[col] = key;
+        }
       });
       return item;
     },
