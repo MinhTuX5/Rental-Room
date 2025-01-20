@@ -32,7 +32,7 @@ export const useFeeStore = defineStore("fee", {
       return [
         {
           Field: "building_id",
-          Value: state.building_id,
+          Value: contextStore.$state.user.building_id,
           Operator: FilterOperator.Equal,
         },
       ];
@@ -40,10 +40,10 @@ export const useFeeStore = defineStore("fee", {
     defaultSorts(state) {
       return [
         {
-          Field: "contract_code",
+          Column: "contract_code",
         },
         {
-          Field: "room_code",
+          Column: "room_code",
         },
       ];
     },

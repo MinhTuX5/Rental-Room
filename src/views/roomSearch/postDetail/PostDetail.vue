@@ -15,7 +15,9 @@
       <v-sheet class="d-flex flex-column mb-4">
         <h3 :style="{ fontFamily: 'Lexend Medium,Roboto,Arial' }">
           {{ model.post_title }}
-          <span class="font-italic ml-2 font-weight-thin">(Mã phòng: {{ model.post_code }})</span>
+          <span class="font-italic ml-2 font-weight-thin"
+            >(Mã phòng: {{ model.post_code }})</span
+          >
         </h3>
         <div class="d-flex align-center">
           <v-icon icon="mdi-map-marker-outline" color="red"></v-icon>
@@ -178,22 +180,51 @@
           >
         </div>
       </v-card>
-      <v-row v-if="isFromAdmin" class="d-flex">
+      <v-row v-if="isFromAdmin" class="d-flex mt-4 flex-column">
         <v-btn
-          class="mt-4 flex-fill mr-4"
           color="green"
           prepend-icon="mdi-check"
+          class="fill-flex mb-4"
+          @click="approve"
           >Phê duyệt</v-btn
         >
-        <v-btn
-          class="mt-4 flex-fill"
-          color="red"
-          prepend-icon="mdi-window-close"
+        <v-btn color="red" prepend-icon="mdi-window-close" @click="reject"
           >Từ chối</v-btn
         >
       </v-row>
     </v-col>
   </v-container>
+  <v-dialog v-model="showDialog" width="auto">
+    <v-card
+      :width="400"
+      :prepend-icon="'mdi-image-remove-outline'"
+      :title="'Từ chối bài đăng'"
+      text="Lý do từ chối sẽ được thông báo đến người dùng"
+    >
+      <v-card-item>
+        <v-row>
+          <v-text-field
+            clearable
+            label="Lý do từ chối"
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            :autofocus="true"
+            v-model="rejectMessage"
+          />
+        </v-row>
+      </v-card-item>
+      <template v-slot:actions>
+        <v-btn
+          :disabled="!rejectMessage"
+          class="ms-auto"
+          :text="'Từ chối'"
+          color="orange-lighten-2"
+          @click="onSubmitDialog"
+        ></v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>

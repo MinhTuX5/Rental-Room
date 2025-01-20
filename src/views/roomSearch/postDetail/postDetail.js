@@ -4,15 +4,18 @@ import moment from "moment";
 import { useRoomSearchCommon } from "../roomSearchCommon";
 // store
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
-import { useContextStore } from "@/stores/contextStore";
 // resources
 import { isJson } from "@/common/commonFunction";
+import PostStatus from "../../../common/enum/PostStatus";
+import { sendNotify, showMessage } from "../../../common/commonFunction";
+import NotificationType from "../../../common/enum/NotificationType";
+import { useContextAdminStore } from "../../../stores/contextAdminStore";
 
 export const usePostDetail = () => {
   const { proxy } = getCurrentInstance();
 
   const store = useRoomPostStore();
-  const contextStore = useContextStore();
+  const contextStore = useContextAdminStore();
 
   const { filters, lovePost } = useRoomSearchCommon();
 
@@ -39,6 +42,69 @@ export const usePostDetail = () => {
   });
 
   const isFromAdmin = ref(false);
+
+  const approve = async () => {
+    const me = proxy;
+    try {
+      const roomPostId = me.$route.params.id;
+      const payload = {
+        RoomPostId: roomPostId,
+        PostStatus: PostStatus.Posted,
+      };
+      await store.updatePostStatus(payload);
+      showMessage("Phê duyệt bài đăng thành công!");
+
+      const notification = {
+        from_user_id: contextStore.$state.user.user_id,
+        to_user_id: me.model.user_id,
+        notification_type: NotificationType.info,
+        notification_message: `Bài đăng <b>#${me.model.post_code}</b> của bạn đã được phê duyệt`,
+        notification_title: "Phê duyệt bài đăng",
+        is_related: true,
+      };
+      sendNotify(notification);
+
+      me.$router.push({ name: "PostApproval" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const showDialog = ref(false);
+  const rejectMessage = ref("");
+  const reject = () => {
+    showDialog.value = true;
+  };
+
+  const onSubmitDialog = async () => {
+    const me = proxy;
+    try {
+      const roomPostId = me.$route.params.id;
+      const payload = {
+        RoomPostId: roomPostId,
+        PostStatus: PostStatus.Posted,
+        RejectMessage: rejectMessage.value,
+      };
+      await store.updatePostStatus(payload);
+
+      const notification = {
+        from_user_id: contextStore.$state.user.user_id,
+        to_user_id: me.model.user_id,
+        notification_type: NotificationType.info,
+        notification_message: `Bài đăng <b>#${me.model.post_code}</b> của bạn đã bị từ chối với lý do: ${rejectMessage.value}`,
+        notification_title: "Từ chối bài đăng",
+        is_related: true,
+      };
+      sendNotify(notification);
+
+      showMessage("Từ chối bài đăng thành công!");
+      me.$router.push({ name: "PostApproval" });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      showDialog.value = false;
+    }
+  };
 
   onMounted(async () => {
     const me = proxy;
@@ -75,5 +141,10 @@ export const usePostDetail = () => {
     likePost,
     isFromAdmin,
     imageLinks,
+    approve,
+    showDialog,
+    rejectMessage,
+    reject,
+    onSubmitDialog,
   };
 };

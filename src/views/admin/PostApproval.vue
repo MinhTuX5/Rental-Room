@@ -1,5 +1,11 @@
 <template>
   <v-col id="list" class="border-thin pa-4">
+    <v-btn
+      @click="changePage(1, true)"
+      class="justify-end mb-4"
+      prepend-icon="mdi-refresh"
+      >Làm mới</v-btn
+    >
     <v-virtual-scroll
       v-if="postDetails.length"
       ref="virtualScroll"
@@ -22,7 +28,7 @@
       text="Không tìm thấy bài đăng cần phê duyệt!"
       image="/src/assets/imgs/common/empty.png"
     ></v-empty-state>
-    <v-row class="d-flex align-center">
+    <v-row v-if="postDetails.length" class="d-flex align-center">
       <v-col>
         <div class="text-h6">Tổng {{ totalCount ?? 0 }} kết quả</div>
       </v-col>
@@ -70,6 +76,8 @@ import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 import baseView from "../base/baseView";
 // components
 import PostOverview from "@/components/views/postOverview/PostOverview.vue";
+import FilterOperator from "../../common/enum/FilterOperator";
+import PostStatus from "../../common/enum/PostStatus";
 
 export default {
   extends: baseView,
@@ -108,6 +116,13 @@ export default {
         PagingItem: {
           Skip: (pageIndex - 1) * pageSize.value,
           Take: pageSize.value,
+          filters: [
+            {
+              Field: "post_status",
+              Operator: FilterOperator.Equal,
+              Value: PostStatus.WaitingForApproval,
+            },
+          ],
         },
       };
       const res = await roomPostStore.getPaging(payload);
@@ -146,7 +161,7 @@ export default {
 
     const heightOfList = computed(() => {
       return (
-        window.innerHeight - (proxy.$props?.heightOfAppHeader ?? 64) - 32 - 60
+        window.innerHeight - (proxy.$props?.heightOfAppHeader ?? 64) - 32 - 60 - 48
       );
     });
 

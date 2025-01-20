@@ -8,6 +8,7 @@ import { showMessage } from "@/common/commonFunction";
 import { useRoomSearchCommon } from "@/views/roomSearch/roomSearchCommon";
 import { usePostOverviewCommon } from "./postOverviewCommon";
 import { formatNumberWithCommas } from "../../../common/commonFunction";
+import PostStatus from "../../../common/enum/PostStatus";
 
 export const usePostOverview = () => {
   const { proxy } = getCurrentInstance();
@@ -55,6 +56,8 @@ export const usePostOverview = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      showDialog.value = false;
     }
   };
 
@@ -64,7 +67,6 @@ export const usePostOverview = () => {
   const likePost = async (item) => {
     const me = proxy;
 
-    
     if (!contextStore.$state.token) {
       appStore.toggleLoginPopup();
       return;
@@ -92,6 +94,42 @@ export const usePostOverview = () => {
     me.$emit("onClickItem");
   };
 
+  const updatePost = () => {
+    const me = proxy;
+    me.$router.push({
+      name: "PostDetailUpdating",
+      params: { roomPostId: me.$props.item.room_post_id },
+    });
+  };
+
+  const onPost = async () => {
+    const me = proxy;
+    try {
+      const payload = {
+        RoomPostId: me.$props.item.room_post_id,
+        PostStatus: PostStatus.WaitingForApproval,
+      };
+      await store.updatePostStatus(payload);
+      me.$emit("onPost");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const hidePost = async () => {
+    const me = proxy;
+    try {
+      const payload = {
+        RoomPostId: me.$props.item.room_post_id,
+        PostStatus: PostStatus.Saved,
+      };
+      await store.updatePostStatus(payload);
+      me.$emit("hidePost");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   onMounted(() => {});
 
   return {
@@ -103,6 +141,9 @@ export const usePostOverview = () => {
     showDialog,
     dialogConfig,
     showDeleteDialog,
-    formatNumberWithCommas
+    formatNumberWithCommas,
+    updatePost,
+    onPost,
+    hidePost,
   };
 };

@@ -7,12 +7,14 @@ import RoomCategoryConfig from "@/common/config/roomCategoryConfig";
 // stores
 import { useLocationStore } from "@/stores/location/locationStore";
 import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
 import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 import i18nApp from "@/constant/resource/i18nApp";
 // enum
 import LocationType from "@/common/enum/LocationType";
 import RoomType from "../../../common/enum/RoomType";
 import PostStatus from "../../../common/enum/PostStatus";
+import { useRoomStore } from "../../../stores/roomManagement/dictionary/roomStore";
 
 export const usePostDetailPopup = () => {
   const { proxy } = getCurrentInstance();
@@ -153,7 +155,7 @@ export const usePostDetailPopup = () => {
     }
 
     locationParts.value[index - 1] = customVal;
-    model.room_address = locationParts.value.filter((x) => x).join(", ");
+    model.value.room_address = locationParts.value.filter((x) => x).join(", ");
   };
 
   const formatAmount = (event) => {
@@ -180,10 +182,6 @@ export const usePostDetailPopup = () => {
   const customBeforeSubmit = () => {
     const me = proxy;
 
-    const contextStore = useContextStore();
-    const { user } = contextStore.$state;
-    me.model.user_id = user?.user_id;
-
     me.model.RoomCharacteristic = cloneDeep(roomCharacteristic.value);
     me.model.room_characteristic = JSON.stringify(roomCharacteristic.value);
 
@@ -192,9 +190,7 @@ export const usePostDetailPopup = () => {
     // Chuyển đổi chuỗi thành số
     me.model.room_price = parseInt(numberWithoutCommas);
 
-    if (isManagement.value) {
-      me.model.is_management = true;
-    }
+    me.model.from_management = isManagement.value ? 1 : 0;
   };
 
   const submitPopup = async (postStatus) => {
@@ -214,8 +210,6 @@ export const usePostDetailPopup = () => {
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      overlay.value = false;
     }
   };
 
@@ -231,7 +225,7 @@ export const usePostDetailPopup = () => {
     allowEdit.value = !allowEdit.value;
   };
 
-  const model = reactive({
+  const model = ref({
     room_gender: 0,
     room_price_unit: 0,
     no_of_bed_rooms: 1,
@@ -281,33 +275,85 @@ export const usePostDetailPopup = () => {
       }
     }
 
+    // Lấy cả những ảnh đã lưu
+    savedImages.value.forEach((x) => {
+      imageLinks.value.push(x);
+    });
+
     if (imageLinks.value.length) {
       const payload = {
         ...data,
         images: imageLinks.value.join(","),
       };
-      store.putAsync(payload).catch((err) => {
-        console.error(err);
-      });
+      store
+        .putAsync(payload)
+        .then(() => {
+          if (isManagement.value) {
+            useRoomStore().$state.invalidCache = true;
+            proxy.$router.push({ name: "RoomListOverview" });
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
+          overlay.value = false;
+        });
     }
   };
 
-  onMounted(() => {
+  const deletedImages = ref([]);
+  const removeImg = (index) => {
+    deletedImages.value.push(savedImages.value[index]);
+    savedImages.value.splice(index, 1);
+  };
+
+  const isReadOnly = ref(false);
+  const savedImages = ref([]);
+  const isUpdating = ref(false);
+
+  onMounted(async () => {
     const me = proxy;
 
-    store.getNew().then((newPost) => {
-      if (newPost && typeof newPost === "object") {
-        Object.keys(newPost).forEach((key) => {
-          model[key] = newPost[key];
-        });
-      }
-    });
-
+    const roomPostId =
+      me.$route.params.roomPostId ?? me.$route.query.roomPostId;
     if (me.$route.name === "Management_PostDetail") {
+      isReadOnly.value = roomPostId ? true : false;
       isManagement.value = true;
       title.value = "Chi tiết phòng";
       me.updateText = "";
       me.addText = "";
+
+      model.value.room_id = me.$route.query.roomId;
+      model.value.user_id = useContextManageStore().$state.user.user_id;
+
+      if (!roomPostId) {
+        me.editMode = 1;
+        const data = await store.getRoomPostByRoomId(model.value.room_id);
+        onSelectLocation(data.province_id, LocationType.Province);
+        onSelectLocation(data.district_id, LocationType.District);
+        model.value = { ...model.value, ...data };
+        roomPrice.value = data.room_price.toString();
+        formatAmount();
+      }
+    } else {
+      model.value.user_id = useContextStore().$state.user.user_id;
+    }
+
+    if (roomPostId) {
+      me.editMode = 2;
+      const data = await store.getById(roomPostId);
+      onSelectLocation(data.province_id, LocationType.Province);
+      onSelectLocation(data.district_id, LocationType.District);
+      model.value = data;
+      roomPrice.value = data.room_price.toString();
+      formatAmount();
+      savedImages.value = data.images.split(",");
+
+      if (me.$route.name === "PostDetailUpdating") {
+        title.value = 'Sửa bài đăng'
+        isUpdating.value = true;
+      }
     }
 
     priceUnit.value = unitList[0];
@@ -347,5 +393,9 @@ export const usePostDetailPopup = () => {
     PostStatus,
     overlay,
     isManagement,
+    isReadOnly,
+    savedImages,
+    removeImg,
+    isUpdating
   };
 };

@@ -21,17 +21,13 @@
       <v-spacer></v-spacer>
 
       <!-- Thông báo -->
-      <v-badge
-        color="error"
-        :content="newNotifications.length"
-        class="mr-4"
-        @click="getNotifications"
-      >
+      <v-badge color="error" :content="newNotifications.length" class="mr-4">
         <v-icon
           id="notification"
           size="large"
           v-tooltip:top="'Thông báo'"
           class="cursor-pointer"
+          @click="getNotify"
           >mdi-bell-outline</v-icon
         >
       </v-badge>
@@ -43,12 +39,13 @@
               v-for="(item, i) in notificationList"
               :key="i"
               :value="item.notification_id"
+              @click="onClickNotify(item)"
             >
-              <template #prepend>
+              <!-- <template #prepend>
                 <v-avatar
                   image="https://picsum.photos/1920/1080?random"
                 ></v-avatar>
-              </template>
+              </template> -->
 
               <template #title>
                 <div
@@ -81,7 +78,7 @@
       <v-menu activator="#menu-activator">
         <v-list>
           <v-list-item
-            v-for="(item, index) in menuItems"
+            v-for="(item, index) in menuItems.filter((x) => !x.isHide)"
             :key="index"
             :value="index"
             class="cursor-pointer"
@@ -151,15 +148,31 @@
       <router-view :height-of-app-header="$refs.VHeader?.$el.clientHeight" />
     </v-main>
   </v-layout>
-  <v-dialog v-model="showPopup" width="auto">
+  <v-dialog v-model="showDialog" width="auto">
     <v-card
       :width="dialogConfig.width ?? 500"
       :prepend-icon="dialogConfig.icon"
       :title="dialogConfig.title"
       :text="dialogConfig.text"
     >
-      <v-card-item>
-        <v-row v-if="dialogConfig.key == featureConfig.LinkToBuilding.key">
+      <v-card-item v-if="dialogConfig.key == featureConfig.FeedBack.key">
+        <v-row>
+          <v-col>
+            <v-text-field
+              clearable
+              label="Nhập phản hồi"
+              class="mt-2"
+              variant="outlined"
+              color="blue-lighten-3"
+              :autofocus="true"
+              v-model="feedBackText"
+          /></v-col>
+        </v-row>
+      </v-card-item>
+      <v-card-item
+        v-if="dialogConfig.key == featureConfig.LinkToRoom.key && isRenterPage"
+      >
+        <v-row>
           <v-col>
             <v-text-field
               clearable
@@ -180,18 +193,6 @@
               v-model="roomCode"
             />
           </v-col>
-        </v-row>
-        <v-row v-if="dialogConfig.key == featureConfig.FeedBack.key">
-          <v-col>
-            <v-text-field
-              clearable
-              label="Nhập phản hồi"
-              class="mt-2"
-              variant="outlined"
-              color="blue-lighten-3"
-              :autofocus="true"
-              v-model="feedBackText"
-          /></v-col>
         </v-row>
       </v-card-item>
       <template v-slot:actions>

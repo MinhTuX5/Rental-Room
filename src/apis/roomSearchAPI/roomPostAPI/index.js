@@ -85,6 +85,33 @@ class RoomPostAPI extends CrudAPI {
       console.error(error);
     }
   }
+
+  async getRoomPostByRoomId(roomId) {
+    try {
+      const res = await this.getAsync(null, `/room/${roomId}`);
+      return res.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async genPostsFromManagement(payload) {
+    try {
+      const res = await this.postAsync(payload, `/generating`);
+      return res.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updatePostStatus(payload) {
+    try {
+      const res = await this.putAsync(payload, `/post-status`);
+      return res.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 export default new RoomPostAPI();

@@ -55,6 +55,7 @@
             :title="item.title"
             :value="item.componentId"
             :active="item.active"
+            :to="item.path"
           >
             <template v-slot:prepend>
               <v-icon

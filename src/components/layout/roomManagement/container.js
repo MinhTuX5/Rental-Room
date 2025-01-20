@@ -1,28 +1,41 @@
 import { getCurrentInstance, onMounted, reactive, ref, computed } from "vue";
 // resources
-import Role from "@/common/enum/Role";
+import {
+  MessageType,
+  showMessage,
+  readNotify,
+  sendNotify,
+  getNotifications,
+  getManagementContext,
+} from "../../../common/commonFunction";
+// stores
 import { useContextManageStore } from "@/stores/contextManageStore";
+
 import renterAPI from "../../../apis/roomManagementAPI/renterAPI";
-import { MessageType, showMessage } from "../../../common/commonFunction";
 import notificationAPI from "../../../apis/notificationAPI/notificationAPI";
 import NotificationType from "../../../common/enum/NotificationType";
+import EventKey from "../../../common/enum/EventKey";
+import { renterFeatures, innkeeperFeatures } from "./resources";
+import _ from "lodash";
+import Role from "../../../common/enum/Role";
 
 export const useContainer = () => {
   const { proxy } = getCurrentInstance();
 
   const contextStore = useContextManageStore();
-  const user = computed(() => contextStore.$state.user);
 
-  const featureConfig = {
-    LinkToBuilding: {
-      icon: user?.innkeeper_id ? "mdi-link-off" : "mdi-link",
-      title: user?.innkeeper_id
-        ? "Hủy liên kết tới tòa nhà"
-        : "Liên kết tới tòa nhà",
-      text: "Yêu cầu sẽ được gửi đến chủ trọ để chờ xác nhận",
-      btnText: "Gửi yêu cầu",
-      key: "LinkToBuilding",
-    },
+  const linkToRoomConfig = computed(() => ({
+    icon: contextStore.$state.user.innkeeper_id ? "mdi-link-off" : "mdi-link",
+    title: contextStore.$state.user.innkeeper_id
+      ? "Hủy liên kết tới phòng"
+      : "Liên kết tới phòng",
+    text: "Yêu cầu sẽ được gửi đến chủ trọ để chờ xác nhận",
+    btnText: "Gửi yêu cầu",
+    key: "LinkToRoom",
+  }));
+
+  const featureConfig = reactive({
+    LinkToRoom: linkToRoomConfig.value,
     FeedBack: {
       icon: "mdi-message-alert-outline",
       title: "Gửi phản hồi",
@@ -31,16 +44,23 @@ export const useContainer = () => {
       key: "FeedBack",
       width: 500,
     },
+    LinkToAccount: {
+      icon: "mdi-hand-okay",
+      title: "Xác nhận liên kết",
+      btnText: "Xác nhận",
+      key: "LinkToAccount",
+      width: 300,
+    },
     GoToHomePage: {
       key: "GoToHomePage",
     },
     Logout: {
       key: "Logout",
     },
-  };
+  });
 
   const rail = ref(false);
-  const showPopup = ref(false);
+  const showDialog = ref(false);
 
   const openHomePage = () => {
     const originLink = window.location.origin;
@@ -69,144 +89,15 @@ export const useContainer = () => {
 
   const renterMenuItems = ref([
     {
-      ...featureConfig.LinkToBuilding,
+      ...featureConfig.LinkToRoom,
     },
     {
+      isHide: contextStore.$state.user.innkeeper_id ? false : true,
       ...featureConfig.FeedBack,
     },
   ]);
 
   const features = ref([]);
-
-  const renterFeatures = reactive([
-    {
-      title: "Thông tin phòng",
-      componentId: "RoomInfo",
-      icon: "mdi-information-variant-circle-outline",
-      path: "/quan-ly/thong-tin-phong",
-    },
-    {
-      title: "Danh sách phòng",
-      componentId: "RoomListOverview",
-      icon: "mdi-list-box-outline",
-      value: "RoomListOverview",
-      path: "/quan-ly/danh-sach-phong",
-    },
-    {
-      title: "Lịch biểu",
-      componentId: "AppointmentSchedule",
-      icon: "mdi-calendar-account-outline",
-      value: "AppointmentSchedule",
-      path: "/quan-ly/lich-bieu",
-    },
-    {
-      title: "Quản lý chi tiêu",
-      componentId: "Expense",
-      icon: "mdi-calendar-account-outline",
-      path: "/quan-ly/chi-tieu",
-    },
-    {
-      title: "Tính toán",
-      componentId: "Calculation",
-      icon: "mdi-calculator",
-      path: "/quan-ly/tinh-toan",
-    },
-    {
-      title: "Danh mục",
-      icon: "mdi-book-alphabet",
-      isGroup: true,
-      parentVal: "dictionary",
-      path: "quan-ly/danh-muc",
-      children: [
-        {
-          title: "Loại chi phí",
-          icon: "mdi-invoice-list-outline",
-          value: "ExpenseCategoryList",
-          componentId: "ExpenseCategoryList",
-          path: "quan-ly/danh-muc/loai-chi-phi",
-        },
-      ],
-    },
-  ]);
-
-  const innkeeperFeatures = reactive([
-    {
-      title: "Danh sách phòng",
-      componentId: "RoomListOverview",
-      icon: "mdi-list-box-outline",
-      value: "RoomListOverview",
-    },
-    {
-      title: "Quản lý thông tin",
-      icon: "mdi-cloud-print-outline",
-      isGroup: true,
-      parentVal: "infoManagement",
-      children: [
-        {
-          title: "Quản lý hộ gia đình",
-          icon: "mdi-home-account",
-          componentId: "HouseholdList",
-          value: "HouseholdList",
-        },
-        {
-          title: "Quản lý thu phí",
-          icon: "mdi-cash-sync",
-          componentId: "FeeList",
-          value: "FeeList",
-        },
-      ],
-    },
-    {
-      title: "Danh mục",
-      icon: "mdi-cloud-print-outline",
-      isGroup: true,
-      parentVal: "dictionary",
-      children: [
-        {
-          title: "Tòa nhà",
-          icon: "mdi-home-city",
-          componentId: "BuildingList",
-          value: "BuildingList",
-        },
-        {
-          title: "Loại phòng",
-          componentId: "RoomCategoryList",
-          icon: "mdi-home-circle-outline",
-          value: "RoomCategoryList",
-        },
-        {
-          title: "Phòng",
-          componentId: "RoomList",
-          icon: "mdi-home-group",
-          value: "RoomList",
-        },
-        {
-          title: "Hợp đồng cho thuê",
-          componentId: "ContractList",
-          icon: "mdi-file-sign",
-          value: "ContractList",
-        },
-        {
-          title: "Người thuê",
-          componentId: "ResidentList",
-          icon: "mdi-account-group-outline",
-          value: "ResidentList",
-        },
-        {
-          title: "Phí gửi xe",
-          componentId: "VehicleFeeList",
-          icon: "mdi-atv",
-          value: "VehicleFeeList",
-        },
-        {
-          title: "Phí dịch vụ",
-          componentId: "ServiceFeeList",
-          icon: "mdi-currency-usd",
-          value: "ServiceFeeList",
-        },
-      ],
-    },
-  ]);
 
   /**
    * @description Xử lý sự kiện chọn tab khác
@@ -225,11 +116,6 @@ export const useContainer = () => {
         break;
       case Role.Renter:
         menuItems.value.splice(1, 0, ...renterMenuItems.value);
-        renterFeatures.forEach((x) => {
-          if (x.componentId === "RoomListOverview" && !user.innkeeper_id) {
-            x.isHide = true;
-          }
-        });
         features.value = renterFeatures;
         break;
       default:
@@ -237,61 +123,36 @@ export const useContainer = () => {
     }
   };
 
-  const activeMenuItem = () => {
-    const me = proxy;
-    const { name } = me.$route;
-    if (name) {
-      var menuItem = features.value.find(
-        (x) =>
-          x.componentId == name ||
-          x.children?.some((y) => y.componentId == name)
-      );
-      if (menuItem) {
-        if (Array.isArray(menuItem.children)) {
-          menuItem.children.forEach((x) => (x.active = false));
-          const childItem = menuItem.children.find(
-            (x) => x.componentId == name
-          );
-          if (childItem) {
-            childItem.active = true;
-          } else {
-            menuItem.children[0].active = true;
-          }
-        } else {
-          menuItem.active = true;
-        }
-      }
-    }
-  };
-
   const roomCode = ref("");
   const phoneNumber = ref("");
 
-  const onLinkToBuilding = async () => {
+  const onLinkToRoom = async () => {
     const payload = {
       roomCode: roomCode.value,
       PhoneNumber: phoneNumber.value,
     };
     try {
-      const res = await renterAPI.linkToBuilding(payload);
+      const res = await renterAPI.linkToRoom(payload);
       if (res) {
         showMessage("Đã gửi yêu cầu đến chủ phòng!");
 
         const notification = {
           from_user_id: contextStore.$state.user.user_id,
           to_user_id: res.user_id,
-          notification_message: `Người thuê <b>${res.user_name}</b> muốn liên kết tới tòa nhà có mã <b>${roomCode.value}</b>.`,
+          notification_message: `Người thuê <b>${res.user_name}</b> muốn liên kết tới phòng có mã <b>${roomCode.value}</b>.`,
           notification_type: NotificationType.confirmation,
           notification_title: "Yêu cầu liên kết",
           notification_data: JSON.stringify({
             room_id: res.room_id,
+            user_id: contextStore.$state.user.user_id,
           }),
+          event_key: EventKey.LinkToRoom,
         };
         notificationAPI.sendNotify(notification);
       }
     } catch (error) {
       console.error(error);
-      showMessage("Không tìm thấy phòng hoặc chủ phòng!", MessageType.Error);
+      showMessage("Có lỗi xảy ra!", MessageType.Error);
     }
   };
 
@@ -312,43 +173,120 @@ export const useContainer = () => {
   };
 
   const notificationList = ref([]);
-  const getNotifications = async () => {
-    const res = await notificationAPI.getPaging(
-      contextStore.$state.user.user_id
-    );
-    if (Array.isArray(res.data)) {
-      notificationList.value = res.data;
-    }
-  };
 
   const selectedMenu = ref();
   const dialogConfig = ref({
     icon: "",
     title: "",
     text: "",
-    feature: "",
     btnText: "",
+    key: "",
     width: 500,
   });
 
   const feedBackText = ref();
 
+  /**
+   *
+   */
   const onSubmitDialog = () => {
-    const me = proxy;
     try {
-      switch (dialogConfig.value.feature) {
+      switch (dialogConfig.value.key) {
         case featureConfig.FeedBack.key:
           onFeedBack();
           break;
-        case featureConfig.LinkToBuilding.key:
-          onLinkToBuilding();
+        case featureConfig.LinkToRoom.key:
+          if (window.PageRole === Role.Innkeeper) {
+            confirmLinkingRoom();
+          } else {
+            onLinkToRoom();
+          }
+          break;
+        case featureConfig.LinkToAccount.key:
+          confirmLinkingAccount();
+          break;
         default:
           break;
       }
     } catch (error) {
       console.error(error);
     } finally {
-      showPopup.value = false;
+      showDialog.value = false;
+    }
+  };
+
+  const confirmLinkingAccount = async () => {
+    try {
+      var payload = {
+        room_seeker_id: dialogConfig.value.data?.room_seeker_id,
+        innkeeper_id: contextStore.$state.user.user_id,
+      };
+
+      const res = await renterAPI.linkToAccount(payload);
+      if (res) {
+        showMessage("Xác nhận liên kết thành công!");
+        const notification = {
+          from_user_id: payload.innkeeper_id,
+          to_user_id: payload.room_seeker_id,
+          notification_message: `Liên kết tài khoản thành công!`,
+          notification_type: NotificationType.info,
+          notification_title: "Thông báo",
+          notification_data: JSON.stringify({
+            innkeeper_id: payload.innkeeper_id,
+          }),
+          event_key: EventKey.LinkingSuccess,
+        };
+        sendNotify(notification).then(() => {
+          getNotify();
+        });
+      } else {
+        showMessage("Xác nhận liên kết thất bại!", MessageType.Error);
+      }
+    } catch (error) {
+      console.error(error);
+      showMessage("Có lỗi xảy ra!", MessageType.Error);
+    } finally {
+      showDialog.value = false;
+    }
+  };
+
+  // Chủ trọ xác nhận
+  const confirmLinkingRoom = async () => {
+    try {
+      var payload = {
+        user_id: dialogConfig.value.data.user_id,
+        room_id: dialogConfig.value.data.room_id,
+        notification_id: dialogConfig.value.notification_id,
+        innkeeper_id: contextStore.$state.user.user_id,
+      };
+
+      const res = await renterAPI.createRoomLinking(payload);
+      if (res) {
+        showMessage("Xác nhận liên kết thành công!");
+        const notification = {
+          from_user_id: contextStore.$state.user.user_id,
+          to_user_id: payload.user_id,
+          notification_message: `Liên kết tài khoản thành công!`,
+          notification_type: NotificationType.info,
+          notification_title: "Thông báo",
+          notification_data: JSON.stringify({
+            innkeeper_id: contextStore.$state.user.user_id,
+            room_name: res.room_name,
+            building_name: res.building_name,
+          }),
+          event_key: EventKey.LinkingSuccess,
+        };
+        sendNotify(notification).then(() => {
+          getNotify();
+        });
+      } else {
+        showMessage("Xác nhận liên kết thất bại!", MessageType.Error);
+      }
+    } catch (error) {
+      console.error(error);
+      showMessage("Có lỗi xảy ra!", MessageType.Error);
+    } finally {
+      showDialog.value = false;
     }
   };
 
@@ -356,9 +294,11 @@ export const useContainer = () => {
     switch (item.key) {
       case featureConfig.FeedBack.key:
         dialogConfig.value = { ...featureConfig.FeedBack };
+        showDialog.value = true;
         break;
-      case featureConfig.LinkToBuilding.key:
-        dialogConfig.value = { ...featureConfig.LinkToBuilding };
+      case featureConfig.LinkToRoom.key:
+        dialogConfig.value = { ...featureConfig.LinkToRoom };
+        showDialog.value = true;
         break;
       case featureConfig.GoToHomePage.key:
         openHomePage();
@@ -367,16 +307,47 @@ export const useContainer = () => {
         logout();
         break;
     }
-    showPopup.value = true;
   };
 
   const onClickNotify = (item) => {
     var notify = notificationList.value.find(
-      (x) => x.notification_id == item.id
+      (x) => x.notification_id == item.notification_id
     );
-    if (!notify.read_at) {
+
+    if (notify && !notify.read_at) {
       notify.read_at = new Date();
-      notificationAPI.readNotify(notify.notification_id);
+      readNotify(notify.notification_id);
+    }
+
+    if (
+      (item.event_key === EventKey.LinkToAccount ||
+        item.event_key === EventKey.LinkToRoom) &&
+      !item.is_completed
+    ) {
+      dialogConfig.value = _.cloneDeep(featureConfig.LinkToAccount);
+      dialogConfig.value.key = item.event_key;
+      if (item.notification_data) {
+        dialogConfig.value.data = JSON.parse(item.notification_data);
+      }
+      dialogConfig.value.notification_id = item.notification_id;
+      showDialog.value = true;
+    } // Liên kết thành công
+    else if (item.event_key === EventKey.LinkingSuccess) {
+      if (item.notification_data) {
+        const data = JSON.parse(item.notification_data);
+        if (data.innkeeper_id) {
+          const context = getManagementContext();
+          context.user.innkeeper_id = data.innkeeper_id;
+          localStorage.setItem("context_management", JSON.stringify(context));
+          // context store
+          contextStore.$state.user = context.user;
+          // Cập nhật cấu hình
+          featureConfig.LinkToRoom = linkToRoomConfig.value;
+          menuItems.value.forEach((x) => {
+            x.isHide = false;
+          });
+        }
+      }
     }
   };
 
@@ -384,11 +355,23 @@ export const useContainer = () => {
     return notificationList.value.filter((x) => !x.read_at);
   });
 
+  const getNotify = () => {
+    getNotifications(contextStore.$state.user.user_id)
+      .then((x) => {
+        if (Array.isArray(x)) {
+          notificationList.value = x;
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const isRenterPage = window.PageRole == Role.Renter;
+
   onMounted(() => {
     getMenu();
-
-    getNotifications();
-
+    getNotify();
     window._container = proxy;
   });
 
@@ -398,10 +381,10 @@ export const useContainer = () => {
     handleSelected,
     open,
     rail,
-    showPopup,
+    showDialog,
     roomCode,
     phoneNumber,
-    onLinkToBuilding,
+    onLinkToRoom,
     notificationList,
     selectedMenu,
     onSubmitDialog,
@@ -411,5 +394,9 @@ export const useContainer = () => {
     feedBackText,
     onClickNotify,
     newNotifications,
+    getNotify,
+    contextStore,
+    linkToRoomConfig,
+    isRenterPage,
   };
 };

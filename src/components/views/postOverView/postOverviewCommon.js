@@ -3,6 +3,7 @@ export const usePostOverviewCommon = () => {
     Delete: "delete",
     Hide: "hide",
     Post: "post",
+    Edit: "edit",
   };
   return { featureBtns };
 };

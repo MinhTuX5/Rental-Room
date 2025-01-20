@@ -24,6 +24,7 @@ export const useAppStore = defineStore({
     allRooms: [],
     allServiceFees: [],
     allExpenseCategories: [],
+    allBuildings: []
   }),
   actions: {
     setAlert({ message, type }) {

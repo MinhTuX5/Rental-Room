@@ -34,7 +34,7 @@ export const useServiceFeeStore = defineStore("service-fee", {
     defaultSorts(state) {
       return [
         {
-          Field: state.codeField,
+          Column: state.codeField,
           IsAscending: true,
         },
       ];
@@ -43,7 +43,7 @@ export const useServiceFeeStore = defineStore("service-fee", {
       return [
         {
           Field: "building_id",
-          Value: state.building_id,
+          Value: contextStore.$state.user.building_id,
           Operator: FilterOperator.Equal,
         },
       ];

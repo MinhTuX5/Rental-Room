@@ -34,7 +34,7 @@ export const useVehicleFeeStore = defineStore("vehicle-fee", {
     defaultSorts(state) {
       return [
         {
-          Field: state.codeField,
+          Column: state.codeField,
           IsAscending: true,
         },
       ];

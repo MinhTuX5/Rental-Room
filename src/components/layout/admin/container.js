@@ -54,17 +54,18 @@ export const useContainer = () => {
   ]);
 
   const features = ref([
-    {
-      title: "Tổng quan",
-      componentId: "RoomListOverview",
-      icon: "mdi-chart-areaspline",
-      value: "RoomListOverview",
-    },
+    // {
+    //   title: "Tổng quan",
+    //   componentId: "RoomListOverview",
+    //   icon: "mdi-chart-areaspline",
+    //   value: "RoomListOverview",
+    // },
     {
       title: "Phê duyệt bài đăng",
       componentId: "PostApproval",
       icon: "mdi-clipboard-check-multiple-outline",
       value: "PostApproval",
+      path: "/admin/phe-duyet",
     },
   ]);
 
@@ -85,6 +86,6 @@ export const useContainer = () => {
     features,
     handleSelected,
     showPopup,
-    rail
+    rail,
   };
 };

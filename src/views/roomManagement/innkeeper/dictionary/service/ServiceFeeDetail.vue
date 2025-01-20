@@ -10,7 +10,7 @@
     <!-- Nội dung popup -->
     <template #content>
       <v-row>
-        <v-col>
+        <v-col class="mr-4">
           <label> Mã dịch vụ </label>
           <v-text-field
             class="mt-2"
@@ -33,11 +33,11 @@
       </v-row>
 
       <v-row>
-        <v-col>
+        <v-col class="mr-4">
           <label>Mức giá dịch vụ</label>
           <t-currency-input
             class="mt-2"
-            v-model="feePrice"
+            v-model="model.fee_price"
             placeholder=""
             :options="{
               currency: 'VND',

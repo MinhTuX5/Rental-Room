@@ -19,6 +19,7 @@ import { useRoomPostStore } from "@/stores/roomSearch/roomPostStore.js";
 import LocationType from "@/common/enum/LocationType";
 import FilterOperator from "../../../common/enum/FilterOperator";
 import { sortBy } from "lodash";
+import PostStatus from "../../../common/enum/PostStatus";
 
 export const useMainView = () => {
   const { proxy } = getCurrentInstance();
@@ -148,13 +149,19 @@ export const useMainView = () => {
       PagingItem: {
         Skip: (pageIndex - 1) * pageSize.value,
         Take: pageSize.value,
-        Filters: [],
+        Filters: [
+          {
+            Field: "post_status",
+            Operator: FilterOperator.Equal,
+            Value: PostStatus.Posted,
+          },
+        ],
         Sorts: [],
       },
     };
 
     if (filterVals.value.length > 0) {
-      payload.FilterVals = filterVals.value;
+      payload.FilterVals = [...payload.FilterVals, ...filterVals.value];
     }
 
     if (filterModel.room_type_id.length > 0) {

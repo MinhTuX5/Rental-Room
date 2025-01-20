@@ -36,12 +36,60 @@
         />
 
         <!-- Thông báo -->
-        <v-btn
-          density="comfortable"
-          class="ml-2 mr-2"
-          icon="mdi-bell-outline"
-          v-tooltip:bottom="'Thông báo'"
-        />
+        <v-badge
+          color="error"
+          :content="notificationList.filter((x) => !x.read_at).length"
+          class="mr-4"
+        >
+          <v-btn
+            id="notification"
+            density="comfortable"
+            class="ml-2 mr-2"
+            icon="mdi-bell-outline"
+            v-tooltip:bottom="'Thông báo'"
+            @click="onClickNotifyBtn"
+          />
+        </v-badge>
+
+        <v-menu activator="#notification" :close-on-content-click="false">
+          <v-card class="mx-auto" max-width="450">
+            <v-list lines="three" @click:select="onClickNotify">
+              <v-list-item
+                v-for="(item, i) in notificationList"
+                :key="i"
+                :value="item.notification_id"
+                @click="onClickNotify(item)"
+              >
+                <!-- <template #prepend>
+                  <v-avatar
+                    image="https://picsum.photos/1920/1080?random"
+                  ></v-avatar>
+                </template> -->
+
+                <template #title>
+                  <div
+                    v-text="item.notification_title"
+                    class="font-weight-bold"
+                  />
+                </template>
+
+                <template #subtitle>
+                  <div v-html="item.notification_message" />
+                </template>
+
+                <template #default>
+                  <div
+                    v-if="item.read_at"
+                    class="d-flex justify-end font-italic opacity-50 text-subtitle-2"
+                  >
+                    Đã xem:
+                    {{ moment(item.read_at).format("HH:mm DD/MM/YYYY") }}
+                  </div>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-menu>
 
         <!-- Tài khoản -->
 
@@ -120,15 +168,7 @@
 </template>
 
 <script>
-import { getCurrentInstance, onMounted, ref, reactive } from "vue";
-import { useContextStore } from "../../../stores/contextStore";
-import { useAppStore } from "../../../stores/appStore";
-import notificationAPI from "../../../apis/notificationAPI/notificationAPI";
-import { useContextAdminStore } from "../../../stores/contextAdminStore";
-import Role from "../../../common/enum/Role";
-import NotificationType from "../../../common/enum/NotificationType";
-import { useRoomPostStore } from "../../../stores/roomSearch/roomPostStore";
-import { getContext, showMessage } from "../../../common/commonFunction";
+import { useHeader } from "./header";
 
 export default {
   props: {
@@ -138,189 +178,8 @@ export default {
     },
   },
   setup() {
-    const { proxy } = getCurrentInstance();
-
-    const contextStore = useContextStore();
-    const user = contextStore.$state.user;
-
-    const appStore = useAppStore();
-    const adminContext = useContextAdminStore();
-
-    const featureConfig = reactive({
-      LinkToInnkeeper: {
-        icon: user?.innkeeper_id ? "mdi-link-off" : "mdi-link",
-        title: user?.innkeeper_id
-          ? "Hủy liên kết tới chủ phòng"
-          : "Liên kết tới tới chủ phòng",
-        text: "Yêu cầu sẽ được gửi đến chủ trọ để chờ xác nhận",
-        btnText: "Gửi yêu cầu",
-        key: "LinkToInnkeeper",
-      },
-      MoveToAdminPage: {
-        key: "MoveToAdminPage",
-      },
-    });
-
-    const tabsConfig = [
-      { display: "Tìm trọ" },
-      { display: "Quản lý trọ" },
-      { display: "Giới thiệu" },
-    ];
-
-    /**
-     * @description Quản lý phòng trọ
-     */
-    const openManagePage = () => {
-      const originLink = window.location.origin;
-      const newLink = `${originLink}/dang-nhap`;
-      window.open(newLink, "_blank");
-    };
-
-    const openAdminPage = () => {
-      const openNewTab = () => {
-        const originLink = window.location.origin;
-        const newLink = `${originLink}/admin`;
-        window.open(newLink, "_blank");
-      };
-
-      if (!adminContext.$state.token) {
-        appStore.toggleLoginPopup();
-        appStore.$state.LoginWithRole = Role.Admin;
-        return;
-      }
-
-      openNewTab();
-    };
-
-    const onClickHomeBtn = () => {
-      const me = proxy;
-      me.$emit("onClickHomeBtn");
-    };
-
-    const moveToPage = (pageName, query = {}) => {
-      const me = proxy;
-
-      if (!contextStore.$state.token) {
-        appStore.toggleLoginPopup();
-        appStore.$state.moveToPageAfterLogin = pageName;
-        return;
-      }
-
-      me.$router.push({ name: pageName, query });
-    };
-
-    const avatarLink = contextStore.$state.user?.user_avatar;
-
-    const onClickMenu = (key) => {
-      switch (key) {
-        case featureConfig.LinkToInnkeeper.key:
-          dialogConfig.value = { ...featureConfig.LinkToInnkeeper };
-          showDialog.value = true;
-          break;
-        case featureConfig.MoveToAdminPage.key:
-          openAdminPage();
-          break;
-      }
-    };
-
-    const phoneNumber = ref();
-    const linkToInnkeeper = async () => {
-      debugger;
-      const payload = {
-        PhoneNumber: phoneNumber.value,
-      };
-      try {
-        const res = await useRoomPostStore().linkToInnkeeper(payload);
-        if (res) {
-          showMessage("Đã gửi yêu cầu đến chủ phòng!");
-
-          const notification = {
-            from_user_id: contextStore.$state.user.user_id,
-            to_user_id: res.innkeeper_id,
-            notification_message: `Người dùng <b>${contextStore.$state.user.user_name}</b> với số điện thoại <b>${contextStore.$state.user.phone_number}</b> muốn liên kết với tài khoản của bạn.`,
-            notification_type: NotificationType.confirmation,
-            notification_title: "Yêu cầu liên kết",
-            notification_data: JSON.stringify({
-              room_seeker_id: contextStore.$state.user.user_id,
-            }),
-          };
-          notificationAPI.sendNotify(notification);
-        } else {
-          showMessage("Không tìm thấy phòng chủ phòng!", MessageType.Warning);
-        }
-      } catch (error) {
-        console.error(error);
-        showMessage("Có lỗi xảy ra!", MessageType.Error);
-      }
-    };
-
-    const menuItems = ref([
-      {
-        title: "Quản trị bài đăng",
-        icon: "mdi-shield-account-outline",
-        key: featureConfig.MoveToAdminPage.key,
-      },
-      {
-        title: "Liên kết đến chủ trọ",
-        icon: "mdi-link",
-        hide: !contextStore.$state.token || !contextStore.$state.user?.user_id,
-        key: featureConfig.LinkToInnkeeper.key,
-      },
-    ]);
-
-    const showDialog = ref(false);
-    const dialogConfig = ref({
-      icon: "",
-      title: "",
-      text: "",
-      btnText: "",
-      width: 500,
-    });
-
-    const onSubmitDialog = async () => {
-      try {
-        switch (dialogConfig.value.key) {
-          case featureConfig.LinkToInnkeeper.key:
-            if (!user?.innkeeper_id) {
-              await linkToInnkeeper();
-            } else {
-              const res = await useRoomPostStore().cancelLinkToInnkeeper();
-              if (res) {
-                showMessage("Đã hủy liên kết tới chủ phòng!");
-                delete contextStore.$state.user.innkeeper_id;
-                const context = getContext();
-                delete context.user.innkeeper_id;
-                localStorage.set("context", JSON.stringify(context));
-              }
-            }
-          default:
-            break;
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        showDialog.value = false;
-      }
-    };
-
-    onMounted(() => {
-      window._header = proxy;
-    });
-
-    return {
-      tabsConfig,
-      openManagePage,
-      onClickHomeBtn,
-      moveToPage,
-      avatarLink,
-      menuItems,
-      dialogConfig,
-      onSubmitDialog,
-      showDialog,
-      onClickMenu,
-      featureConfig,
-      phoneNumber,
-    };
+    const resource = useHeader();
+    return resource;
   },
 };
 </script>

@@ -22,6 +22,5 @@ export const useVehicleFeeDetail = () => {
     store,
     unitItems,
     defaultModel,
-    feePrice,
   };
 };

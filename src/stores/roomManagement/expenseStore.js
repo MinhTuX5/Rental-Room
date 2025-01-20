@@ -26,11 +26,11 @@ export const useExpenseStore = defineStore("Expense", {
     defaultSorts(state) {
       const sorts = [
         {
-          Field: "expense_date",
+          Column: "expense_date",
           IsAscending: false,
         },
         {
-          Field: "created_at",
+          Column: "created_at",
           IsAscending: false,
         },
       ];

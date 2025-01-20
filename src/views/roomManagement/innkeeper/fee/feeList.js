@@ -3,6 +3,7 @@ import { useFeeStore } from "../../../../stores/roomManagement/feeStore";
 import popupUtil from "../../../../common/popupUtil";
 import _enum from "../../../../common/enum";
 import { convertCurrencyFormat } from "../../../../common/commonFunction";
+import { useContextManageStore } from "@/stores/contextManageStore";
 
 export const useHouseholdList = () => {
   const { proxy } = getCurrentInstance();
@@ -31,7 +32,7 @@ export const useHouseholdList = () => {
     const me = proxy;
     try {
       me.loading = true;
-      await store.genFees(store.buildingID);
+      await store.genFees(useContextManageStore().$state.user.building_id);
       await me.refresh();
     } catch (error) {
       console.log(error);

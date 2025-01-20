@@ -24,7 +24,7 @@ export const useExpenseCategoryStore = defineStore("ExpenseCategory", {
     defaultSorts(state) {
       return [
         {
-          Field: state.nameField,
+          Column: state.nameField,
         },
       ];
     },

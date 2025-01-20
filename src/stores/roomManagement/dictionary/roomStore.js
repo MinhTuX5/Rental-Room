@@ -15,7 +15,6 @@ const contextStore = useContextManageStore();
 export const useRoomStore = defineStore("room", {
   state: () => ({
     ...store.state,
-    building_id: contextStore.$state.user.building_id,
     idField: "room_id",
     codeField: "room_code",
     nameField: "room_name",
@@ -27,7 +26,7 @@ export const useRoomStore = defineStore("room", {
     defaultSorts(state) {
       return [
         {
-          Field: state.codeField,
+          Column: state.codeField,
           IsAscending: true,
         },
       ];
@@ -36,7 +35,7 @@ export const useRoomStore = defineStore("room", {
       return [
         {
           Field: "building_id",
-          Value: state.building_id,
+          Value: contextStore.$state.user.building_id,
           Operator: FilterOperator.Equal,
         },
       ];
@@ -78,11 +77,16 @@ export const useRoomStore = defineStore("room", {
       const appStore = useAppStore();
       if (me.invalidCache) {
         try {
-          const res = await me.getAll();
-          if (Array.isArray(res)) {
+          const pagingPayload = {
+            filters: me.defaultFilters,
+            sorts: me.defaultSorts,
+          };
+          const res = await me.getPaging(pagingPayload);
+          if (Array.isArray(res.data)) {
             me.invalidCache = false;
-            const orderedItems = res
-              .sort((a, b) => a[me.codeField] < b[me.codeField]);
+            const orderedItems = res.data.sort(
+              (a, b) => a[me.codeField] < b[me.codeField]
+            );
             appStore.$state.allRooms = orderedItems;
             return orderedItems;
           } else {

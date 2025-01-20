@@ -17,7 +17,7 @@ export const useRoomManagementList = () => {
     const me = proxy;
     me.$router.push({
       name: "Management_PostDetail",
-      params: { roomID: item.room_id },
+      query: { roomPostId: item.room_post_id, roomId: item.room_id },
     });
   };
 
@@ -25,6 +25,12 @@ export const useRoomManagementList = () => {
 
   onMounted(async () => {
     items.value = await store.getAllItems();
+    items.value.forEach((x) => {
+      if (x.images) {
+        const firstImg = x.images.split(",")[0];
+        x.first_image = firstImg;
+      }
+    });
     overlay.value = false;
     if (Array.isArray(items.value)) {
       items.value.sortByField("room_name");

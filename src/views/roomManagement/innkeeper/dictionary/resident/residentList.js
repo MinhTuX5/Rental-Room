@@ -14,7 +14,7 @@ export const usResidentList = () => {
     { key: "phone_number", title: "SĐT", align: "start" },
     { key: "is_owner", title: "Chủ hộ", align: "center", sortable: false }, // kiểu bit
     { key: "identity_number", title: "Số CCCD", align: "start" },
-    { key: "gender", title: "Giới tính", align: "center" },
+    { key: "displayed_resident_gender", title: "Giới tính", align: "center" },
     { key: "on_leave", title: "Tạm vắng", align: "center", sortable: false }, // kiểu bit
     {
       title: "Chức năng",

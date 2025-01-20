@@ -29,7 +29,7 @@ export const useRoomCategoryStore = defineStore("room_category", {
     defaultSorts(state) {
       return [
         {
-          Field: state.codeField,
+          Column: state.codeField,
           IsAscending: true,
         },
       ];

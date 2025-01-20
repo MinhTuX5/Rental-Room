@@ -82,15 +82,25 @@
         >
         <v-btn
           v-if="displayedBtns.includes(featureBtns.Post)"
+          prepend-icon="mdi-pencil"
+          class="w-fit-content"
+          color="blue-accent-1"
+          @click="updatePost"
+          >Sửa bài</v-btn
+        >
+        <v-btn
+          v-if="displayedBtns.includes(featureBtns.Post)"
           prepend-icon="mdi-post-outline"
           class="w-fit-content"
           color="blue-accent-1"
+          @click="onPost"
           >Đăng bài</v-btn
         >
         <v-btn
           v-if="displayedBtns.includes(featureBtns.Hide)"
           prepend-icon="mdi-eye-off-outline"
           class="w-fit-content"
+          @click="hidePost"
           >Ẩn bài đăng</v-btn
         >
       </v-sheet>

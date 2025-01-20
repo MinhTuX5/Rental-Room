@@ -150,10 +150,7 @@ export default {
 
       me.lastPagingParam = { page, itemsPerPage, sortBy };
 
-      var sorts = me.defaultSorts.map((x) => ({
-        Column: x.Field,
-        IsAscending: x.IsAscending,
-      }));
+      var sorts = me.defaultSorts;
       if (sortBy.length) {
         sorts = sortBy.map((x) => ({
           Column: x.key,

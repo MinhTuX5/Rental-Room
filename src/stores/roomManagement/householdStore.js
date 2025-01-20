@@ -31,10 +31,10 @@ export const useHouseholdStore = defineStore("household", {
     defaultSorts(state) {
       return [
         {
-          Field: state.codeField,
+          Column: state.codeField,
         },
         {
-          Field: "resident_code",
+          Column: "resident_code",
         },
       ];
     },

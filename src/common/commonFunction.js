@@ -195,6 +195,15 @@ export const readNotify = (notificationId) => {
   notificationAPI.readNotify(notificationId);
 };
 
+export const sendNotify = async (notification) => {
+  await notificationAPI.sendNotify(notification);
+};
+
+export const getNotifications = async (userId) => {
+  const res = await notificationAPI.getPaging(userId);
+  return res.data;
+};
+
 //#region Generate
 export function generateUUID() {
   // Tạo một chuỗi UUID

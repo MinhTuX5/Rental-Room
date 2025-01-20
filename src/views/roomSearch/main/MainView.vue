@@ -222,7 +222,7 @@
           text="Không tìm thấy bài đăng!"
           image="/src/assets/imgs/common/empty.png"
         ></v-empty-state>
-        <v-row class="mt-2">
+        <v-row v-if="totalCount" class="mt-2">
           <v-col class="d-flex align-center justify-end">
             <v-select
               label="Số bài mỗi trang"

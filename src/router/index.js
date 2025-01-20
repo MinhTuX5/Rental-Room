@@ -39,9 +39,15 @@ const router = createRouter({
       component: () => import("@/components/layout/account/Container.vue"),
       children: [
         {
-          path: "/tai-khoan/dang-bai",
+          path: "dang-bai",
           name: "PostDetailPopup",
           meta: { roles: [Role.RoomSeeker] },
+          component: () =>
+            import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
+        },
+        {
+          path: "sua-bai/:roomPostId",
+          name: "PostDetailUpdating",
           component: () =>
             import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),
         },
@@ -85,7 +91,8 @@ const router = createRouter({
             ),
         },
         {
-          path: "chi-tiet-phong/:roomID",
+          path: "chi-tiet-phong",
+          query: { roomId: "", roomPostId: "" },
           name: "Management_PostDetail",
           component: () =>
             import("@/views/roomSearch/postDetail/PostDetailPopup.vue"),

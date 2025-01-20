@@ -20,6 +20,7 @@
               :isShowFeatureBtn="true"
               :displayed-btns="[featureBtns.Delete, featureBtns.Hide]"
               @delete="onAfterDelete"
+              @hidePost="hidePost"
             ></post-overview>
           </template>
         </v-virtual-scroll>
@@ -35,7 +36,12 @@
       </v-tabs-window-item>
       <v-tabs-window-item :value="PostStatus.Saved">
         <v-row v-if="isLinked" class="d-flex justify-end mb-4"
-          ><v-btn color="blue">Lấy dữ liệu</v-btn></v-row
+          ><v-btn
+            color="blue"
+            prepend-icon="mdi-note-plus-outline"
+            @click="showDialog = true"
+            >Sinh bài đăng</v-btn
+          ></v-row
         >
         <v-virtual-scroll
           v-if="savedPosts.length > 0"
@@ -47,8 +53,13 @@
               :item="item"
               :isShowLikeIcon="false"
               :isShowFeatureBtn="true"
-              :displayed-btns="[featureBtns.Delete, featureBtns.Post]"
+              :displayed-btns="[
+                featureBtns.Delete,
+                featureBtns.Post,
+                featureBtns.Edit,
+              ]"
               @delete="onAfterDelete"
+              @onPost="onPost"
             ></post-overview>
           </template>
         </v-virtual-scroll>
@@ -96,8 +107,13 @@
               :item="item"
               :isShowLikeIcon="false"
               :isShowFeatureBtn="true"
-              :displayed-btns="[featureBtns.Delete]"
+              :displayed-btns="[
+                featureBtns.Delete,
+                featureBtns.Edit,
+                featureBtns.Hide,
+              ]"
               @delete="onAfterDelete"
+              @hidePost="hidePost"
             ></post-overview>
           </template>
         </v-virtual-scroll>
@@ -112,7 +128,45 @@
         ></v-empty-state>
       </v-tabs-window-item>
     </v-tabs-window>
+    <v-overlay :model-value="overlay" class="align-center justify-center">
+      <v-progress-circular
+        color="primary"
+        size="64"
+        indeterminate
+      ></v-progress-circular>
+    </v-overlay>
   </v-container>
+  <v-dialog v-model="showDialog" width="auto">
+    <v-card
+      :width="400"
+      :prepend-icon="'mdi-note-plus-outline'"
+      :title="'Sinh bài đăng'"
+      :text="'Dữ liệu lấy từ trang quản lý đã liên kết'"
+    >
+      <v-card-item>
+        <v-row>
+          <v-number-input
+            class="mt-2"
+            variant="outlined"
+            controlVariant="stacked"
+            :reverse="false"
+            :inset="true"
+            :min="0"
+            v-model="buildingCode"
+          ></v-number-input>
+        </v-row>
+      </v-card-item>
+      <template v-slot:actions>
+        <v-btn
+          :disabled="!buildingCode"
+          class="ms-auto"
+          :text="'Thực hiện'"
+          color="orange-lighten-2"
+          @click="genPostsFromManagement"
+        ></v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>

@@ -6,8 +6,17 @@ class RenterAPI extends CrudAPI {
     super(END_POINT); // Gọi constructor của lớp cha
   }
 
-  async linkToBuilding(payload) {
+  async linkToRoom(payload) {
     const res = await this.postAsync(payload, "/linking");
+    return res.data;
+  }
+
+  async linkToAccount(payload) {
+    const res = await this.postAsync(payload, "/account-linking");
+    return res.data;
+  }
+  async createRoomLinking(payload) {
+    const res = await this.postAsync(payload, "/room-linking");
     return res.data;
   }
 }

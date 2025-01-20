@@ -62,6 +62,7 @@
         <v-col cols="5">
           <label>Giá phòng</label>
           <t-currency-input
+            color="blue-lighten-3"
             class="mt-2"
             v-model="model.room_price"
             placeholder=""
@@ -87,6 +88,7 @@
             :min="0"
             :hide-spin-buttons="true"
             suffix="m²"
+            color="blue-lighten-3"
             v-model="model.room_area"
           ></v-number-input>
         </v-col>
@@ -99,6 +101,7 @@
             :reverse="false"
             :inset="true"
             :min="0"
+            color="blue-lighten-3"
             v-model="model.no_of_bed_rooms"
           ></v-number-input>
         </v-col>

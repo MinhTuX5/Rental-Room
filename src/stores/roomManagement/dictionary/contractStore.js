@@ -27,7 +27,7 @@ export const useContractStore = defineStore("contract", {
     defaultSorts(state) {
       return [
         {
-          Field: state.codeField,
+          Column: state.codeField,
         },
       ];
     },

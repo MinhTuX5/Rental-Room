@@ -9,6 +9,7 @@ import FilterOperator from "@/common/enum/FilterOperator";
 import _enum from "@/common/enum";
 // api
 import api from "../../../apis/dictionaryAPI/buildingAPI";
+import { useAppStore } from "../../appStore";
 
 const store = new BaseDicStore(api);
 const contextStore = useContextManageStore();
@@ -30,10 +31,10 @@ export const useBuildingStore = defineStore("building", {
     defaultSorts(state) {
       return [
         {
-          Field: "status",
+          Column: "status",
         },
         {
-          Field: state.nameField,
+          Column: state.nameField,
         },
       ];
     },
@@ -87,11 +88,39 @@ export const useBuildingStore = defineStore("building", {
           break;
       }
 
-      item.province_name = item.province_name.replace('Thành phố ', '');
-      item.district_name = item.district_name.replace('Quận ', '');
-      item.ward_name = item.ward_name.replace('Phường ', '');
+      item.province_name = item.province_name.replace("Thành phố ", "");
+      item.district_name = item.district_name.replace("Quận ", "");
+      item.ward_name = item.ward_name.replace("Phường ", "");
 
       return item;
+    },
+
+    async getAllItems() {
+      const me = this;
+      const appStore = useAppStore();
+      if (me.invalidCache) {
+        try {
+          const pagingPayload = {
+            filters: me.defaultFilters,
+            sorts: me.defaultSorts,
+          };
+          const res = await me.getPaging(pagingPayload);
+          if (Array.isArray(res.data)) {
+            me.invalidCache = false;
+            const orderedItems = res.data.sort(
+              (a, b) => a[me.codeField] < b[me.codeField]
+            );
+            appStore.$state.allRooms = orderedItems;
+            return orderedItems;
+          } else {
+            return [];
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        return appStore.$state.allRooms;
+      }
     },
   },
 });

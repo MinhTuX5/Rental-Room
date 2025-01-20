@@ -10,7 +10,7 @@
     <!-- Nội dung popup -->
     <template #content>
       <v-row>
-        <v-col>
+        <v-col class="mr-4">
           <label> Mã phương tiện </label>
           <v-text-field
             class="mt-2"
@@ -33,7 +33,7 @@
       </v-row>
 
       <v-row>
-        <v-col>
+        <v-col class="mr-4">
           <label>Giá phí gửi xe</label>
           <t-currency-input
             class="mt-2"

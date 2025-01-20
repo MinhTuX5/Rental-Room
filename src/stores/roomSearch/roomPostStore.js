@@ -47,5 +47,14 @@ export const useRoomPostStore = defineStore("RoomPost", {
     async cancelLinkToInnkeeper() {
       return await api.cancelLinkToInnkeeper();
     },
+    async getRoomPostByRoomId(roomId) {
+      return await api.getRoomPostByRoomId(roomId);
+    },
+    async genPostsFromManagement(payload) {
+      return await api.genPostsFromManagement(payload);
+    },
+    async updatePostStatus(payload) {
+      return await api.updatePostStatus(payload);
+    },
   },
 });

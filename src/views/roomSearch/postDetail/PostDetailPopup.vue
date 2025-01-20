@@ -1,12 +1,13 @@
 <template>
   <v-container class="post-detail-popup">
     <v-row class="d-flex align-center">
-      <div class="text-h4 ps-3">{{ title }}</div>
+      <div class="text-h4 ps-3">
+        {{ title }}
+      </div>
       <span
         v-show="model.post_code"
-        class="text-h5 ml-2 cursor-default"
-        v-tooltip:end="'Mã tin'"
-        >({{ model.post_code }})</span
+        class="text-h6 ml-2 cursor-default font-italic"
+        >(Mã tin: #{{ model.post_code }})</span
       >
     </v-row>
     <v-form v-model="form">
@@ -32,16 +33,15 @@
               align-self="center"
             >
               <v-autocomplete
-                clearable
+                :readonly="isManagement"
+                :clearable="isReadOnly ? false : true"
                 v-model="model[item.valueField]"
                 density="compact"
-                :auto-select-first="true"
                 :no-data-text="item.noDataText"
                 :label="item.label"
                 :items="item.items"
                 :item-value="locationStore.$state.idField"
                 :item-title="locationStore.$state.nameField"
-                :autofocus="item.autofocus"
                 :rules="[rules.required]"
                 @update:modelValue="onSelectLocation($event, item.locationType)"
               ></v-autocomplete>
@@ -51,15 +51,16 @@
           <v-row class="address">
             <v-col>
               <v-text-field
+                :readonly="isManagement"
                 label="Đường/Phố"
                 density="compact"
-                :disabled="viewing"
                 v-model="model.street_name"
                 @update:modelValue="updateLocationParts($event, 2)"
               ></v-text-field>
             </v-col>
             <v-col>
               <v-text-field
+                :readonly="isManagement"
                 label="Số nhà"
                 density="compact"
                 :disabled="viewing"
@@ -81,7 +82,7 @@
               v-model="model.room_address"
             >
             </v-text-field>
-            <v-sheet v-tooltip:bottom="'Chỉnh sửa'">
+            <v-sheet v-if="!isManagement" v-tooltip:bottom="'Chỉnh sửa'">
               <v-icon
                 v-if="allowEdit"
                 icon="mdi-pencil-outline cursor-pointer"
@@ -99,7 +100,7 @@
         </v-sheet>
         <v-sheet class="room-description">
           <v-sheet class="text-h5 mb-4">Thông tin mô tả</v-sheet>
-          <v-sheet>
+          <v-sheet v-if="!isManagement">
             <v-sheet class="text-h6 mb-2"
               >Tiêu đề bài đăng <span class="required">*</span></v-sheet
             >
@@ -118,15 +119,16 @@
               <v-row>
                 <v-col cols="7">
                   <v-text-field
+                    :readonly="isManagement"
                     :maxlength="16"
                     :required="true"
-                    :disabled="viewing"
                     v-model="roomPrice"
                     @input="formatAmount"
                   />
                 </v-col>
                 <v-col>
                   <v-combobox
+                    :readonly="isManagement"
                     label="Đơn vị"
                     :auto-select-first="true"
                     :disabled="viewing"
@@ -139,6 +141,7 @@
             <v-col>
               <label class="text-h6 mb-2">Số phòng ngủ</label>
               <v-number-input
+                :readonly="isManagement"
                 controlVariant="stacked"
                 :reverse="false"
                 :inset="false"
@@ -152,6 +155,7 @@
                 >Diện tích <span class="required">*</span></label
               >
               <v-number-input
+                :readonly="isManagement"
                 class="hide-spin-buttons"
                 controlVariant=""
                 type="number"
@@ -191,12 +195,7 @@
             <!-- Đối tượng cho thuê -->
             <v-col>
               <label class="text-h6 mb-2">Đối tượng cho thuê</label>
-              <v-radio-group
-                class="gender"
-                v-model="model.room_gender"
-                inline
-                :disabled="viewing"
-              >
+              <v-radio-group class="gender" v-model="model.room_gender" inline>
                 <v-radio label="Tất cả" :value="0"></v-radio>
                 <v-radio label="Nam" :value="1"></v-radio>
                 <v-radio label="Nữ" :value="2"></v-radio>
@@ -232,7 +231,7 @@
           <v-file-input
             multiple
             chips
-            :rules="imageRules"
+            :rules="savedImages.length > 0 ? [] : imageRules"
             label="Chọn các hình ảnh miêu tả cho phòng trọ"
             prepend-icon="mdi-camera"
             variant="filled"
@@ -241,10 +240,22 @@
             :accept="validImageTypes"
             v-model="files"
           ></v-file-input>
+          <v-row v-if="savedImages.length">
+            <v-col v-for="(img, index) in savedImages" :key="index" cols="2">
+              <v-img :src="img" height="200px" :cover="true"></v-img>
+              <v-btn
+                prepend-icon="mdi-delete"
+                class="w-100"
+                color="red"
+                @click="removeImg(index)"
+                >Xóa</v-btn
+              >
+            </v-col>
+          </v-row>
         </v-sheet>
       </v-col>
       <v-row>
-        <v-col :cols="isManagement ? 12 : 6" class="d-flex justify-center">
+        <v-col :cols="isManagement || isUpdating ? 12 : 6" class="d-flex justify-center">
           <!-- Nếu không ngăn chặn sự kiện => submit sẽ thực hiện hành động mặc định của nó => tự điều hướng về màn hiện tại -->
           <v-btn
             color="light-blue-accent-4"
@@ -254,7 +265,7 @@
             >Lưu</v-btn
           >
         </v-col>
-        <v-col cols="6" class="d-flex justify-center" v-if="!isManagement">
+        <v-col cols="6" class="d-flex justify-center" v-if="!isManagement && !isUpdating">
           <v-btn
             color="green-lighten-1"
             type="submit"

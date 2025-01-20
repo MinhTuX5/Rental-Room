@@ -18,23 +18,12 @@ export const useServiceFeeDetail = () => {
     unit: unitItems.value[0],
   };
 
-  const feePrice = ref(0);
-  watch(feePrice, (newVal) => {
-    proxy.model.fee_price = newVal;
-  });
-
-  onMounted(() => {
-    const me = proxy;
-    if (me._formParam?.model?.fee_price) {
-      feePrice.value = me._formParam?.model?.fee_price;
-    }
-  });
+  onMounted(() => {});
 
   return {
     title,
     store,
     unitItems,
     defaultModel,
-    feePrice,
   };
 };

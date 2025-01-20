@@ -6,15 +6,11 @@
           <v-img
             height="200px"
             :src="
-              index == 0
-                ? 'https://res.cloudinary.com/dbm4qpzc1/image/upload/v1736859172/lnwvcgb0qc1qgy4enxye.jpg'
-                : index == 1
-                ? 'https://res.cloudinary.com/dbm4qpzc1/image/upload/v1736859174/vqob8oc0jafyt2raoifz.jpg'
-                : index == 2
-                ? 'https://res.cloudinary.com/dbm4qpzc1/image/upload/v1736859175/t7dktqsmr5vcff5rtasw.jpg'
-                : 'https://res.cloudinary.com/dbm4qpzc1/image/upload/v1737295010/dplpcufl18smxlgrkmvw.jpg'
+              room.first_image
+                ? room.first_image
+                : '/src/assets/imgs/common/room.png'
             "
-            cover
+            :cover="room.first_image ? true : false"
           ></v-img>
 
           <v-card-title> {{ room.room_name }} </v-card-title>
@@ -31,7 +27,7 @@
             <v-btn
               v-if="isShowUpdateBtn"
               color="orange-lighten-2"
-              text="Cập nhật"
+              :text="'Cập nhật'"
               @click="showRoomPost(room)"
             ></v-btn>
 

@@ -5,6 +5,7 @@ import { useContextStore } from "@/stores/contextStore";
 import { usePostOverviewCommon } from "@/components/views/postOverView/postOverviewCommon.js";
 // enum
 import PostStatus from "../../../common/enum/PostStatus";
+import { MessageType, showMessage } from "../../../common/commonFunction";
 
 export const usePostManagement = () => {
   const { proxy } = getCurrentInstance();
@@ -15,7 +16,6 @@ export const usePostManagement = () => {
   if (contextStore.$state.user.innkeeper_id) {
     isLinked.value = true;
   }
-  
 
   const { featureBtns } = usePostOverviewCommon();
 
@@ -46,10 +46,17 @@ export const usePostManagement = () => {
    * @param {String} postID
    */
   const onAfterDelete = (postID) => {
-    const me = proxy;
-    postDetails.value = postDetails.value.filter(
-      (x) => x[me.idField] === postID
-    );
+    loadData();
+  };
+
+  const onPost = () => {
+    tabIndex.value = PostStatus.WaitingForApproval;
+    loadData();
+  };
+
+  const hidePost = () => {
+    tabIndex.value = PostStatus.Saved;
+    loadData();
   };
 
   const favoritePosts = ref([]);
@@ -82,18 +89,19 @@ export const usePostManagement = () => {
           }
         }
       } else {
-        if (!postDetails.value.length) {
-          me.loading = true;
-          try {
-            var res = await store.getMyPosts(user.user_id);
-            if (Array.isArray(res)) {
-              postDetails.value = res;
-            }
-          } catch (error) {
-            console.error(error);
-          } finally {
-            me.loading = false;
+        // if (!postDetails.value.length) {
+        // }
+
+        me.loading = true;
+        try {
+          var res = await store.getMyPosts(user.user_id);
+          if (Array.isArray(res)) {
+            postDetails.value = res;
           }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          me.loading = false;
         }
       }
     } else {
@@ -110,6 +118,38 @@ export const usePostManagement = () => {
     favoritePosts.value = favoritePosts.value.filter(
       (x) => x[me.idField] !== roomPostID
     );
+  };
+
+  const showDialog = ref(false);
+  const overlay = ref(false);
+  const buildingCode = ref(0);
+  const genPostsFromManagement = async () => {
+    try {
+      overlay.value = true;
+      const payload = {
+        BuildingCode: buildingCode.value,
+        UserId: contextStore.$state.user.user_id,
+        InnkeeperId: contextStore.$state.user.innkeeper_id,
+      };
+      var res = await store.genPostsFromManagement(payload);
+      if (res > 0) {
+        showMessage(`Sinh thành công ${res} bài đăng`);
+      } else if (res == 0) {
+        showMessage(
+          `Không có thông tin để sinh dữ liệu. Vui lòng kiểm tra lại.`,
+          MessageType.Warning
+        );
+      } else if (res < 0) {
+        showMessage(`Thông tin đầu vào không hợp lệ!`, MessageType.Error);
+      }
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      showMessage(`Có lỗi xảy ra!`, MessageType.Error);
+    } finally {
+      overlay.value = false;
+      showDialog.value = false;
+    }
   };
 
   onMounted(async () => {
@@ -140,6 +180,11 @@ export const usePostManagement = () => {
     featureBtns,
     waitingPosts,
     PostStatus,
-    isLinked
+    isLinked,
+    genPostsFromManagement,
+    showDialog,
+    buildingCode,
+    onPost,
+    hidePost,
   };
 };

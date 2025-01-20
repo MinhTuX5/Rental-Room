@@ -131,7 +131,7 @@ export default {
 
   // Đơn vị dịch vụ
   ResidentGender: {
-    "Cả 2": 0,
+    "Tất cả": 0,
     Nam: 1,
     Nữ: 2,
   },

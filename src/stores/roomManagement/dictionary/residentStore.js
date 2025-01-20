@@ -5,6 +5,7 @@ import { useContextManageStore } from "@/stores/contextManageStore";
 // enum
 import _enum from "@/common/enum";
 import FilterOperator from "@/common/enum/FilterOperator";
+import Gender from "../../../common/enum/Gender";
 // api
 import api from "../../../apis/dictionaryAPI/residentAPI";
 
@@ -32,7 +33,7 @@ export const useResidentStore = defineStore("resident", {
     defaultSorts(state) {
       return [
         {
-          Field: state.codeField,
+          Column: state.codeField,
           IsAscending: true,
         },
       ];
@@ -60,7 +61,6 @@ export const useResidentStore = defineStore("resident", {
     },
     afterInsertAsync(item) {
       const me = this;
-      item = me.standardItem(item);
       me.items.unshift(item);
       me.totalItems++;
     },
@@ -73,36 +73,16 @@ export const useResidentStore = defineStore("resident", {
       const me = this;
       const curItem = me.items.find((x) => x[me.idField] == item[me.idField]);
       if (curItem) {
-        item = me.standardItem(item);
         Object.assign(curItem, item);
       }
     },
-    getEnumItem(item) {
-      const me = this;
-      me.enumFields.forEach((x) => {
-        const keys = Object.keys(_enum[x.enum]);
-        const key = keys.find((y) => _enum[x.enum][y] == item[x.field]);
-        if (key) item[x.column] = key;
-      });
-      return item;
-    },
-    getAmountItem(item) {
-      const me = this;
-      me.numberFields.forEach((y) => {
-        item[y] = convertCurrencyFormat(item[y]);
-      });
-      return item;
-    },
     standardItem(item) {
-      const me = this;
-      item = me.getEnumItem(item);
-      item = me.getAmountItem(item);
       switch (item.resident_gender) {
         case Gender.Male:
-          x.color = "blue";
+          item.color = "blue";
           break;
         case Gender.Female:
-          x.color = "pink";
+          item.color = "pink";
           break;
       }
       return item;
