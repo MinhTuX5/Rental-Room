@@ -2,7 +2,7 @@
   <t-dynamic-popup
     :title="title"
     :width="600"
-    :zIndexBase="10000"
+    :zIndexBase="2000"
     name="AppointmentScheduleDetail"
     class="appointment-schedule-detail"
     @before-open="beforeOpen"

@@ -112,6 +112,7 @@ export default {
       const param = {
         mode: me._enum.Mode.Add,
         detailForm: me.detailForm,
+        refresh: this.refresh,
       };
       popupUtil.show(me.detailForm, param);
     },
@@ -196,6 +197,7 @@ export default {
       popupUtil.show(me.detailForm, {
         editMode: _enum.Mode.Update,
         model: cloneDeep(item),
+        refresh: me.refresh,
       });
     },
   },

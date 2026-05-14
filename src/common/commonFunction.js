@@ -113,7 +113,10 @@ export const getEnumItem = (item, enumFields) => {
     enumFields.forEach((x) => {
       const keys = Object.keys(_enum[x.enum]);
       const key = keys.find((y) => _enum[x.enum][y] == item[x.field]);
-      if (key) item[x.column] = key;
+      if (key) {
+        const col = `displayed_${x.field}`;
+        item[col] = key;
+      }
     });
   }
 

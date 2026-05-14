@@ -23,7 +23,7 @@ export const useHouseholdDetail = () => {
     { key: "resident_code", title: "Mã người thuê", align: "start" },
     { key: "resident_name", title: "Họ và tên", align: "start" },
     { key: "phone_number", title: "Số điện thoại", align: "start" },
-    { key: "gender", title: "Giới tính", align: "center" },
+    { key: "displayed_resident_gender", title: "Giới tính", align: "center" },
     { key: "on_leave", title: "Tạm vắng", align: "center", sortable: false }, // kiểu bit
   ];
 
@@ -48,13 +48,13 @@ export const useHouseholdDetail = () => {
     vehicles: [],
   };
 
-  const editVehicle = (item) =>{
+  const editVehicle = (item) => {
     const me = proxy;
-    me.viewForm('VehicleDetail', {
+    me.viewForm("VehicleDetail", {
       editMode: FormState.Update,
-      model: item
-    })
-  }
+      model: item,
+    });
+  };
 
   onMounted(async () => {
     const me = proxy;
@@ -111,6 +111,6 @@ export const useHouseholdDetail = () => {
     defaultModel,
     vehicleHeaders,
     vehicleStore,
-    editVehicle
+    editVehicle,
   };
 };

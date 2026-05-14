@@ -22,6 +22,7 @@
       :fixed-header="true"
       :style="{ maxHeight: tableMaxHeight + 'px' }"
       @update:options="loadItems"
+      @refresh="refresh"
     >
       <template v-slot:item.actions="{ item }">
         <v-row>

@@ -107,12 +107,12 @@ export const renterFeatures = [
     icon: "mdi-calendar-account-outline",
     path: "/quan-ly/chi-tieu",
   },
-  {
-    title: "Tính toán",
-    componentId: "Calculation",
-    icon: "mdi-calculator",
-    path: "/quan-ly/tinh-toan",
-  },
+  // {
+  //   title: "Tính toán",
+  //   componentId: "Calculation",
+  //   icon: "mdi-calculator",
+  //   path: "/quan-ly/tinh-toan",
+  // },
   {
     title: "Danh mục",
     icon: "mdi-book-alphabet",

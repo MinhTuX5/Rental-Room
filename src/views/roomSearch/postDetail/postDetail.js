@@ -61,6 +61,7 @@ export const usePostDetail = () => {
         notification_message: `Bài đăng <b>#${me.model.post_code}</b> của bạn đã được phê duyệt`,
         notification_title: "Phê duyệt bài đăng",
         is_related: true,
+        user_avatar: contextStore.$state.user.user_avatar,
       };
       sendNotify(notification);
 
@@ -94,6 +95,7 @@ export const usePostDetail = () => {
         notification_message: `Bài đăng <b>#${me.model.post_code}</b> của bạn đã bị từ chối với lý do: ${rejectMessage.value}`,
         notification_title: "Từ chối bài đăng",
         is_related: true,
+        user_avatar: contextStore.$state.user.user_avatar,
       };
       sendNotify(notification);
 

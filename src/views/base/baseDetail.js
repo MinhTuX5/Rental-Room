@@ -187,6 +187,7 @@ export default {
 
     hide() {
       const me = this;
+      debugger;
       const detailForm = me.detailForm ?? me._formParam?.detailForm;
       if (detailForm) {
         me.$vfm.hide(detailForm);
@@ -204,6 +205,10 @@ export default {
       }
 
       await me.customAfterSubmit(data);
+
+      if (typeof me._formParam.refresh == "function") {
+        me._formParam.refresh();
+      }
 
       me.hide();
     },

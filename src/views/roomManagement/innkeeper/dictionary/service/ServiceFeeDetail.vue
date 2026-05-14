@@ -2,7 +2,7 @@
   <t-dynamic-popup
     :title="title"
     :width="600"
-    name="serviceFeeDetail"
+    name="ServiceFeeDetail"
     class="service-fee-detail"
     @before-open="beforeOpen"
     @opened="opened"
@@ -56,8 +56,10 @@
             class="mt-2"
             variant="outlined"
             color="blue-lighten-3"
+            item-value="value"
+            item-title="key"
             :items="unitItems"
-            v-model="model.unit"
+            v-model="model.price_unit"
           />
         </v-col>
       </v-row>

@@ -123,6 +123,7 @@ export const useHeader = () => {
             room_seeker_id: contextStore.$state.user.user_id,
           }),
           event_key: EventKey.LinkToAccount,
+          user_avatar: contextStore.$state.user.user_avatar,
         };
         notificationAPI.sendNotify(notification);
       } else {

@@ -3,7 +3,7 @@
     <t-feature
       :ref="refToolBar"
       class="pb-4"
-      search-label="Tên, địa chỉ tòa nhà"
+      search-label="Mã, Tên, địa chỉ tòa nhà"
       @on-click="viewDetail"
       @search="onSearch"
       @refresh="refresh"

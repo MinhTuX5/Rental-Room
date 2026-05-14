@@ -25,7 +25,7 @@ export const usServiceFeeList = () => {
       align: "end",
     },
     {
-      key: "unit",
+      key: "displayed_price_unit",
       title: "Đơn vị tính",
     },
     {

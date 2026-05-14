@@ -132,9 +132,9 @@
                     }}/{{ service.price_unit == 4 ? "số" : "m³" }}):
                     {{
                       formatNumberWithCommas(
-                        (service.newIndex ?? 0) - (service.oldIndex ?? 0) <= 0
+                        (service.new_index ?? 0) - (service.old_index ?? 0) <= 0
                           ? 0
-                          : (service.newIndex - service.oldIndex) *
+                          : (service.new_index - service.old_index) *
                               service.fee_price
                       )
                     }}</v-col
@@ -153,7 +153,7 @@
                       :inset="false"
                       :hide-spin-buttons="true"
                       hide-details
-                      v-model="service.oldIndex"
+                      v-model="service.old_index"
                     />
                   </v-col>
                   <v-col cols="3">
@@ -169,7 +169,7 @@
                       :min="0"
                       hide-details
                       :hide-spin-buttons="true"
-                      v-model="service.newIndex"
+                      v-model="service.new_index"
                     />
                   </v-col>
                 </v-row>

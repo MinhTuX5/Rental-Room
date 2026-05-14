@@ -32,7 +32,7 @@ export const useFeeDetail = () => {
       align: "end",
     },
     {
-      key: "unit",
+      key: "displayed_price_unit",
       title: "Đơn vị tính",
     },
     {
@@ -71,9 +71,9 @@ export const useFeeDetail = () => {
     const editServiceTotal = editServiceFees.value.reduce(
       (total, service) =>
         total +
-        ((service.newIndex ?? 0) - (service.oldIndex ?? 0) <= 0
+        ((service.new_index ?? 0) - (service.old_index ?? 0) <= 0
           ? 0
-          : (service.newIndex - service.oldIndex) * service.fee_price),
+          : (service.new_index - service.old_index) * service.fee_price),
       0
     );
 
@@ -95,7 +95,7 @@ export const useFeeDetail = () => {
   });
 
   const customBeforeSubmit = () => {
-    me.total_fee = totalFee.value;
+    proxy.total_fee = totalFee.value;
   };
 
   onMounted(async () => {
@@ -115,7 +115,7 @@ export const useFeeDetail = () => {
             });
           });
         } else {
-          me.model.vehicles = []
+          me.model.vehicles = [];
         }
       } catch (error) {
         console.error(error);
@@ -123,28 +123,32 @@ export const useFeeDetail = () => {
     }
 
     serviceFeeStore
-      .getAll()
+      .getAllItems()
       .then((res) => {
         if (Array.isArray(res)) {
           editServiceFees.value = res
             .filter((x) => x.price_unit > 3)
             .map((x) => {
-              return { ...x, oldIndex: 0, newIndex: 0 };
+              return {
+                ...x,
+                old_index: x.old_index ?? 0,
+                new_index: x.new_index ?? 0,
+              };
             });
           viewServiceFees.value = res
             .filter((x) => x.price_unit <= 3)
             .map((x) => {
               switch (x.price_unit) {
                 case _enum.ServicePriceUnit["đồng/người"]:
-                  x.member_count = 2;
-                  x.total_fee = x.member_count * x.fee_price;
+                  x.member_count = me.model.member_count;
+                  x.total_fee = me.model.member_count * x.fee_price;
                   break;
                 case _enum.ServicePriceUnit["đồng/phòng"]:
                   x.total_fee = x.fee_price;
                   break;
                 case _enum.ServicePriceUnit["đồng/m²"]:
-                  x.room_area = 50;
-                  x.total_fee = x.room_area * x.fee_price;
+                  x.room_area = me.model.room_area;
+                  x.total_fee = me.model.room_area * x.fee_price;
                   break;
               }
 

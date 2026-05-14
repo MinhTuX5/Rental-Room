@@ -15,7 +15,7 @@ const contextStore = useContextManageStore();
 export const useServiceFeeStore = defineStore("service-fee", {
   state: () => ({
     ...store.state,
-    ...contextStore.$state,
+    building_id: contextStore.$state.user.building_id,
     idField: "service_fee_id",
     codeField: "service_fee_code",
     nameField: "service_type",
@@ -23,7 +23,6 @@ export const useServiceFeeStore = defineStore("service-fee", {
     numberFields: ["fee_price"],
     enumFields: [
       {
-        column: "unit",
         field: "price_unit",
         enum: "ServicePriceUnit",
       },
@@ -81,14 +80,15 @@ export const useServiceFeeStore = defineStore("service-fee", {
       const appStore = useAppStore();
       if (me.invalidCache) {
         try {
-          const res = await me.getAll();
-          if (Array.isArray(res)) {
+          const pagingPayload = {
+            filters: me.defaultFilters,
+            sorts: me.defaultSorts,
+          };
+          const res = await me.getPaging(pagingPayload);
+          if (Array.isArray(res.data)) {
             me.invalidCache = false;
-            const orderedItems = res.sort(
-              (a, b) => a[me.codeField] < b[me.codeField]
-            );
-            appStore.$state.allServiceFees = orderedItems;
-            return orderedItems;
+            appStore.$state.allServiceFees = res.data;
+            return res.data;
           } else {
             return [];
           }

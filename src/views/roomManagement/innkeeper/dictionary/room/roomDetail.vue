@@ -116,12 +116,12 @@
           >
           <v-btn min-width="80" @click="close" variant="outlined">Hủy</v-btn>
         </div>
-        <v-checkbox-btn
+        <!-- <v-checkbox-btn
           label="Còn trống"
           color="blue"
           density="compact"
           v-model="model.is_empty"
-        ></v-checkbox-btn>
+        ></v-checkbox-btn> -->
       </div>
     </template>
   </t-dynamic-popup>

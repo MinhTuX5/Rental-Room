@@ -5,20 +5,24 @@ import { useServiceFeeStore } from "@/stores/roomManagement/dictionary/serviceFe
 import _enum from "@/common/enum";
 
 export const useServiceFeeDetail = () => {
-  const { proxy } = getCurrentInstance();
-
   const store = useServiceFeeStore();
 
   const title = ref("Phí dịch vụ");
 
-  const unitItems = ref(Object.keys(_enum.ServicePriceUnit));
+  const unitItems = ref([]);
 
   const defaultModel = {
-    price_unit: 0,
-    unit: unitItems.value[0],
+    price_unit: 1,
   };
 
-  onMounted(() => {});
+  onMounted(() => {
+    Object.keys(_enum.ServicePriceUnit).forEach((key) => {
+      unitItems.value.push({
+        key: key,
+        value: _enum.ServicePriceUnit[key],
+      });
+    });
+  });
 
   return {
     title,

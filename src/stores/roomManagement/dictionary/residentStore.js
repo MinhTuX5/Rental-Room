@@ -42,7 +42,7 @@ export const useResidentStore = defineStore("resident", {
       return [
         {
           Field: "building_id",
-          Value: state.building_id,
+          Value: contextStore.$state.user.building_id,
           Operator: FilterOperator.Equal,
         },
       ];

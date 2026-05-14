@@ -171,6 +171,7 @@ export const useRoomSearchCommon = () => {
   const onSelectLocation = (selectedVal, locationType) => {
     let selectedLocation = {};
     let config = null;
+    let result = "";
     switch (locationType) {
       case LocationType.Province:
         selectedLocation = locationStore.selectProvinceById(selectedVal);
@@ -180,7 +181,10 @@ export const useRoomSearchCommon = () => {
         if (config) {
           config.items = locationStore.districtItems;
         }
-        updateLocationParts(selectedLocation[locationStore.nameField], 5);
+        result = updateLocationParts(
+          selectedLocation[locationStore.nameField],
+          5
+        );
         break;
       case LocationType.District:
         selectedLocation = locationStore.selectDistrictById(selectedVal);
@@ -188,13 +192,20 @@ export const useRoomSearchCommon = () => {
         if (config) {
           config.items = locationStore.wardItems;
         }
-        updateLocationParts(selectedLocation[locationStore.nameField], 4);
+        result = updateLocationParts(
+          selectedLocation[locationStore.nameField],
+          4
+        );
         break;
       case LocationType.Ward:
         selectedLocation = locationStore.getWardById(selectedVal);
-        updateLocationParts(selectedLocation[locationStore.nameField], 3);
+        result = updateLocationParts(
+          selectedLocation[locationStore.nameField],
+          3
+        );
         break;
     }
+    return result;
   };
 
   const locationParts = ref(new Array(5).fill(""));
@@ -224,8 +235,8 @@ export const useRoomSearchCommon = () => {
     }
 
     locationParts.value[index - 1] = customVal;
-    model.room_address = locationParts.value.filter((x) => x).join(", ");
+    return locationParts.value.filter((x) => x).join(", ");
   };
 
-  return { filters, lovePost, addressInfo, onSelectLocation };
+  return { filters, lovePost, addressInfo, onSelectLocation, updateLocationParts };
 };

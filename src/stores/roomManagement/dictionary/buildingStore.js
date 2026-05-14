@@ -18,8 +18,9 @@ export const useBuildingStore = defineStore("building", {
   state: () => ({
     ...store.state,
     idField: "building_id",
+    codeField: "building_code",
     nameField: "building_name",
-    searchFields: ["building_name", "building_address"],
+    searchFields: ["building_code", "building_name", "building_address"],
     enumFields: [
       {
         field: "status",
@@ -88,9 +89,9 @@ export const useBuildingStore = defineStore("building", {
           break;
       }
 
-      item.province_name = item.province_name.replace("Thành phố ", "");
-      item.district_name = item.district_name.replace("Quận ", "");
-      item.ward_name = item.ward_name.replace("Phường ", "");
+      item.province_name = item.province_name?.replace("Thành phố ", "");
+      item.district_name = item.district_name?.replace("Quận ", "");
+      item.ward_name = item.ward_name?.replace("Phường ", "");
 
       return item;
     },

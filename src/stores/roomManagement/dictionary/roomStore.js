@@ -15,6 +15,7 @@ const contextStore = useContextManageStore();
 export const useRoomStore = defineStore("room", {
   state: () => ({
     ...store.state,
+    building_id: contextStore.$state.user.building_id,
     idField: "room_id",
     codeField: "room_code",
     nameField: "room_name",

@@ -16,6 +16,7 @@
     ></v-text-field>
     <div class="d-flex">
       <v-btn
+        v-if="showRefreshBtn"
         icon="mdi-refresh"
         class="mr-4"
         density="comfortable"
@@ -63,6 +64,10 @@ export default {
     addBtnColor: {
       default: "blue-lighten-1",
       type: String,
+    },
+    showRefreshBtn: {
+      default: true,
+      type: Boolean,
     },
   },
   setup() {

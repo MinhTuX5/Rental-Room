@@ -1,17 +1,40 @@
 <template>
   <t-dynamic-popup
     :title="title"
-    :width="660"
-    name="RoomCategoryDetail"
-    class="room-category-detail"
+    :width="700"
+    name="BuildingDetail"
+    class="building-detail"
     @before-open="beforeOpen"
     @opened="opened"
   >
     <!-- Nội dung popup -->
     <template #content>
+      <v-row>
+        <v-col v-if="editMode == 2" class="mr-4" cols="4">
+          <label> Mã tòa nhà</label>
+          <v-text-field
+            disabled
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            :rules="[rules.required]"
+            v-model="model.building_code"
+            density="compact"
+        /></v-col>
+        <v-col>
+          <label> Tên tòa nhà <span class="required">*</span></label>
+          <v-text-field
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            placeholder="Nhập tên tòa nhà"
+            :rules="[rules.required]"
+            v-model="model.building_name"
+            density="compact"
+        /></v-col>
+      </v-row>
       <!-- Địa chỉ cho thuê -->
       <v-sheet>
-        <v-sheet class="text-h5 mb-4">Địa chỉ cho thuê</v-sheet>
         <v-row align="center" class="address mb-2">
           <v-col
             v-for="item in addressInfo"
@@ -28,136 +51,96 @@
               :items="item.items"
               :item-value="locationStore.$state.idField"
               :item-title="locationStore.$state.nameField"
-              :autofocus="item.autofocus"
               :rules="[rules.required]"
               @update:modelValue="selectLocation($event, item.locationType)"
             ></v-autocomplete>
           </v-col>
         </v-row>
         <!-- 02 -->
-        <v-row class="address">
+        <v-row class="address mb-4">
           <v-col>
             <v-text-field
+              hide-details
               label="Đường/Phố"
               density="compact"
-              :disabled="viewing"
+              variant="outlined"
+              color="blue-lighten-3"
               v-model="model.street_name"
-              @update:modelValue="updateLocationParts($event, 2)"
+              @update:modelValue="updateLocation($event, 2)"
             ></v-text-field>
           </v-col>
           <v-col>
             <v-text-field
+              hide-details
               label="Số nhà"
               density="compact"
-              :disabled="viewing"
+              variant="outlined"
+              color="blue-lighten-3"
               v-model="model.house_number"
-              @update:modelValue="updateLocationParts($event, 1)"
+              @update:modelValue="updateLocation($event, 1)"
             ></v-text-field>
           </v-col>
         </v-row>
+        <v-row class="d-flex flex-column">
+          <label class="mb-2">Địa chỉ</label>
+          <v-text-field
+            :variant="allowEdit ? 'filled' : 'outlined'"
+            density="compact"
+            readonly
+            :hide-details="true"
+            placeholder="Địa chỉ"
+            color="blue-lighten-3"
+            v-model="model.building_address"
+          >
+          </v-text-field>
+        </v-row>
       </v-sheet>
-
-      <v-row>
-        <v-col cols="5">
-          <label> Mã loại phòng </label>
-          <v-text-field
-            class="mt-2"
-            variant="outlined"
-            color="blue-lighten-3"
-            placeholder="Nhập mã loại phòng"
-            :autofocus="true"
-            :disabled="viewing"
-            v-model="model.room_category_code"
-        /></v-col>
-        <v-col cols="7">
-          <label> Loại phòng </label>
-          <v-text-field
-            class="mt-2"
-            variant="outlined"
-            color="blue-lighten-3"
-            placeholder="Phòng VIP, ..."
-            :disabled="viewing"
-            v-model="model.room_category_name"
-        /></v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="5">
-          <label>Giá phòng</label>
-          <t-currency-input
-            class="mt-2"
-            v-model="feePrice"
-            placeholder=""
-            :options="{
-              currency: 'VND',
-              locale: 'de-DE',
-              valueRange: {
-                min: 0,
-              },
-              hideGroupingSeparatorOnFocus: false,
-            }"
-          />
-        </v-col>
-        <v-col>
-          <label>Diện tích</label>
-          <v-number-input
-            class="mt-2 hide-spin-buttons"
-            variant="outlined"
-            controlVariant=""
-            type="number"
-            :reverse="false"
-            :inset="false"
-            :min="0"
-            :hide-spin-buttons="true"
-            suffix="m²"
-            v-model="model.room_area"
-          ></v-number-input>
-        </v-col>
-        <v-col>
-          <label>Số phòng ngủ</label>
-          <v-number-input
-            class="mt-2"
-            variant="outlined"
-            controlVariant="stacked"
-            :reverse="false"
-            :inset="true"
-            :min="0"
-            v-model="model.no_of_bed_rooms"
-          ></v-number-input>
-        </v-col>
-      </v-row>
     </template>
     <!-- Chân popup -->
     <template #footer="{ close }">
-      <div class="d-flex flex-row-reverse">
-        <v-btn class="ml-3" min-width="80" color="blue" @click="submit"
-          >Lưu</v-btn
-        >
-        <v-btn min-width="80" @click="close" variant="outlined">Hủy</v-btn>
+      <div class="d-flex flex-row-reverse justify-space-between align-center">
+        <div class="d-flex flex-row-reverse">
+          <v-btn class="ml-3" min-width="80" color="blue" @click="submit"
+            >Lưu</v-btn
+          >
+          <v-btn min-width="80" @click="close" variant="outlined">Hủy</v-btn>
+        </div>
+        <v-checkbox-btn
+          :disabled="disableUsingBtn"
+          label="Sử dụng"
+          color="blue"
+          density="compact"
+          v-model="isUsing"
+        ></v-checkbox-btn>
       </div>
     </template>
   </t-dynamic-popup>
 </template>
 
 <script>
-import { useVehicleFeeDetail } from "./roomCategoryDetail";
 // base
 import BaseDetail from "@/views/base/baseDetail.js";
 // components
 import TCurrencyInput from "@/components/base/input/TCurrencyInput.vue";
+import { useBuildingDetail } from "./buildingDetail";
 
 export default {
   extends: BaseDetail,
-  name: "VehicleFeeDetail",
+  name: "BuildingDetail",
   components: {
     TCurrencyInput,
   },
   setup() {
-    const vehicleFeeDetail = useVehicleFeeDetail();
-    return vehicleFeeDetail;
+    const resource = useBuildingDetail();
+    return resource;
   },
 };
 </script>
 
 <style lang="scss">
+.address {
+  .v-col + .v-col {
+    margin-left: 16px;
+  }
+}
 </style>

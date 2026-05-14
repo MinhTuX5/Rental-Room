@@ -16,7 +16,14 @@
         <v-app-bar-nav-icon @click.stop="rail = !rail"></v-app-bar-nav-icon>
       </template>
 
-      <v-app-bar-title>Quản lý phòng trọ</v-app-bar-title>
+      <v-app-bar-title>
+        <v-row>
+          <span>Quản lý phòng trọ</span>
+          <span v-if="buildingName" class="ml-8 building-name"
+            >Tòa nhà: <span class="font-italic">{{ buildingName }}</span></span
+          >
+        </v-row>
+      </v-app-bar-title>
 
       <v-spacer></v-spacer>
 
@@ -41,11 +48,9 @@
               :value="item.notification_id"
               @click="onClickNotify(item)"
             >
-              <!-- <template #prepend>
-                <v-avatar
-                  image="https://picsum.photos/1920/1080?random"
-                ></v-avatar>
-              </template> -->
+              <template #prepend>
+                <v-avatar :image="item.user_avatar"></v-avatar>
+              </template>
 
               <template #title>
                 <div
@@ -183,6 +188,18 @@
               :autofocus="true"
               v-model="phoneNumber"
           /></v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-text-field
+              clearable
+              label="Mã tòa nhà"
+              class="mt-2"
+              variant="outlined"
+              color="blue-lighten-3"
+              v-model="buildingCode"
+            />
+          </v-col>
           <v-col class="ml-4">
             <v-text-field
               clearable
@@ -230,6 +247,10 @@ export default {
 .room-management-container {
   .v-list-item__spacer {
     width: 8px !important;
+  }
+
+  .building-name {
+    font-size: 18px;
   }
 }
 </style>

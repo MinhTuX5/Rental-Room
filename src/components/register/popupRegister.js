@@ -60,6 +60,12 @@ const ExpenseCategoryDetail = defineAsyncComponent(() =>
 const AppointmentScheduleDetail = defineAsyncComponent(() =>
   import("@/views/auth/schedule/AppointmentScheduleDetail.vue")
 );
+const BuildingDetail = defineAsyncComponent(() =>
+  import(
+    "@/views/roomManagement/innkeeper/dictionary/building/BuildingDetail.vue"
+  )
+);
+
 //#endregion
 //#endregion
 export function registerPopup(app) {
@@ -78,4 +84,5 @@ export function registerPopup(app) {
   app.component("FeeDetail", FeeDetail);
   app.component("ExpenseCategoryDetail", ExpenseCategoryDetail);
   app.component("AppointmentScheduleDetail", AppointmentScheduleDetail);
+  app.component("BuildingDetail", BuildingDetail);
 }

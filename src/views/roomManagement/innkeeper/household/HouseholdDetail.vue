@@ -15,6 +15,7 @@
           <label> Mã phòng </label>
           <v-text-field
             readonly
+            density="compact"
             hide-details
             class="mt-2"
             variant="outlined"
@@ -25,6 +26,7 @@
           <label> Vị trí phòng </label>
           <v-text-field
             readonly
+            density="compact"
             hide-details
             class="mt-2"
             variant="outlined"
@@ -36,6 +38,7 @@
           <label> Mã chủ phòng </label>
           <v-text-field
             readonly
+            density="compact"
             hide-details
             class="mt-2"
             variant="outlined"
@@ -47,6 +50,7 @@
           <label> Tên chủ phòng </label>
           <v-text-field
             readonly
+            density="compact"
             hide-details
             class="mt-2"
             variant="outlined"
@@ -58,6 +62,7 @@
           <label> Số điện thoại </label>
           <v-text-field
             readonly
+            density="compact"
             hide-details
             class="mt-2"
             variant="outlined"
@@ -82,18 +87,27 @@
               v-model="item.on_leave"
             ></v-checkbox-btn>
           </template>
-          <template v-slot:item.gender="{ item }">
-            <v-chip :color="item.color">{{ item.gender }}</v-chip>
+          <template v-slot:item.displayed_resident_gender="{ item }">
+            <v-chip :color="item.color">{{
+              item.displayed_resident_gender
+            }}</v-chip>
           </template>
         </v-data-table-virtual>
       </v-row>
 
+      <t-feature
+        :ref="refToolBar"
+        class="pb-4 mt-4"
+        :showRefreshBtn="false"
+        @on-click="viewDetail"
+      ></t-feature>
       <v-row>
         <v-data-table-virtual
           :fixed-header="true"
           no-data-text="Chưa có phương tiện được đăng ký"
           :headers="vehicleHeaders"
           :items="vehicleStore.$state.items"
+          :height="140"
         >
           <template v-slot:item.actions="{ item }">
             <v-row>
