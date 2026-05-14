@@ -48,6 +48,16 @@
       @input="v$.phoneNumber.$touch"
     ></v-text-field>
 
+    <v-select
+      v-model="state.role"
+      :items="registerRoles"
+      item-title="label"
+      item-value="value"
+      label="Vai trò*"
+      density="compact"
+      class="mt-2"
+    ></v-select>
+
     <v-text-field
       label="Mật khẩu*"
       v-model="state.password"

@@ -29,19 +29,17 @@
           @click:append="showPassword = !showPassword"
         ></v-text-field>
 
-        <v-radio-group
-          v-if="isManagementPage"
+        <v-select
+          v-if="!isRoleFixed"
           v-model="model.role"
-          inline
+          :items="loginRoles"
+          item-title="label"
+          item-value="value"
+          label="Vai trò*"
+          density="compact"
+          class="mt-2"
           hide-details
-        >
-          <v-radio label="Người thuê" :value="Role.Renter"></v-radio>
-          <v-radio label="Chủ trọ" :value="Role.Innkeeper"></v-radio>
-        </v-radio-group>
-        <v-radio-group v-else v-model="model.role" inline hide-details>
-          <v-radio label="Đăng hoặc tìm trọ" :value="Role.RoomSeeker"></v-radio>
-          <v-radio label="Quản trị viên" :value="Role.Admin"></v-radio>
-        </v-radio-group>
+        ></v-select>
       </v-col>
 
       <div class="forgot-password text-end">
@@ -97,7 +95,7 @@
 
 
 <script>
-import { onMounted, reactive, ref, getCurrentInstance, onUnmounted } from "vue";
+import { onMounted, reactive, ref, computed, getCurrentInstance, onUnmounted } from "vue";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -179,54 +177,45 @@ export default {
     const handleAfterLogin = (rs) => {
       const me = proxy;
       if (rs.data && typeof rs.data === "object") {
-        const context = {
-          ...rs.data,
-        };
+        const context = { ...rs.data };
 
         let store = {};
         let localStorageKey = "";
-        if (me.$props.isManagementPage) {
-          store = useContextManageStore();
+
+        if (context.role == Role.Admin) {
+          localStorageKey = "context_admin";
+          store = useContextAdminStore();
+        } else if (context.role == Role.Renter || context.role == Role.Innkeeper) {
           localStorageKey = "context_management";
-          window.PageRole = context.role;
+          store = useContextManageStore();
         } else {
-          if (context.role == Role.Admin) {
-            localStorageKey = "context_admin";
-            store = useContextAdminStore();
-            window.PageRole = context.role;
-          } else {
-            localStorageKey = "context";
-            store = useContextStore();
-          }
+          localStorageKey = "context";
+          store = useContextStore();
         }
 
-        store.$state = {
-          ...store.$state,
-          ...context,
-        };
-
+        window.PageRole = context.role;
+        store.$state = { ...store.$state, ...context };
         localStorage.setItem(localStorageKey, JSON.stringify(context));
 
         showMessage("Đăng nhập thành công!");
 
-        if (me.$props.isManagementPage) {
-          me.$router.push({ name: "Management" });
-          window.PageRole = context.role;
-        } else {
+        if (appStore.$state.showLoginPopup) {
           appStore.toggleLoginPopup();
+        }
 
+        if (context.role == Role.Admin) {
+          openAdminPage();
+        } else if (context.role == Role.Renter || context.role == Role.Innkeeper) {
+          me.$router.push({ name: "Management" });
+        } else {
           if (appStore.$state.moveToPageAfterLogin) {
             me.$router.push({ name: appStore.$state.moveToPageAfterLogin });
             appStore.$state.moveToPageAfterLogin = "";
-          }
-
-          if (typeof appStore.$state.callBackAfterLogin === "function") {
+          } else if (typeof appStore.$state.callBackAfterLogin === "function") {
             appStore.$state.callBackAfterLogin();
             appStore.$state.callBackAfterLogin = null;
-          }
-
-          if (context.role == Role.Admin) {
-            openAdminPage();
+          } else {
+            me.$router.push({ name: "RoomSearchView" });
           }
         }
       }
@@ -294,6 +283,27 @@ export default {
       appStore.toggleLoginPopup();
     };
 
+    // Ẩn combobox khi context yêu cầu role cố định (vd: click đăng bài → luôn là RoomSeeker)
+    const isRoleFixed = computed(() =>
+      !!appStore.$state.moveToPageAfterLogin ||
+      typeof appStore.$state.callBackAfterLogin === "function"
+    );
+
+    const loginRoles = computed(() => {
+      if (proxy.$props.isManagementPage) {
+        return [
+          { label: "Người thuê", value: Role.Renter },
+          { label: "Chủ trọ", value: Role.Innkeeper },
+        ];
+      }
+      return [
+        { label: "Đăng bài và tìm trọ", value: Role.RoomSeeker },
+        { label: "Người thuê", value: Role.Renter },
+        { label: "Chủ trọ", value: Role.Innkeeper },
+        { label: "Quản trị viên", value: Role.Admin },
+      ];
+    });
+
     onMounted(() => {
       const me = proxy;
       if (me.$props.isManagementPage) {
@@ -318,6 +328,8 @@ export default {
       overlay,
       form,
       Role,
+      loginRoles,
+      isRoleFixed,
       onClickOut,
     };
   },

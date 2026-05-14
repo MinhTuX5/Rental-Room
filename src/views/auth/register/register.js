@@ -3,6 +3,7 @@ import { useRouter } from "vue-router";
 import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, maxLength, email } from "@vuelidate/validators";
 import userAPI from "@/apis/userAPI";
+import Role from "@/common/enum/Role";
 
 export const useRegister = () => {
   const router = useRouter();
@@ -14,6 +15,7 @@ export const useRegister = () => {
     password: "",
     email: "",
     fullName: "",
+    role: Role.RoomSeeker,
   };
 
   const state = reactive({ ...initialState });
@@ -27,6 +29,7 @@ export const useRegister = () => {
     },
     password: { required, minLength: minLength(8) },
     fullName: { required },
+    role: { required },
   };
 
   const v$ = useVuelidate(rules, state);
@@ -44,6 +47,7 @@ export const useRegister = () => {
         fullName: state.fullName,
         phoneNumber: state.phoneNumber,
         password: state.password,
+        role: state.role,
       };
       await userAPI.register(payload);
       router.push("/dang-nhap");
@@ -57,5 +61,11 @@ export const useRegister = () => {
     }
   };
 
-  return { state, v$, loading, errorMessage, register };
+  const registerRoles = [
+    { label: "Đăng bài và tìm trọ", value: Role.RoomSeeker },
+    { label: "Người thuê", value: Role.Renter },
+    { label: "Chủ trọ", value: Role.Innkeeper },
+  ];
+
+  return { state, v$, loading, errorMessage, register, Role, registerRoles };
 };
