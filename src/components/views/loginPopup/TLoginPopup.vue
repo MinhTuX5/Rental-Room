@@ -30,7 +30,6 @@
         ></v-text-field>
 
         <v-select
-          v-if="!isRoleFixed"
           v-model="model.role"
           :items="loginRoles"
           item-title="label"

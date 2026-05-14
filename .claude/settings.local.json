@@ -4,7 +4,8 @@
       "Bash(rtk ls *)",
       "Bash(rtk grep *)",
       "Bash(rtk find *)",
-      "Bash(grep -E '\\\\.\\(json|config|rc\\)$')"
+      "Bash(grep -E '\\\\.\\(json|config|rc\\)$')",
+      "Bash(rtk read *)"
     ]
   }
 }
