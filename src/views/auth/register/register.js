@@ -32,7 +32,7 @@ export const useRegister = () => {
   const v$ = useVuelidate(rules, state);
 
   const register = async () => {
-    const isValid = await v$.$validate();
+    const isValid = await v$.value.$validate();
     if (!isValid) return;
 
     loading.value = true;
