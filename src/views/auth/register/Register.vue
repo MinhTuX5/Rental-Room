@@ -1,8 +1,20 @@
 <template>
   <form
     class="w-auto d-flex flex-column justify-center bg-white pa-8 rounded-lg"
+    @submit.prevent="register"
   >
     <div class="form-title text-h4 text-center mb-6">Đăng ký</div>
+
+    <v-alert
+      v-if="errorMessage"
+      type="error"
+      density="compact"
+      class="mb-4"
+      closable
+      @click:close="errorMessage = ''"
+    >
+      {{ errorMessage }}
+    </v-alert>
 
     <v-text-field
       label="Email*"
@@ -40,6 +52,7 @@
       label="Mật khẩu*"
       v-model="state.password"
       density="compact"
+      type="password"
       :error-messages="v$.password.$errors.map((e) => e.$message)"
       required
       @blur="v$.password.$touch"
@@ -50,23 +63,28 @@
       label="Xác nhận mật khẩu*"
       v-model="state.passwordConfirmation"
       density="compact"
+      type="password"
       :error-messages="v$.passwordConfirmation.$errors.map((e) => e.$message)"
       required
       @blur="v$.passwordConfirmation.$touch"
       @input="v$.passwordConfirmation.$touch"
     ></v-text-field>
 
-    <v-btn class="mx-auto mt-4" @click="v$.$validate" color="green-lighten-1">
+    <v-btn
+      class="mx-auto mt-4"
+      type="submit"
+      color="green-lighten-1"
+      :loading="loading"
+    >
       Đăng ký
     </v-btn>
 
     <div class="register text-center mt-4">
       <span>Đã có tài khoản? </span>
-      <a href="#">Đăng nhập</a>
+      <a href="/dang-nhap">Đăng nhập</a>
     </div>
   </form>
 </template>
-
 
 <script>
 import { useRegister } from "./register";
