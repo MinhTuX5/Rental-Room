@@ -25,7 +25,7 @@
 
       <div v-show="model.role != Role.Admin" class="register text-center mt-4">
         <span>Chưa có tài khoản? </span>
-        <a href="#">Đăng ký</a>
+        <a href="/auth/dang-ky">Đăng ký</a>
       </div>
 
       <v-col v-if="model.role != Role.Admin" class="d-flex flex-column justify-center">
@@ -251,13 +251,7 @@ export default {
 
     onMounted(() => {
       const me = proxy;
-      if (me.$props.isManagementPage) {
-        me.model.role = Role.RoomSeeker;
-      } else if (appStore.$state.LoginWithRole === Role.Admin) {
-        me.model.role = Role.Admin;
-      } else {
-        me.model.role = Role.Renter;
-      }
+      me.model.role = Role.RoomSeeker;
     });
 
     onUnmounted(() => {

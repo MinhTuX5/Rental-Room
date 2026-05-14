@@ -207,7 +207,7 @@ const router = createRouter({
       component: () => import("@/views/auth/Auth.vue"),
       children: [
         {
-          path: "register",
+          path: "dang-ky",
           name: "RegisterView",
           component: () => import("@/views/auth/register/Register.vue"),
         },
