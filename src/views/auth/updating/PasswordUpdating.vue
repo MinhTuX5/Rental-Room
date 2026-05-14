@@ -7,11 +7,10 @@
         :min-width="minWidth"
         :error-messages="model.currentPassword.errorMessage"
         label="Mật khẩu hiện tại"
+        :type="showPassword.currentPassword ? 'text' : 'password'"
         :append-icon="showPassword.currentPassword ? 'mdi-eye' : 'mdi-eye-off'"
-        @click:append="
-          showPassword.currentPassword = !showPassword.currentPassword
-        "
-        :rules="[rules.required]"
+        @click:append="showPassword.currentPassword = !showPassword.currentPassword"
+        :disabled="loading"
         class="mb-2"
       ></v-text-field>
 
@@ -21,9 +20,10 @@
         :min-width="minWidth"
         :error-messages="model.newPassword.errorMessage"
         label="Mật khẩu mới"
+        :type="showPassword.newPassword ? 'text' : 'password'"
         :append-icon="showPassword.newPassword ? 'mdi-eye' : 'mdi-eye-off'"
         @click:append="showPassword.newPassword = !showPassword.newPassword"
-        :rules="[rules.required, rules.min]"
+        :disabled="loading"
         class="mb-2"
       ></v-text-field>
 
@@ -33,19 +33,15 @@
         :min-width="minWidth"
         :error-messages="model.newPasswordConfirmation.errorMessage"
         label="Xác nhận mật khẩu mới"
-        :append-icon="
-          showPassword.newPasswordConfirmation ? 'mdi-eye' : 'mdi-eye-off'
-        "
-        @click:append="
-          showPassword.newPasswordConfirmation =
-            !showPassword.newPasswordConfirmation
-        "
-        :rules="[rules.required, rules.min]"
+        :type="showPassword.newPasswordConfirmation ? 'text' : 'password'"
+        :append-icon="showPassword.newPasswordConfirmation ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append="showPassword.newPasswordConfirmation = !showPassword.newPasswordConfirmation"
+        :disabled="loading"
         class="mb-2"
       ></v-text-field>
 
       <v-row class="submit-btn">
-        <v-btn type="submit" :disabled="form" color="blue"> Cập nhật </v-btn>
+        <v-btn type="submit" :loading="loading" color="blue"> Cập nhật </v-btn>
       </v-row>
     </v-form>
   </v-col>

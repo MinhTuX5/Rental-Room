@@ -14,6 +14,10 @@ class ProfileAPI extends BaseAPI {
   updateProfile(userId, payload) {
     return this.putAsync(payload, `profile/${userId}`);
   }
+
+  changePassword(userId, payload) {
+    return this.putAsync(payload, `change-password/${userId}`);
+  }
 }
 
 export default new ProfileAPI();
