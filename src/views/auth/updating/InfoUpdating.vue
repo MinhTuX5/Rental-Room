@@ -6,6 +6,7 @@
     </v-tabs>
     <v-tabs-window v-model="tab">
       <v-tabs-window-item :value="1">
+        <v-progress-linear v-if="loading" indeterminate color="blue-lighten-1" class="mb-4"></v-progress-linear>
         <v-row>
           <v-col>
             <form @submit.prevent="submit">
@@ -13,38 +14,44 @@
                 v-model="model.user_name"
                 :counter="255"
                 label="Tên liên hệ"
+                :disabled="loading"
               ></v-text-field>
 
               <v-text-field
                 v-model="model.phone_number"
                 :counter="10"
                 label="Số điện thoại chính"
+                :disabled="loading"
               ></v-text-field>
 
               <v-text-field
                 v-model="model.second_phone_number"
                 :counter="10"
                 label="Số điện thoại phụ"
+                :disabled="loading"
               ></v-text-field>
 
               <v-text-field
                 v-model="model.user_email"
                 label="E-mail"
+                :disabled="loading"
               ></v-text-field>
 
               <v-text-field
                 v-model="model.user_facebook"
                 label="Facebook"
+                :disabled="loading"
               ></v-text-field>
 
               <v-text-field
                 v-model="model.user_zalo"
                 label="Zalo"
+                :disabled="loading"
               ></v-text-field>
 
               <v-row class="d-flex justify-end mb-2 mr-4">
-                <v-btn class="me-4" @click="handleReset"> Hủy </v-btn>
-                <v-btn type="submit" color="blue-lighten-1"> Cập nhật </v-btn>
+                <v-btn class="me-4" @click="handleReset" :disabled="loading"> Hủy </v-btn>
+                <v-btn type="submit" color="blue-lighten-1" :loading="loading"> Cập nhật </v-btn>
               </v-row>
             </form>
           </v-col>

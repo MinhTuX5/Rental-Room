@@ -1,23 +1,78 @@
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted } from "vue";
+import { useContextStore } from "@/stores/contextStore";
+import { useContextManageStore } from "@/stores/contextManageStore";
+import profileAPI from "@/apis/profileAPI";
+import userAPI from "@/apis/userAPI";
+import { showMessage, MessageType } from "@/common/commonFunction";
 
 export const useInfoUpdating = () => {
   const model = reactive({
-    user_name: 'Nguyễn Văn Đông',
-    user_email: 'abc@gmail.com',
-    phone_number: '0964895540',
+    user_name: "",
+    user_email: "",
+    phone_number: "",
+    second_phone_number: "",
+    user_facebook: "",
+    user_zalo: "",
   });
 
-  const submit = () => {
-    console.log("Form submitted:", model);
+  const loading = ref(false);
+  const tab = ref(1);
+
+  const getUserId = () => {
+    const contextStore = useContextStore();
+    if (contextStore.user?.user_id) return contextStore.user.user_id;
+
+    const manageStore = useContextManageStore();
+    if (manageStore.user?.user_id) return manageStore.user.user_id;
+
+    return null;
+  };
+
+  const loadProfile = async () => {
+    const userId = getUserId();
+    if (!userId) return;
+
+    try {
+      loading.value = true;
+      const res = await profileAPI.getProfile(userId);
+      if (res?.data) {
+        Object.assign(model, {
+          user_name: res.data.user_name ?? "",
+          user_email: res.data.user_email ?? "",
+          phone_number: res.data.phone_number ?? "",
+          second_phone_number: res.data.second_phone_number ?? "",
+          user_facebook: res.data.user_facebook ?? "",
+          user_zalo: res.data.user_zalo ?? "",
+        });
+      }
+    } catch (error) {
+      showMessage("Không thể tải thông tin người dùng!", MessageType.Error);
+      console.error(error);
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const submit = async () => {
+    try {
+      loading.value = true;
+      await userAPI.updateUserInfo(model);
+      showMessage("Cập nhật thông tin thành công!");
+    } catch (error) {
+      showMessage("Cập nhật thất bại!", MessageType.Error);
+      console.error(error);
+    } finally {
+      loading.value = false;
+    }
   };
 
   const handleReset = () => {
-    Object.values(model).forEach((field) => {
-      field.value = "";
-    });
+    loadProfile();
   };
 
-  const tab = ref(1);
+  onMounted(() => {
+    loadProfile();
+  });
 
-  return { model, submit, handleReset, tab };
+  return { model, loading, submit, handleReset, tab };
 };
