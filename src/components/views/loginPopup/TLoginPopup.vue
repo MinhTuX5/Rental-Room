@@ -1,56 +1,25 @@
 <template>
   <v-container class="login-popup" :class="containerClass">
     <div class="h-100 w-100 background" @click="onClickOut"></div>
-    <v-form
-      fast-fail
-      class="w-50 d-flex flex-column justify-center bg-white pa-8 rounded-lg"
-      v-model="form"
-    >
+    <v-form fast-fail class="w-50 d-flex flex-column justify-center bg-white pa-8 rounded-lg" v-model="form">
       <div class="form-title text-h4 text-center mb-6">Đăng nhập</div>
 
       <v-col>
-        <v-text-field
-          v-model="model.account"
-          label="Số điện thoại*"
-          required
-          :rules="phoneNumberRules"
-        ></v-text-field>
+        <v-text-field v-model="model.account" label="Số điện thoại*" required :rules="phoneNumberRules"></v-text-field>
 
-        <v-text-field
-          v-model="model.password"
-          required
-          label="Mật khẩu*"
-          class="mt-2"
-          :type="showPassword ? 'text' : 'password'"
-          :append-icon="
-            showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
-          "
-          :rules="passwordRules"
-          @click:append="showPassword = !showPassword"
-        ></v-text-field>
+        <v-text-field v-model="model.password" required label="Mật khẩu*" class="mt-2"
+          :type="showPassword ? 'text' : 'password'" :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
+            " :rules="passwordRules" @click:append="showPassword = !showPassword"></v-text-field>
 
-        <v-select
-          v-model="model.role"
-          :items="loginRoles"
-          item-title="label"
-          item-value="value"
-          label="Vai trò*"
-          density="compact"
-          class="mt-2"
-          hide-details
-        ></v-select>
+        <v-select v-model="model.role" :items="loginRoles" item-title="label" item-value="value" label="Vai trò*"
+          density="compact" class="mt-2" hide-details></v-select>
       </v-col>
 
       <div class="forgot-password text-end">
         <a href="#">Quên mật khẩu?</a>
       </div>
 
-      <v-btn
-        class="mx-auto mt-4"
-        @click="login"
-        color="green-lighten-1"
-        :disabled="!form"
-      >
+      <v-btn class="mx-auto mt-4" @click="login" color="green-lighten-1" :disabled="!form">
         Đăng nhập
       </v-btn>
 
@@ -59,36 +28,19 @@
         <a href="#">Đăng ký</a>
       </div>
 
-      <v-col
-        v-if="model.role != Role.Admin"
-        class="d-flex flex-column justify-center"
-      >
-        <v-btn
-          class="mx-auto mt-4"
-          color="red-lighten-1"
-          prepend-icon="mdi-google"
-          @click="signInWithGoogle"
-        >
+      <v-col v-if="model.role != Role.Admin" class="d-flex flex-column justify-center">
+        <v-btn class="mx-auto mt-4" color="red-lighten-1" prepend-icon="mdi-google" @click="signInWithGoogle">
           Tiếp tục với Google
         </v-btn>
 
-        <v-btn
-          class="mx-auto mt-2"
-          color="blue-lighten-1"
-          prepend-icon="mdi-facebook"
-          @click="signInWithFb"
-        >
+        <v-btn class="mx-auto mt-2" color="blue-lighten-1" prepend-icon="mdi-facebook" @click="signInWithFb">
           Tiếp tục với Facebook
         </v-btn>
       </v-col>
     </v-form>
   </v-container>
   <v-overlay :model-value="overlay" class="align-center justify-center">
-    <v-progress-circular
-      color="primary"
-      size="64"
-      indeterminate
-    ></v-progress-circular>
+    <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
   </v-overlay>
 </template>
 
@@ -289,15 +241,8 @@ export default {
     );
 
     const loginRoles = computed(() => {
-      if (proxy.$props.isManagementPage) {
-        return [
-          { label: "Đăng bài và tìm trọ", value: Role.RoomSeeker },
-          { label: "Người thuê", value: Role.Renter },
-          { label: "Chủ trọ", value: Role.Innkeeper },
-          { label: "Quản trị viên", value: Role.Admin },
-        ];
-      }
       return [
+        { label: "Đăng bài và tìm trọ", value: Role.RoomSeeker },
         { label: "Người thuê", value: Role.Renter },
         { label: "Chủ trọ", value: Role.Innkeeper },
         { label: "Quản trị viên", value: Role.Admin },
