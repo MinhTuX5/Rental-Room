@@ -11,8 +11,8 @@ class ProfileAPI extends BaseAPI {
     return this.getAsync({}, `profile/${userId}`);
   }
 
-  updateProfile(payload) {
-    return this.postAsync(payload, "profile/update");
+  updateProfile(userId, payload) {
+    return this.putAsync(payload, `profile/${userId}`);
   }
 }
 

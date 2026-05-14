@@ -2,7 +2,6 @@ import { reactive, ref, onMounted } from "vue";
 import { useContextStore } from "@/stores/contextStore";
 import { useContextManageStore } from "@/stores/contextManageStore";
 import profileAPI from "@/apis/profileAPI";
-import userAPI from "@/apis/userAPI";
 import { showMessage, MessageType } from "@/common/commonFunction";
 
 export const useInfoUpdating = () => {
@@ -54,9 +53,12 @@ export const useInfoUpdating = () => {
   };
 
   const submit = async () => {
+    const userId = getUserId();
+    if (!userId) return;
+
     try {
       loading.value = true;
-      await userAPI.updateUserInfo(model);
+      await profileAPI.updateProfile(userId, model);
       showMessage("Cập nhật thông tin thành công!");
     } catch (error) {
       showMessage("Cập nhật thất bại!", MessageType.Error);

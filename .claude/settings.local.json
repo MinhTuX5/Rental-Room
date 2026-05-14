@@ -6,7 +6,8 @@
       "Bash(rtk find *)",
       "Bash(grep -E '\\\\.\\(json|config|rc\\)$')",
       "Bash(rtk read *)",
-      "Read(//c/Users/thinh/source/repos/RentRoomManagement/RentRoomManagement.API/Controllers/**)"
+      "Read(//c/Users/thinh/source/repos/RentRoomManagement/RentRoomManagement.API/Controllers/**)",
+      "Read(//c/Users/thinh/source/repos/RentRoomManagement/**)"
     ]
   }
 }
