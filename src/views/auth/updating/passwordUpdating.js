@@ -83,8 +83,8 @@ export const usePasswordUpdating = () => {
     try {
       loading.value = true;
       await profileAPI.changePassword(userId, {
-        current_password: model.currentPassword.value,
-        new_password: model.newPassword.value,
+        CurrentPassword: model.currentPassword.value,
+        NewPassword: model.newPassword.value,
       });
       showMessage("Đổi mật khẩu thành công!");
       model.currentPassword.value = "";
