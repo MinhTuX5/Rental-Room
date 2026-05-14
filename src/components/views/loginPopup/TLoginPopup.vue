@@ -292,12 +292,13 @@ export default {
     const loginRoles = computed(() => {
       if (proxy.$props.isManagementPage) {
         return [
+          { label: "Đăng bài và tìm trọ", value: Role.RoomSeeker },
           { label: "Người thuê", value: Role.Renter },
           { label: "Chủ trọ", value: Role.Innkeeper },
+          { label: "Quản trị viên", value: Role.Admin },
         ];
       }
       return [
-        { label: "Đăng bài và tìm trọ", value: Role.RoomSeeker },
         { label: "Người thuê", value: Role.Renter },
         { label: "Chủ trọ", value: Role.Innkeeper },
         { label: "Quản trị viên", value: Role.Admin },
@@ -307,9 +308,11 @@ export default {
     onMounted(() => {
       const me = proxy;
       if (me.$props.isManagementPage) {
-        me.model.role = Role.Renter;
+        me.model.role = Role.RoomSeeker;
       } else if (appStore.$state.LoginWithRole === Role.Admin) {
         me.model.role = Role.Admin;
+      } else {
+        me.model.role = Role.Renter;
       }
     });
 
