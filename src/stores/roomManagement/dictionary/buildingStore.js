@@ -79,6 +79,23 @@ export const useBuildingStore = defineStore("building", {
       }
     },
 
+    async setActive(buildingId) {
+      const me = this;
+      const response = await api.setActive(buildingId);
+      const updated = response.data;
+      me.items.forEach((item) => {
+        if (item[me.idField] == buildingId) {
+          item = me.standardItem({ ...item, ...updated });
+          Object.assign(item, me.standardItem({ ...item, ...updated }));
+        } else if (item.status === BuildingStatus.Using) {
+          item.status = BuildingStatus.NoUsing;
+          item = me.standardItem(item);
+          Object.assign(item, me.standardItem(item));
+        }
+      });
+      return updated;
+    },
+
     standardItem(item) {
       switch (item.status) {
         case BuildingStatus.Using:

@@ -43,6 +43,17 @@
           <v-col v-if="item.status != BuildingStatus.Using">
             <v-icon
               class="cursor-pointer"
+              color="green"
+              v-tooltip:top="'Sử dụng'"
+              size="large"
+              @click="useItem(item, refresh)"
+            >
+              mdi-check-circle-outline
+            </v-icon>
+          </v-col>
+          <v-col v-if="item.status != BuildingStatus.Using">
+            <v-icon
+              class="cursor-pointer"
               color="red"
               v-tooltip:top="'Xóa'"
               size="large"
@@ -63,7 +74,6 @@ import baseDicList from "@/views/base/baseDicList";
 // components
 import TFeature from "@/components/base/views/TFeature.vue";
 import _enum from "../../../../../common/enum";
-import BuildingStatus from "../../../../../common/enum/BuildingStatus";
 
 export default {
   extends: baseDicList,
@@ -76,8 +86,7 @@ export default {
     },
   },
   setup() {
-    const resource = useBuildingList();
-    return { ...resource, BuildingStatus };
+    return useBuildingList();
   },
 };
 </script>

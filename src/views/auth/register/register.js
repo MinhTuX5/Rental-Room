@@ -1,7 +1,7 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useVuelidate } from "@vuelidate/core";
-import { required, minLength, maxLength, email, sameAs } from "@vuelidate/validators";
+import { required, minLength, maxLength, email } from "@vuelidate/validators";
 import userAPI from "@/apis/userAPI";
 
 export const useRegister = () => {
@@ -14,7 +14,6 @@ export const useRegister = () => {
     password: "",
     email: "",
     fullName: "",
-    passwordConfirmation: "",
   };
 
   const state = reactive({ ...initialState });
@@ -27,11 +26,6 @@ export const useRegister = () => {
       minLength: minLength(10),
     },
     password: { required, minLength: minLength(8) },
-    passwordConfirmation: {
-      required,
-      minLength: minLength(8),
-      sameAs: sameAs(() => state.password),
-    },
     fullName: { required },
   };
 
@@ -50,7 +44,6 @@ export const useRegister = () => {
         fullName: state.fullName,
         phoneNumber: state.phoneNumber,
         password: state.password,
-        passwordConfirmation: state.passwordConfirmation,
       };
       await userAPI.register(payload);
       router.push("/dang-nhap");

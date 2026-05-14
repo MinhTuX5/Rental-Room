@@ -52,22 +52,13 @@
       label="Mật khẩu*"
       v-model="state.password"
       density="compact"
-      type="password"
+      :type="showPassword ? 'text' : 'password'"
+      :append-inner-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
       :error-messages="v$.password.$errors.map((e) => e.$message)"
       required
       @blur="v$.password.$touch"
       @input="v$.password.$touch"
-    ></v-text-field>
-
-    <v-text-field
-      label="Xác nhận mật khẩu*"
-      v-model="state.passwordConfirmation"
-      density="compact"
-      type="password"
-      :error-messages="v$.passwordConfirmation.$errors.map((e) => e.$message)"
-      required
-      @blur="v$.passwordConfirmation.$touch"
-      @input="v$.passwordConfirmation.$touch"
+      @click:append-inner="showPassword = !showPassword"
     ></v-text-field>
 
     <v-btn
@@ -87,13 +78,15 @@
 </template>
 
 <script>
+import { ref } from "vue";
 import { useRegister } from "./register";
 
 export default {
   name: "RegisterView",
   setup() {
     const resource = useRegister();
-    return resource;
+    const showPassword = ref(false);
+    return { ...resource, showPassword };
   },
 };
 </script>
