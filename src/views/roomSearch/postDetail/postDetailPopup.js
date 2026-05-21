@@ -90,7 +90,7 @@ export const usePostDetailPopup = () => {
    * @param {Number} locationType Loại vị trí đc chọn
    */
   const onSelectLocation = (selectedVal, locationType) => {
-    let selectedLocation = {};
+    let selectedLocation = null;
     let config = null;
     let result = "";
     switch (locationType) {
@@ -102,10 +102,12 @@ export const usePostDetailPopup = () => {
         if (config) {
           config.items = locationStore.districtItems;
         }
-        result = updateLocationParts(
-          selectedLocation[locationStore.nameField],
-          5
-        );
+        if (selectedLocation) {
+          result = updateLocationParts(
+            selectedLocation[locationStore.nameField],
+            5
+          );
+        }
         break;
       case LocationType.District:
         selectedLocation = locationStore.selectDistrictById(selectedVal);
@@ -113,21 +115,25 @@ export const usePostDetailPopup = () => {
         if (config) {
           config.items = locationStore.wardItems;
         }
-        result = updateLocationParts(
-          selectedLocation[locationStore.nameField],
-          4
-        );
+        if (selectedLocation) {
+          result = updateLocationParts(
+            selectedLocation[locationStore.nameField],
+            4
+          );
+        }
         break;
       case LocationType.Ward:
         selectedLocation = locationStore.getWardById(selectedVal);
-        result = updateLocationParts(
-          selectedLocation[locationStore.nameField],
-          3
-        );
+        if (selectedLocation) {
+          result = updateLocationParts(
+            selectedLocation[locationStore.nameField],
+            3
+          );
+        }
         break;
     }
+    return result;
   };
-
   const updateLocationParts = (value, index) => {
     if (index < 1 || index > 5) {
       return;
@@ -341,14 +347,17 @@ export const usePostDetailPopup = () => {
     }
 
     if (roomPostId) {
+      if (!locationStore.items.length) {
+        await locationStore.getAllLocations();
+      }
       me.editMode = 2;
       const data = await store.getById(roomPostId);
+      model.value = data;
       onSelectLocation(data.province_id, LocationType.Province);
       onSelectLocation(data.district_id, LocationType.District);
-      model.value = data;
-      roomPrice.value = data.room_price.toString();
+      roomPrice.value = data.room_price?.toString() ?? "";
       formatAmount();
-      savedImages.value = data.images.split(",");
+      savedImages.value = data.images ? data.images.split(",") : [];
 
       if (me.$route.name === "PostDetailUpdating") {
         title.value = 'Sửa bài đăng'

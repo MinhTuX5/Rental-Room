@@ -31,7 +31,6 @@ export default class BaseStore {
        */
       async getPaging(config) {
         const me = this;
-
         const response = await api.getPaging(config);
         var result = {
           data: response.data,

@@ -49,7 +49,9 @@ export const useLocationStore = defineStore("location", {
     },
     selectProvinceById(id) {
       const me = this;
-      const province = me.provinceItems.find((x) => x[me.idField] === id);
+      const province = me.provinceItems.find(
+        (x) => x[me.idField] === id || x[me.codeField] === id
+      );
       if (province) {
         me.selectedProvinceCode = province[me.codeField];
       }
@@ -58,7 +60,9 @@ export const useLocationStore = defineStore("location", {
     selectDistrictById(id) {
       const me = this;
 
-      const district = me.districtItems.find((x) => x[me.idField] === id);
+      const district = me.districtItems.find(
+        (x) => x[me.idField] === id || x[me.codeField] === id
+      );
       if (district) {
         me.selectedDistrictCode = district[me.codeField];
       }
@@ -66,7 +70,9 @@ export const useLocationStore = defineStore("location", {
     },
     getWardById(id) {
       const me = this;
-      const item = me.wardItems.find((x) => x[me.idField] === id);
+      const item = me.wardItems.find(
+        (x) => x[me.idField] === id || x[me.codeField] === id
+      );
       return item;
     },
     async getAllLocations() {

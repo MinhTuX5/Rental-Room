@@ -161,7 +161,7 @@ export const useMainView = () => {
     };
 
     if (filterVals.value.length > 0) {
-      payload.FilterVals = [...payload.FilterVals, ...filterVals.value];
+      payload.FilterVals = [...(payload.FilterVals || []), ...filterVals.value];
     }
 
     if (filterModel.room_type_id.length > 0) {
@@ -278,7 +278,14 @@ export const useMainView = () => {
 
   const scrollToIndex = (index) => {
     const me = proxy;
-    me.$refs.virtualScroll.scrollToIndex(index);
+    const vs = me?.$refs?.virtualScroll;
+    if (vs && typeof vs.scrollToIndex === "function") {
+      try {
+        vs.scrollToIndex(index);
+      } catch (err) {
+        console.warn("scrollToIndex failed:", err);
+      }
+    }
   };
   //#endregion
 

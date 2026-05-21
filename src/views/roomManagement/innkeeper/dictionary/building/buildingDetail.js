@@ -46,7 +46,7 @@ export const useBuildingDetail = () => {
       : BuildingStatus.NoUsing;
   };
 
-  const customAfterSubmit = (data) => {
+  const customAfterSubmit = async (data) => {
     const me = proxy;
     if (me.editMode == 1) {
       const payload = {
@@ -62,19 +62,20 @@ export const useBuildingDetail = () => {
       });
     }
 
-    if (data.status === BuildingStatus.Using) {
+    if (isUsing.value || data.status === BuildingStatus.Using) {
+      try {
+        await store.setActive(data.building_id);
+      } catch (error) {
+        console.error(error);
+      }
+
       const context = getManagementContext();
       context.user.building_id = data.building_id;
       context.user.building_name = data.building_name;
       localStorage.setItem("context_management", JSON.stringify(context));
 
       const contextStore = useContextManageStore();
-
       contextStore.$state.user = context.user;
-
-      console.log(contextStore);
-      
-
       roomStore.$state.invalidCache = true;
     }
 
