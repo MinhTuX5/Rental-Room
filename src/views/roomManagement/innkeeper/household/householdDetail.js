@@ -3,7 +3,7 @@ import { onMounted, ref, getCurrentInstance } from "vue";
 import { useHouseholdStore } from "@/stores/roomManagement/HouseholdStore";
 import { useVehicleStore } from "@/stores/roomManagement/vehicleStore";
 // resources
-import { getEnumItem } from "@/common/commonFunction";
+import { getEnumItem, showMessage, MessageType } from "@/common/commonFunction";
 // enum
 import _enum from "@/common/enum";
 import FormState from "../../../../common/enum/FormState";
@@ -48,12 +48,61 @@ export const useHouseholdDetail = () => {
     vehicles: [],
   };
 
+  const refreshVehicles = async () => {
+    const me = proxy;
+    const roomID = me._formParam?.model?.room_id;
+    if (roomID) {
+      const details = await store.getById(roomID);
+      vehicleStore.$state.items = [];
+      if (Array.isArray(details?.vehicles)) {
+        details.vehicles.forEach((x) => {
+          const resident = me.model.residents.find(
+            (y) => y.resident_id === x.resident_id
+          );
+          if (resident) {
+            x.resident_name = resident.resident_name;
+            x.resident_code = resident.resident_code;
+          }
+        });
+
+        vehicleStore.$state.items = details.vehicles;
+      }
+    }
+  };
+
+  const addVehicle = () => {
+    const me = proxy;
+    me.viewForm("VehicleDetail", {
+      editMode: FormState.Add,
+      residents: me.model.residents,
+      refresh: refreshVehicles,
+    });
+  };
+
   const editVehicle = (item) => {
     const me = proxy;
     me.viewForm("VehicleDetail", {
       editMode: FormState.Update,
       model: item,
+      residents: me.model.residents,
+      refresh: refreshVehicles,
     });
+  };
+
+  const deleteItem = async (item) => {
+    const me = proxy;
+    try {
+      if (item && item.vehicle_id) {
+        if (confirm("Bạn có chắc chắn muốn xóa phương tiện này không?")) {
+          await vehicleStore.deleteAsync(item.vehicle_id);
+          showMessage("Xóa phương tiện thành công!");
+          await refreshVehicles();
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      showMessage("Có lỗi xảy ra khi xóa phương tiện", MessageType.Error);
+    }
   };
 
   onMounted(async () => {
@@ -111,6 +160,8 @@ export const useHouseholdDetail = () => {
     defaultModel,
     vehicleHeaders,
     vehicleStore,
+    addVehicle,
     editVehicle,
+    deleteItem,
   };
 };

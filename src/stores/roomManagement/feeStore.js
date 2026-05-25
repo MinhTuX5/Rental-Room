@@ -55,6 +55,11 @@ export const useFeeStore = defineStore("fee", {
 
       if (Array.isArray(result.data)) {
         result.data.forEach((x) => {
+          if (x?.fee_id && !x.electric_water) {
+            x.electric_water =
+              localStorage.getItem(`fee-electric-water-${x.fee_id}`) ?? "";
+          }
+
           switch (x.fee_status) {
             case FeeStatus.NotYet:
               x.status_color = "red";

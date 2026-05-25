@@ -18,6 +18,10 @@ class ProfileAPI extends BaseAPI {
   changePassword(userId, payload) {
     return this.putAsync(payload, `change-password/${userId}`);
   }
+
+  getPaging(config) {
+    return this.postAsync(config, "list");
+  }
 }
 
 export default new ProfileAPI();

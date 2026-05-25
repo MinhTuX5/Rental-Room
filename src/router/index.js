@@ -77,7 +77,10 @@ const router = createRouter({
     {
       path: "/quan-ly",
       name: "Management",
-      redirect: "/quan-ly/danh-sach-phong",
+      redirect: () =>
+        window.PageRole === Role.Renter
+          ? "/quan-ly/thong-tin-phong"
+          : "/quan-ly/danh-sach-phong",
       meta: { requiresAuth: true, localContextKey: "context_management" },
       component: () =>
         import("@/components/layout/roomManagement/Container.vue"),
@@ -256,13 +259,9 @@ router.beforeEach(async (to, from, next) => {
   if (requireAuth) {
     let isSignIn = isLoggedIn(requireAuth.meta.localContextKey);
     if (isSignIn) {
-      if (
-        window.PageRole === Role.Renter &&
-        to.name === "RoomListOverview" &&
-        from.name === "Login"
-      ) {
-        next({ name: "RoomInfo" });
-      } else {
+        if (window.PageRole === Role.Renter && to.name === "RoomListOverview") {
+          next({ name: "RoomInfo" });
+        } else {
         next();
       }
     } else {

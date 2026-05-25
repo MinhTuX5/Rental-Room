@@ -10,6 +10,7 @@ import PostStatus from "../../../common/enum/PostStatus";
 import { sendNotify, showMessage } from "../../../common/commonFunction";
 import NotificationType from "../../../common/enum/NotificationType";
 import { useContextAdminStore } from "../../../stores/contextAdminStore";
+import profileAPI from "@/apis/profileAPI";
 
 export const usePostDetail = () => {
   const { proxy } = getCurrentInstance();
@@ -42,6 +43,48 @@ export const usePostDetail = () => {
   });
 
   const isFromAdmin = ref(false);
+
+  const loadPosterInfo = async (userId) => {
+    if (!userId) {
+      return;
+    }
+
+    try {
+      const res = await profileAPI.getProfile(userId);
+      const user = res?.data;
+      if (!user) {
+        return;
+      }
+
+      model.value = {
+        ...model.value,
+        user_name: model.value.user_name || user.user_name,
+        phone_number: model.value.phone_number || user.phone_number,
+        second_phone_number:
+          model.value.second_phone_number || user.second_phone_number,
+        user_facebook: model.value.user_facebook || user.user_facebook,
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const openAppointmentSchedule = () => {
+    if (!model.value?.user_id) {
+      return;
+    }
+
+    proxy.$router.push({
+      name: "AppointmentSchedule",
+      query: {
+        mode: "booking",
+        ownerUserId: model.value.user_id,
+        roomPostId: model.value.room_post_id,
+        postCode: model.value.post_code,
+        address: model.value.room_address || model.value.address || "",
+      },
+    });
+  };
 
   const approve = async () => {
     const me = proxy;
@@ -126,6 +169,7 @@ export const usePostDetail = () => {
               rs.room_characteristic
             );
           }
+          await loadPosterInfo(rs.user_id);
         }
       } catch (error) {
         console.log(error);
@@ -141,8 +185,10 @@ export const usePostDetail = () => {
     filters,
     contextStore,
     likePost,
+    openAppointmentSchedule,
     isFromAdmin,
     imageLinks,
+    loadPosterInfo,
     approve,
     showDialog,
     rejectMessage,

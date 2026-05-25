@@ -21,6 +21,7 @@ export const useAppStore = defineStore({
       type: "",
     },
     allRoomCategories: [],
+    allRoomCategoriesByBuilding: {},
     allRooms: [],
     allServiceFees: [],
     allExpenseCategories: [],

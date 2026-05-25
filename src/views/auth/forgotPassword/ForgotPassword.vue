@@ -4,7 +4,6 @@
     @submit.prevent="submit"
   >
     <v-icon
-      v-if="isExistEmail"
       icon="mdi-close"
       class="position-absolute top-0 right-0 pa-4 cursor-pointer"
       @click="close"
@@ -12,54 +11,48 @@
     <div class="form-title text-h4 text-center mb-6">{{ title }}</div>
 
     <v-text-field
-      v-if="!isExistEmail"
-      label="Email*"
-      type="email"
-      v-model="model.email"
+      label="Tài khoản*"
+      v-model="model.account"
       :min-width="400"
-      :error-messages="v$.email.$errors.map((e) => e.$message)"
-      @blur="v$.email.$touch"
-      @input="v$.email.$touch"
+      :error-messages="v$.account.$errors.map((e) => e.$message)"
+      @blur="v$.account.$touch"
+      @input="v$.account.$touch"
     ></v-text-field>
 
-    <v-sheet v-if="isExistEmail">
-      <v-text-field
-        label="Mật khẩu*"
-        v-model="model.password"
-        density="compact"
-        :error-messages="v$.password.$errors.map((e) => e.$message)"
-        required
-        :min-width="400"
-        @blur="v$.password.$touch"
-        @input="v$.password.$touch"
-      ></v-text-field>
+    <v-text-field
+      label="OTP*"
+      v-model="model.otp"
+      density="compact"
+      maxlength="4"
+      :error-messages="v$.otp.$errors.map((e) => e.$message)"
+      required
+      @blur="v$.otp.$touch"
+      @input="v$.otp.$touch"
+    ></v-text-field>
 
-      <v-text-field
-        label="Xác nhận mật khẩu*"
-        v-model="model.passwordConfirmation"
-        density="compact"
-        :error-messages="v$.passwordConfirmation.$errors.map((e) => e.$message)"
-        required
-        @blur="v$.passwordConfirmation.$touch"
-        @input="v$.passwordConfirmation.$touch"
-      ></v-text-field>
-    </v-sheet>
+    <div class="d-flex justify-center ga-3 mt-4">
+      <v-btn
+        type="button"
+        text="Lấy OTP"
+        color="green-lighten-1"
+        :loading="loading"
+        @click="requestOtp"
+      />
+      <v-btn
+        type="button"
+        text="Xác nhận OTP"
+        color="blue-lighten-1"
+        :disabled="!generatedOtp"
+        @click="verifyOtp"
+      />
+    </div>
 
-    <v-btn
-      type="submit"
-      :text="btnSubmitText"
-      class="mx-auto mt-4"
-      color="green-lighten-1"
-      :loading="loading"
-    />
-
-    <div v-if="!isExistEmail" class="register text-center mt-4">
+    <div class="register text-center mt-4">
       <span>Đã có tài khoản? </span>
       <a href="#">Đăng nhập</a>
     </div>
   </form>
 </template>
-
 
 <script>
 import { useForgotPassword } from "./forgotPassword";

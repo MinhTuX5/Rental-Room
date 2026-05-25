@@ -18,13 +18,13 @@ export const useAppointmentScheduleStore = defineStore("appointmentSchedule", {
   getters: {},
   actions: {
     ...store.actions,
-    async getEvents({ start, end }) {
+    async getEvents({ start, end, userId }) {
       const payload = {
         Filters: [
           {
             Field: "user_id",
             Operator: FilterOperator.Equal,
-            Value: contextStore.$state.user.user_id,
+            Value: userId || contextStore.$state.user.user_id,
           },
           {
             Field: "appointment_date",

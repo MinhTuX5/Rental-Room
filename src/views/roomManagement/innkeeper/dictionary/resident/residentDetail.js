@@ -2,10 +2,17 @@ import { ref, computed, onMounted, getCurrentInstance } from "vue";
 // store
 import { useResidentStore } from "../../../../../stores/roomManagement/dictionary/residentStore";
 import { useRoomStore } from "../../../../../stores/roomManagement/dictionary/roomStore";
+import residentAPI from "@/apis/dictionaryAPI/residentAPI";
 // enum
 import Gender from "../../../../../common/enum/Gender";
+import _enum from "@/common/enum";
+import FilterOperator from "@/common/enum/FilterOperator";
 // resource
-import { formatDate } from "../../../../../common/commonFunction";
+import {
+  formatDate,
+  showMessage,
+  MessageType,
+} from "../../../../../common/commonFunction";
 
 export const useResidentDetail = () => {
   const { proxy } = getCurrentInstance();
@@ -22,31 +29,62 @@ export const useResidentDetail = () => {
 
   const ownerDisable = ref(false);
 
-  const onSelectRoom = (value) => {
+  const findRoomOwner = async (roomID) => {
+    const me = proxy;
+    if (!roomID) {
+      return null;
+    }
+
+    const response = await residentAPI.getPaging({
+      skip: 0,
+      take: 100000,
+      filters: [
+        {
+          Field: roomStore.$state.idField,
+          Value: roomID,
+          Operator: FilterOperator.Equal,
+        },
+      ],
+    });
+
+    const residents = response?.data ?? [];
+    return residents.find(
+      (resident) =>
+        resident?.is_owner === true &&
+        resident?.resident_id !== me.model?.resident_id
+    );
+  };
+
+  const onSelectRoom = async (value) => {
     const me = proxy;
 
-    if (checkExistOwner(value)) {
-      ownerDisable.value = true;
+    if (await findRoomOwner(value)) {
       me.model.is_owner = false;
     } else {
       me.model.is_owner = true;
     }
   };
 
-  // Check phòng đã tồn tại chủ phòng
-  const checkExistOwner = (roomID) => {
-    const isExist = store.$state.items.some(
-      (item) =>
-        item[roomStore.$state.idField] == roomID && item.is_owner == true
+  const onOwnerChange = async (value) => {
+    const me = proxy;
+    if (!value) {
+      return;
+    }
+
+    const owner = await findRoomOwner(me.model?.[roomStore.$state.idField]);
+    if (!owner) {
+      return;
+    }
+
+    me.model.is_owner = false;
+    showMessage(
+      `Cần bỏ chọn chủ phòng của ${owner.resident_name} để tiếp tục`,
+      MessageType.Warning
     );
-    return isExist;
   };
 
   const onClickEdit = () => {
     const me = proxy;
-    if (checkExistOwner(me.model.apartmentId) && me.model.is_owner == false) {
-      ownerDisable.value = true;
-    }
     me.commandClick(_enum.Mode.Update);
   };
 
@@ -64,11 +102,12 @@ export const useResidentDetail = () => {
     defaultModel,
     store,
     onSelectRoom,
+    onOwnerChange,
     ownerDisable,
     onClickEdit,
     roomStore,
     allRooms,
     bod,
-    Gender
+    Gender,
   };
 };

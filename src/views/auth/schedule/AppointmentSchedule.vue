@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { getCurrentInstance, onMounted, reactive, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, reactive, ref } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -42,6 +42,7 @@ import baseView from "../../base/baseView";
 import _enum from "../../../common/enum";
 import popupUtil from "../../../common/popupUtil";
 import { useAppointmentScheduleStore } from "../../../stores/roomSearch/appointmentScheduleStore";
+import { useContextStore } from "../../../stores/contextStore";
 
 export default {
   extends: baseView,
@@ -50,16 +51,34 @@ export default {
   setup() {
     const { proxy } = getCurrentInstance();
     const store = useAppointmentScheduleStore();
+    const contextStore = useContextStore();
 
     const selectedDate = ref();
+    const selectedDateStr = ref("");
+    const eventDateSet = ref(new Set());
+    const isBookingMode = computed(() => proxy.$route.query.mode === "booking");
+    const appointmentOwnerUserId = computed(
+      () => proxy.$route.query.ownerUserId || contextStore.$state.user.user_id
+    );
+
     const handleSelect = (selectInfo) => {
       // let title = prompt("Please enter a new title for your event");
       selectedDate.value = selectInfo;
+      selectedDateStr.value = moment(selectInfo.start).format("YYYY-MM-DD");
+      selectInfo.view.calendar.render();
       const param = {
         editMode: _enum.Mode.Add,
         detailForm: "AppointmentScheduleDetail",
         dayInfo: selectInfo,
         appointment_date: selectInfo.start,
+        ownerUserId: appointmentOwnerUserId.value,
+        model: {
+          to_user_name: contextStore.$state.user.user_name ?? "",
+          to_phone_number: contextStore.$state.user.phone_number ?? "",
+          appointment_address: proxy.$route.query.address ?? "",
+          room_post_id: proxy.$route.query.roomPostId,
+          post_code: proxy.$route.query.postCode,
+        },
         options: {
           afterSubmit: addEvent,
         },
@@ -81,6 +100,11 @@ export default {
           allDay: true,
           ...data,
         });
+        eventDateSet.value = new Set([
+          ...eventDateSet.value,
+          moment(data.appointment_date).format("YYYY-MM-DD"),
+        ]);
+        calendarApi.render();
       }
     };
 
@@ -159,10 +183,25 @@ export default {
       },
       events: [],
       eventClick: handleEventClick,
+      dayCellClassNames: (arg) => {
+        const date = moment(arg.date).format("YYYY-MM-DD");
+        return eventDateSet.value.has(date) || selectedDateStr.value === date
+          ? ["appointment-highlighted-day"]
+          : [];
+      },
       datesSet: async (config) => {
+        if (isBookingMode.value) {
+          calendarOptions.events = [];
+          eventDateSet.value = new Set(
+            selectedDateStr.value ? [selectedDateStr.value] : []
+          );
+          return;
+        }
+
         const payload = {
           start: moment(config.start).format("YYYY-MM-DD"),
           end: moment(config.end).format("YYYY-MM-DD"),
+          userId: appointmentOwnerUserId.value,
         };
         const rs = await store.getEvents(payload);
         calendarOptions.events = rs.map((x) => ({
@@ -172,6 +211,9 @@ export default {
           allDay: true,
           ...x,
         }));
+        eventDateSet.value = new Set(
+          rs.map((x) => moment(x.appointment_date).format("YYYY-MM-DD"))
+        );
       },
     });
 
@@ -214,6 +256,15 @@ export default {
 
     .fc-more-link {
       width: 100%;
+    }
+
+    .appointment-highlighted-day {
+      background: #e3f2fd;
+
+      .fc-daygrid-day-number {
+        color: #1565c0;
+        font-weight: 700;
+      }
     }
 
     .fc-h-event {

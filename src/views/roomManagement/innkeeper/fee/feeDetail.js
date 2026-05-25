@@ -1,5 +1,4 @@
 import { ref, reactive, onMounted, getCurrentInstance, computed } from "vue";
-import moment from "moment";
 
 import { useFeeStore } from "../../../../stores/roomManagement/feeStore";
 import { useServiceFeeStore } from "../../../../stores/roomManagement/dictionary/serviceFeeStore";
@@ -8,9 +7,8 @@ import {
   standardItem,
   formatNumberWithCommas,
   formatDate,
+  convertCurrencyFormat,
 } from "../../../../common/commonFunction";
-
-import _enum from "../../../../common/enum";
 
 export const useFeeDetail = () => {
   const { proxy } = getCurrentInstance();
@@ -67,15 +65,27 @@ export const useFeeDetail = () => {
   const viewServiceFees = ref([]);
   const viewServiceTotal = ref(0);
 
+  const parseNumber = (value) => {
+    if (typeof value === "number") {
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    if (typeof value === "string") {
+      const normalized = value.replace(/\./g, "").replace(/,/g, ".");
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    return 0;
+  };
+
   const serviceFeeTotal = computed(() => {
-    const editServiceTotal = editServiceFees.value.reduce(
-      (total, service) =>
-        total +
-        ((service.new_index ?? 0) - (service.old_index ?? 0) <= 0
-          ? 0
-          : (service.new_index - service.old_index) * service.fee_price),
-      0
-    );
+    const editServiceTotal = editServiceFees.value.reduce((total, service) => {
+      const oldIndex = parseNumber(service.old_index);
+      const newIndex = parseNumber(service.new_index);
+      const usage = newIndex - oldIndex;
+      return total + (usage <= 0 ? 0 : usage * parseNumber(service.fee_price));
+    }, 0);
 
     return viewServiceTotal.value + editServiceTotal;
   });
@@ -90,12 +100,83 @@ export const useFeeDetail = () => {
 
   const totalFee = computed(() => {
     return (
-      proxy.model.room_price + serviceFeeTotal.value + vehicleFeeTotal.value
+      parseNumber(proxy.model.room_price) +
+      serviceFeeTotal.value +
+      vehicleFeeTotal.value
     );
   });
 
+  const getUsage = (service) => {
+    const usage = parseNumber(service.new_index) - parseNumber(service.old_index);
+    return usage > 0 ? usage : 0;
+  };
+
+  const getServiceStorageKey = () => {
+    return `fee-service-indices-${proxy.model.fee_id}`;
+  };
+
+  const getElectricWaterStorageKey = () => {
+    return `fee-electric-water-${proxy.model.fee_id}`;
+  };
+
+  const buildElectricWaterDisplay = () => {
+    const electric = editServiceFees.value.find(
+      (service) => service.price_unit === 4
+    );
+    const water = editServiceFees.value.find(
+      (service) => service.price_unit === 5
+    );
+
+    const electricUsage = electric ? getUsage(electric) : 0;
+    const waterUsage = water ? getUsage(water) : 0;
+    return `${electricUsage}kw & ${waterUsage}m3`;
+  };
+
   const customBeforeSubmit = () => {
-    proxy.total_fee = totalFee.value;
+    proxy.model.total_fee = totalFee.value;
+    proxy.model.electric_water = buildElectricWaterDisplay();
+    proxy.model.service_fees = editServiceFees.value.map((service) => ({
+      service_fee_id: service.service_fee_id,
+      service_type: service.service_type,
+      price_unit: service.price_unit,
+      fee_price: parseNumber(service.fee_price),
+      old_index: parseNumber(service.old_index),
+      new_index: parseNumber(service.new_index),
+    }));
+
+    localStorage.setItem(getElectricWaterStorageKey(), proxy.model.electric_water);
+    localStorage.setItem(
+      getServiceStorageKey(),
+      JSON.stringify(proxy.model.service_fees)
+    );
+  };
+
+  const getBuildingServiceFees = async () => {
+    const result = await serviceFeeStore.getPaging({
+      skip: 0,
+      take: 100000,
+      filters: serviceFeeStore.defaultFilters,
+      sorts: serviceFeeStore.defaultSorts,
+    });
+
+    return result?.data ?? [];
+  };
+
+  const getFixedServiceTotal = (service, model) => {
+    const feePrice = parseNumber(service.fee_price);
+
+    switch (service.price_unit) {
+      case 1:
+        service.member_count = model.member_count;
+        return parseNumber(model.member_count) * feePrice;
+      case 2:
+        return feePrice;
+      case 3:
+        service.room_area = model.room_area;
+        return parseNumber(model.room_area) * feePrice;
+      default:
+        return 0;
+    }
   };
 
   onMounted(async () => {
@@ -108,7 +189,7 @@ export const useFeeDetail = () => {
         me.model = { ...me.model, ...detailInfo };
         if (Array.isArray(me.model.vehicles)) {
           me.model.vehicles.forEach((vehicle) => {
-            vehicleFeeTotal.value += vehicle.fee_price;
+            vehicleFeeTotal.value += parseNumber(vehicle.fee_price);
             vehicle = standardItem(vehicle, {
               ...serviceFeeStore.$state,
               numberFields: ["fee_price"],
@@ -122,36 +203,37 @@ export const useFeeDetail = () => {
       }
     }
 
-    serviceFeeStore
-      .getAllItems()
+    getBuildingServiceFees()
       .then((res) => {
         if (Array.isArray(res)) {
+          const storedServiceFees = JSON.parse(
+            localStorage.getItem(getServiceStorageKey()) ?? "[]"
+          );
+          const storedServiceById = storedServiceFees.reduce(
+            (result, service) => {
+              if (service?.service_fee_id) {
+                result[service.service_fee_id] = service;
+              }
+              return result;
+            },
+            {}
+          );
+
           editServiceFees.value = res
             .filter((x) => x.price_unit > 3)
             .map((x) => {
+              const storedService = storedServiceById[x.service_fee_id] ?? {};
               return {
                 ...x,
-                old_index: x.old_index ?? 0,
-                new_index: x.new_index ?? 0,
+                old_index: storedService.old_index ?? x.old_index ?? 0,
+                new_index: storedService.new_index ?? x.new_index ?? 0,
               };
             });
+          viewServiceTotal.value = 0;
           viewServiceFees.value = res
             .filter((x) => x.price_unit <= 3)
             .map((x) => {
-              switch (x.price_unit) {
-                case _enum.ServicePriceUnit["đồng/người"]:
-                  x.member_count = me.model.member_count;
-                  x.total_fee = me.model.member_count * x.fee_price;
-                  break;
-                case _enum.ServicePriceUnit["đồng/phòng"]:
-                  x.total_fee = x.fee_price;
-                  break;
-                case _enum.ServicePriceUnit["đồng/m²"]:
-                  x.room_area = me.model.room_area;
-                  x.total_fee = me.model.room_area * x.fee_price;
-                  break;
-              }
-
+              x.total_fee = getFixedServiceTotal(x, me.model);
               viewServiceTotal.value += x.total_fee ?? 0;
 
               x = standardItem(x, {

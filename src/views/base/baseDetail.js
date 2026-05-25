@@ -187,7 +187,7 @@ export default {
 
     hide() {
       const me = this;
-      debugger;
+      //debugger;
       const detailForm = me.detailForm ?? me._formParam?.detailForm;
       if (detailForm) {
         me.$vfm.hide(detailForm);

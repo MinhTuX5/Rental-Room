@@ -65,6 +65,7 @@
             color="green"
             icon="mdi-calendar-month-outline"
             variant="text"
+            @click="openAppointmentSchedule"
           ></v-btn>
         </v-sheet>
       </v-sheet>
@@ -156,19 +157,47 @@
           size="220"
         ></v-avatar>
 
-        <div class="text-h6 mt-2">{{ model.user_name }}</div>
+        <div class="poster-info mt-4 w-100">
+          <div class="poster-info__row">
+            <span class="poster-info__label">name</span>
+            <span>{{ model.user_name || "--" }}</span>
+          </div>
+          <div class="poster-info__row">
+            <span class="poster-info__label">Số điện thoại 1</span>
+            <span>{{ model.phone_number || "--" }}</span>
+          </div>
+          <div class="poster-info__row">
+            <span class="poster-info__label">Số điện thoại 2</span>
+            <span>{{ model.second_phone_number || "--" }}</span>
+          </div>
+          <div class="poster-info__row">
+            <span class="poster-info__label">Facebook</span>
+            <a
+              v-if="model.user_facebook"
+              :href="model.user_facebook"
+              target="_blank"
+              class="cursor-pointer"
+              >{{
+                model.user_facebook?.replace("https://www.facebook.com/", "")
+              }}</a
+            >
+            <span v-else>--</span>
+          </div>
+        </div>
 
-        <div v-if="model.phone_number" class="mt-4 w-100">
+        <div class="d-none text-h6 mt-2">{{ model.user_name }}</div>
+
+        <div v-if="model.phone_number" class="d-none mt-4 w-100">
           Số điện thoại 1: {{ model.phone_number }}
         </div>
-        <div v-if="model.second_phone_number" class="mt-2 w-100">
+        <div v-if="model.second_phone_number" class="d-none mt-2 w-100">
           Số điện thoại 2: {{ model.second_phone_number }}
         </div>
 
-        <div v-if="model.user_zalo" class="mt-4 w-100">
+        <div v-if="model.user_zalo" class="d-none mt-4 w-100">
           Zalo: {{ model.user_zalo }}
         </div>
-        <div v-if="model.user_facebook" class="mt-2 w-100">
+        <div v-if="model.user_facebook" class="d-none mt-2 w-100">
           <span>Facebook: </span>
           <a
             :href="model.user_facebook"

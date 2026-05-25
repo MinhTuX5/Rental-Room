@@ -11,27 +11,7 @@
     <template #content>
       <v-row>
         <v-col>
-          <label> Mã phòng </label>
-          <v-text-field
-            class="mt-2"
-            variant="outlined"
-            color="blue-lighten-3"
-            placeholder="Nhập mã loại phòng"
-            :autofocus="true"
-            v-model="model[store.codeField]"
-        /></v-col>
-        <v-col class="ml-4">
-          <label> Tên phòng </label>
-          <v-text-field
-            class="mt-2"
-            variant="outlined"
-            color="blue-lighten-3"
-            placeholder="Phòng 001, ..."
-            v-model="model[store.nameField]"
-          />
-        </v-col>
-        <v-col class="ml-4">
-          <label> Loại phòng </label>
+          <label> Loại chi tiêu <span class="required">*</span></label>
           <v-autocomplete
             class="mt-2"
             variant="outlined"
@@ -43,28 +23,12 @@
             @update:modelValue="onSelectExpenseCategory"
           ></v-autocomplete>
         </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col>
-          <label> Vị trí phòng </label>
-          <v-text-field
-            class="mt-2"
-            variant="outlined"
-            color="blue-lighten-3"
-            placeholder="Tầng 2 bên phải cầu thang máy ..."
-            v-model="model.expense_position"
-          />
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="5">
-          <label>Giá phòng</label>
+        <v-col class="ml-4">
+          <label>Số tiền chi <span class="required">*</span></label>
           <t-currency-input
             class="mt-2"
-            v-model="model.expense_price"
-            placeholder=""
+            v-model="model.expense_amount"
+            placeholder="Nhập số tiền"
             :options="{
               currency: 'VND',
               locale: 'de-DE',
@@ -75,32 +39,46 @@
             }"
           />
         </v-col>
-        <v-col class="ml-4">
-          <label>Diện tích</label>
-          <v-number-input
-            class="mt-2 hide-spin-buttons"
+      </v-row>
+
+      <v-row class="mt-22px">
+        <v-col>
+          <label>Ngày chi</label>
+          <v-text-field
+            id="expenseDate"
             variant="outlined"
-            controlVariant=""
-            type="number"
-            :reverse="false"
-            :inset="false"
-            :min="0"
-            :hide-spin-buttons="true"
-            suffix="m²"
-            v-model="model.expense_area"
-          ></v-number-input>
+            :model-value="expenseDate"
+            append-inner-icon="mdi-calendar"
+            readonly
+            class="mt-2"
+          ></v-text-field>
+          <v-menu
+            location="end center"
+            activator="#expenseDate"
+            :close-on-content-click="false"
+          >
+            <v-date-picker
+              v-model="model.expense_date"
+              hide-header
+              show-adjacent-months
+            >
+              <v-spacer></v-spacer>
+            </v-date-picker>
+          </v-menu>
         </v-col>
-        <v-col class="ml-4">
-          <label>Số phòng ngủ</label>
-          <v-number-input
+        <v-col class="ml-4"></v-col>
+      </v-row>
+
+      <v-row>
+        <v-col>
+          <label> Ghi chú </label>
+          <v-text-field
             class="mt-2"
             variant="outlined"
-            controlVariant="stacked"
-            :reverse="false"
-            :inset="true"
-            :min="0"
-            v-model="model.no_of_bed_expenses"
-          ></v-number-input>
+            color="blue-lighten-3"
+            placeholder="Ăn sáng, mua sắm, ..."
+            v-model="model.expense_description"
+          />
         </v-col>
       </v-row>
     </template>
@@ -113,12 +91,6 @@
           >
           <v-btn min-width="80" @click="close" variant="outlined">Hủy</v-btn>
         </div>
-        <v-checkbox-btn
-          label="Còn trống"
-          color="blue"
-          density="compact"
-          v-model="model.is_empty"
-        ></v-checkbox-btn>
       </div>
     </template>
   </t-dynamic-popup>

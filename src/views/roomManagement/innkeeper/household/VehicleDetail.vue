@@ -12,7 +12,22 @@
       <v-row>
         <v-col class="mr-4">
           <label> Chủ xe </label>
+          <v-autocomplete
+            v-if="!viewing"
+            hide-details
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            :items="residents"
+            item-title="resident_name"
+            item-value="resident_id"
+            :menu-props="vehicleDetailMenuProps"
+            v-model="model.resident_id"
+            @update:modelValue="onSelectResident"
+            placeholder="Chọn chủ xe"
+          />
           <v-text-field
+            v-else
             disabled
             hide-details
             class="mt-2"
@@ -23,14 +38,27 @@
         </v-col>
         <v-col>
           <label> Loại phương tiện </label>
-          <v-text-field
+          <v-combobox
+            v-if="!viewing"
             class="mt-2"
             variant="outlined"
             color="blue-lighten-3"
-            placeholder="Ô tô, xe máy, ..."
-            :disabled="viewing"
+            placeholder="Chọn hoặc nhập loại xe"
+            :items="vehicleTypes"
+            :menu-props="vehicleDetailMenuProps"
             v-model="model.vehicle_type"
-        /></v-col>
+            hide-details
+          />
+          <v-text-field
+            v-else
+            class="mt-2"
+            variant="outlined"
+            color="blue-lighten-3"
+            disabled
+            v-model="model.vehicle_type"
+            hide-details
+          />
+        </v-col>
       </v-row>
 
       <v-row>
@@ -88,8 +116,21 @@ export default {
     const resource = useVehicleDetail();
     return resource;
   },
+  data() {
+    return {
+      residents: [],
+      vehicleTypes: [],
+      vehicleDetailMenuProps: {
+        zIndex: 4000,
+        contentClass: "vehicle-detail-menu",
+      },
+    };
+  },
 };
 </script>
 
 <style lang="scss">
+.vehicle-detail-menu {
+  z-index: 4000 !important;
+}
 </style>

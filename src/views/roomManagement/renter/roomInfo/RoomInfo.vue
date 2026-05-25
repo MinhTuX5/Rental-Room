@@ -4,7 +4,6 @@
       <v-window v-model="onboarding">
         <v-window-item v-for="n in length" :key="`card-${n}`" :value="n">
           <v-card class="d-flex justify-center align-center" height="200">
-            <!-- <span class="text-h2"> Card {{ n }} </span> -->
             <v-img
               color="surface-variant"
               height="200"
@@ -57,18 +56,22 @@
           }"
         >
           <span class="mr-2 title">{{ info.title }}:</span>
-          <span v-show="dataConfig.roomInfo.isView">{{ info.value }}</span>
+          <span v-show="dataConfig.roomInfo.isView">{{
+            info.value || "--"
+          }}</span>
           <v-textarea
             v-if="
               !dataConfig.roomInfo.isView && info.componentType == 'textarea'
             "
+            v-model="info.value"
             :hide-details="true"
+            rows="3"
           ></v-textarea>
           <v-text-field
             v-else-if="!dataConfig.roomInfo.isView"
+            v-model="info.value"
             :hide-details="true"
-            >{{ info.value }}</v-text-field
-          >
+          ></v-text-field>
         </div>
       </v-col>
       <v-col>
@@ -83,12 +86,31 @@
           </v-btn>
         </div>
         <div
-          class="d-flex mt-4 align-center"
+          class="d-flex mt-4"
           v-for="info in serviceInfoView"
           :key="info.title"
+          :class="{
+            'align-center':
+              !dataConfig.serviceInfo.isView && info.componentType != 'textarea',
+          }"
         >
           <span class="mr-2 title">{{ info.title }}:</span>
-          <span>{{ info.value }}</span>
+          <span v-show="dataConfig.serviceInfo.isView">{{
+            info.value || "--"
+          }}</span>
+          <v-textarea
+            v-if="
+              !dataConfig.serviceInfo.isView && info.componentType == 'textarea'
+            "
+            v-model="info.value"
+            :hide-details="true"
+            rows="3"
+          ></v-textarea>
+          <v-text-field
+            v-else-if="!dataConfig.serviceInfo.isView"
+            v-model="info.value"
+            :hide-details="true"
+          ></v-text-field>
         </div>
       </v-col>
     </v-row>

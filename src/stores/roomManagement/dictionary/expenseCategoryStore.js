@@ -19,6 +19,7 @@ export const useExpenseCategoryStore = defineStore("ExpenseCategory", {
     idField: "expense_category_id",
     nameField: "expense_category_name",
     searchFields: ["expense_category_name"],
+    invalidCache: true,
   }),
   getters: {
     defaultSorts(state) {
@@ -49,11 +50,13 @@ export const useExpenseCategoryStore = defineStore("ExpenseCategory", {
       const me = this;
       me.items.unshift(item);
       me.totalItems++;
+      me.invalidCache = true;
     },
     afterDeleteAsync(id) {
       const me = this;
       me.items = me.items.filter((x) => x[me.idField] != id);
       me.totalItems--;
+      me.invalidCache = true;
     },
     afterUpdate(item) {
       const me = this;
@@ -61,6 +64,7 @@ export const useExpenseCategoryStore = defineStore("ExpenseCategory", {
       if (curItem) {
         Object.assign(curItem, item);
       }
+      me.invalidCache = true;
     },
     async getAllItems() {
       const me = this;
@@ -70,9 +74,11 @@ export const useExpenseCategoryStore = defineStore("ExpenseCategory", {
           const res = await me.getAll();
           if (Array.isArray(res)) {
             me.invalidCache = false;
-            const orderedItems = res.sort(
-              (a, b) => a[me.nameField] < b[me.nameField]
-            );
+            const orderedItems = res.sort((a, b) => {
+              const nameA = a[me.nameField] || "";
+              const nameB = b[me.nameField] || "";
+              return nameA.localeCompare(nameB);
+            });
             appStore.$state.allExpenseCategories = orderedItems;
             return orderedItems;
           } else {

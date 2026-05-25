@@ -65,6 +65,7 @@
             color="blue-lighten-3"
             class="mt-2"
             v-model="model.room_price"
+            :disabled="!!model[roomCategoryStore.idField]"
             placeholder=""
             :options="{
               currency: 'VND',
@@ -90,6 +91,7 @@
             suffix="m²"
             color="blue-lighten-3"
             v-model="model.room_area"
+            :disabled="!!model[roomCategoryStore.idField]"
           ></v-number-input>
         </v-col>
         <v-col class="ml-4">
@@ -103,6 +105,7 @@
             :min="0"
             color="blue-lighten-3"
             v-model="model.no_of_bed_rooms"
+            :disabled="!!model[roomCategoryStore.idField]"
           ></v-number-input>
         </v-col>
       </v-row>

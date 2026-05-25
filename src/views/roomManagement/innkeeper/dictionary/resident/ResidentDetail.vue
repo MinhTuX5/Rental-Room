@@ -130,8 +130,8 @@
                 label="Chủ phòng"
                 color="blue"
                 density="compact"
-                :disabled="ownerDisable"
                 v-model="model.is_owner"
+                @update:modelValue="onOwnerChange"
               ></v-checkbox-btn>
             </v-col>
             <v-col>

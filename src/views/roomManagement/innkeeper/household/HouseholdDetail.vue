@@ -81,7 +81,6 @@
         >
           <template v-slot:item.on_leave="{ item }">
             <v-checkbox-btn
-              readonly
               color="green"
               class="justify-center"
               v-model="item.on_leave"
@@ -99,7 +98,8 @@
         :ref="refToolBar"
         class="pb-4 mt-4"
         :showRefreshBtn="false"
-        @on-click="viewDetail"
+        addBtnText="Thêm mới phương tiện"
+        @on-click="addVehicle"
       ></t-feature>
       <v-row>
         <v-data-table-virtual

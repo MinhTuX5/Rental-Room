@@ -27,12 +27,20 @@ export const useAppointmentScheduleDetail = () => {
   };
 
   const customBeforeSubmit = () => {
-    proxy.model.user_id = contextStore.$state.user.user_id;
+    proxy.model.user_id =
+      proxy._formParam?.ownerUserId || contextStore.$state.user.user_id;
     proxy.model.appointment_title = proxy.model.to_user_name;
   };
 
   const customAfterBeforeOpen = () => {
     const me = proxy;
+    if (me._formParam.model && typeof me._formParam.model === "object") {
+      me.model = {
+        ...me.model,
+        ...me._formParam.model,
+      };
+    }
+
     if (me._formParam.appointment_date) {
       me.model.appointment_date = me._formParam.appointment_date;
     }

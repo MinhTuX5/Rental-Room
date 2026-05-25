@@ -98,16 +98,31 @@ export const useRoomCategoryStore = defineStore("room_category", {
       item = me.getAmountItem(item);
       return item;
     },
-    async getAllItems() {
+    async getAllItems(buildingId = contextStore.$state.user.building_id) {
       const me = this;
       const appStore = useAppStore();
-      if (me.invalidCache) {
+      const cacheKey = buildingId || "all";
+      const cachedItems = appStore.$state.allRoomCategoriesByBuilding[cacheKey];
+      if (me.invalidCache || !cachedItems) {
         try {
-          const res = await me.getAll();
-          if (Array.isArray(res)) {
+          const pagingPayload = {
+            filters: buildingId
+              ? [
+                  {
+                    Field: "building_id",
+                    Value: buildingId,
+                    Operator: FilterOperator.Equal,
+                  },
+                ]
+              : [],
+            sorts: me.defaultSorts,
+          };
+          const res = await me.getPaging(pagingPayload);
+          if (Array.isArray(res.data)) {
             me.invalidCache = false;
-            appStore.$state.allRoomCategories = res;
-            return res;
+            appStore.$state.allRoomCategoriesByBuilding[cacheKey] = res.data;
+            appStore.$state.allRoomCategories = res.data;
+            return res.data;
           } else {
             return [];
           }
@@ -115,7 +130,8 @@ export const useRoomCategoryStore = defineStore("room_category", {
           console.log(error);
         }
       } else {
-        return appStore.$state.allRoomCategories;
+        appStore.$state.allRoomCategories = cachedItems;
+        return cachedItems;
       }
     },
   },

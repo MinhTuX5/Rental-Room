@@ -16,7 +16,7 @@
       </v-col>
 
       <div class="forgot-password text-end">
-        <a href="#">Quên mật khẩu?</a>
+        <router-link :to="{ name: 'ForgottenPassword' }">Quên mật khẩu?</router-link>
       </div>
 
       <v-btn class="mx-auto mt-4" @click="login" color="green-lighten-1" :disabled="!form">

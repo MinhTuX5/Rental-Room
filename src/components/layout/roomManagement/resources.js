@@ -95,13 +95,6 @@ export const renterFeatures = [
     path: "/quan-ly/thong-tin-phong",
   },
   {
-    title: "Lịch biểu",
-    componentId: "AppointmentSchedule",
-    icon: "mdi-calendar-account-outline",
-    value: "AppointmentSchedule",
-    path: "/quan-ly/lich-bieu",
-  },
-  {
     title: "Quản lý chi tiêu",
     componentId: "Expense",
     icon: "mdi-calendar-account-outline",

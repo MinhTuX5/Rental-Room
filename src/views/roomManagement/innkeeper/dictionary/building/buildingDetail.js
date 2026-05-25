@@ -39,7 +39,7 @@ export const useBuildingDetail = () => {
 
   const customBeforeSubmit = () => {
     const me = proxy;
-    debugger;
+    //debugger;
     me.model.user_id = useContextManageStore().$state.user.user_id;
     me.model.status = isUsing.value
       ? BuildingStatus.Using
