@@ -5,6 +5,7 @@ import baseList from "./baseList";
 // resources
 import popupUtil from "../../common/popupUtil";
 import { formatNumberWithCommas } from "@/common/commonFunction";
+import { useContextManageStore } from "@/stores/contextManageStore";
 // enum
 import _enum from "@/common/enum";
 import { showMessage } from "@/common/commonFunction";
@@ -47,6 +48,9 @@ export default {
     defaultFilters() {
       return this.store.defaultFilters ?? [];
     },
+    activeBuildingId() {
+      return useContextManageStore().$state.user?.building_id;
+    },
     tableMaxHeight() {
       return (
         window.innerHeight -
@@ -66,6 +70,25 @@ export default {
   mounted() {
     const me = this;
     window._list = me;
+  },
+  watch: {
+    activeBuildingId(newValue, oldValue) {
+      const me = this;
+      if (!newValue || newValue === oldValue || !me.lastPagingParam?.itemsPerPage) {
+        return;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(me.store?.$state ?? {}, "building_id")) {
+        me.store.$state.building_id = newValue;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(me.store?.$state ?? {}, "invalidCache")) {
+        me.store.$state.invalidCache = true;
+      }
+
+      me.loading = true;
+      me.loadItems({ ...me.lastPagingParam, page: 1 });
+    },
   },
   methods: {
     /**
@@ -146,10 +169,11 @@ export default {
       }
     },
 
-    async loadItems({ page, itemsPerPage, sortBy }) {
+    async loadItems({ page = 1, itemsPerPage = this.itemsPerPage, sortBy = [] } = {}) {
       const me = this;
 
       me.lastPagingParam = { page, itemsPerPage, sortBy };
+      me.loading = true;
 
       var sorts = me.defaultSorts;
       if (sortBy.length) {
@@ -182,9 +206,17 @@ export default {
       }
     },
 
-    refresh() {
+    async refresh() {
       const me = this;
-      me.loadItems(me.lastPagingParam);
+      if (Object.prototype.hasOwnProperty.call(me.store?.$state ?? {}, "invalidCache")) {
+        me.store.$state.invalidCache = true;
+      }
+
+      const pagingParam = me.lastPagingParam?.itemsPerPage
+        ? me.lastPagingParam
+        : { page: 1, itemsPerPage: me.itemsPerPage, sortBy: [] };
+
+      await me.loadItems(pagingParam);
     },
 
     onSearch(searchText) {

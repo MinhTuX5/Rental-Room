@@ -6,6 +6,7 @@
       search-label="Mã, Loại dịch vụ"
       @on-click="viewDetail"
       @search="onSearch"
+      @refresh="refresh"
     ></t-feature>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
@@ -22,7 +23,6 @@
       :fixed-header="true"
       :style="{ maxHeight: tableMaxHeight + 'px' }"
       @update:options="loadItems"
-      @refresh="refresh"
     >
       <template v-slot:item.actions="{ item }">
         <v-row>

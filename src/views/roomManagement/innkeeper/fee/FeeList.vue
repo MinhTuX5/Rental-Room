@@ -31,6 +31,17 @@
           item.displayed_fee_status
         }}</v-chip>
       </template>
+      <template v-slot:item.print="{ item }">
+        <v-icon
+          color="indigo"
+          v-tooltip:top="'In phiếu thu'"
+          class="cursor-pointer"
+          size="large"
+          @click="printReceipt(item)"
+        >
+          mdi-printer
+        </v-icon>
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-row>
           <v-col>

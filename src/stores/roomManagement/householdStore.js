@@ -104,7 +104,7 @@ export const useHouseholdStore = defineStore("household", {
       return [
         {
           Field: "building_id",
-          Value: state.building_id,
+          Value: getCurrentBuildingId(),
           Operator: FilterOperator.Equal,
         },
       ];

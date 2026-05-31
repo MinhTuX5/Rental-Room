@@ -6,6 +6,7 @@
       search-label="Mã, Loại phương tiện"
       @on-click="viewDetail"
       @search="onSearch"
+      @refresh="refresh"
     ></t-feature>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"

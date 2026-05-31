@@ -134,12 +134,147 @@ export const usePostDetailPopup = () => {
     }
     return result;
   };
+
+  const syncLocationItems = () => {
+    const provinceConfig = addressInfo.find(
+      (x) => x.locationType === LocationType.Province
+    );
+    const districtConfig = addressInfo.find(
+      (x) => x.locationType === LocationType.District
+    );
+    const wardConfig = addressInfo.find((x) => x.locationType === LocationType.Ward);
+
+    if (provinceConfig) {
+      provinceConfig.items = locationStore.provinceItems;
+    }
+    if (districtConfig) {
+      districtConfig.items = locationStore.districtItems;
+    }
+    if (wardConfig) {
+      wardConfig.items = locationStore.wardItems;
+    }
+  };
+
+  const normalizeLocationName = (value) => {
+    return value
+      ?.toString()
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/^(tinh|thanh pho|tp|quan|huyen|thi xa|phuong|xa|thi tran)\s+/g, "")
+      .replace(/\s+/g, " ");
+  };
+
+  const findLocationByName = (items, name) => {
+    const normalizedName = normalizeLocationName(name);
+    if (!normalizedName) {
+      return null;
+    }
+
+    return items.find(
+      (item) => normalizeLocationName(item[locationStore.nameField]) === normalizedName
+    );
+  };
+
+  const splitAddress = (address) => {
+    const parts = address
+      ?.toString()
+      .split(",")
+      .map((x) => x.trim())
+      .filter((x) => x);
+
+    if (!parts?.length) {
+      return {};
+    }
+
+    const province = parts.find((x) =>
+      /^(tỉnh|thành phố|tp)\s+/i.test(x)
+    );
+    const district = parts.find((x) =>
+      x !== province && /^(quận|huyện|thị xã|thành phố|tp)\s+/i.test(x)
+    );
+    const ward = parts.find((x) => /^(phường|xã|thị trấn)\s+/i.test(x));
+    const houseNumber = parts.find((x) => /^số\s+/i.test(x));
+    const streetName = parts.find(
+      (x) =>
+        x !== houseNumber &&
+        x !== ward &&
+        x !== district &&
+        x !== province
+    );
+
+    return {
+      province,
+      district,
+      ward,
+      streetName,
+      houseNumber,
+    };
+  };
+
+  const fillAddressFromModel = (data) => {
+    if (!data) {
+      return;
+    }
+
+    const addressParts = splitAddress(data.room_address);
+    const province =
+      locationStore.selectProvinceById(data.province_id) ||
+      findLocationByName(locationStore.provinceItems, data.province_name) ||
+      findLocationByName(locationStore.provinceItems, addressParts.province);
+
+    if (province) {
+      model.value.province_id = province[locationStore.idField];
+      onSelectLocation(model.value.province_id, LocationType.Province);
+    }
+
+    const district =
+      locationStore.selectDistrictById(data.district_id) ||
+      findLocationByName(locationStore.districtItems, data.district_name) ||
+      findLocationByName(locationStore.districtItems, addressParts.district);
+
+    if (district) {
+      model.value.district_id = district[locationStore.idField];
+      onSelectLocation(model.value.district_id, LocationType.District);
+    }
+
+    const ward =
+      locationStore.getWardById(data.ward_id) ||
+      findLocationByName(locationStore.wardItems, data.ward_name) ||
+      findLocationByName(locationStore.wardItems, addressParts.ward);
+
+    if (ward) {
+      model.value.ward_id = ward[locationStore.idField];
+      onSelectLocation(model.value.ward_id, LocationType.Ward);
+    }
+
+    const streetName = data.street_name || addressParts.streetName;
+    if (streetName) {
+      model.value.street_name = streetName.replace(/^đường\s+/i, "");
+      updateLocationParts(model.value.street_name, 2);
+    }
+
+    const houseNumber = data.house_number || addressParts.houseNumber;
+    if (houseNumber) {
+      model.value.house_number = houseNumber.replace(/^số\s+/i, "");
+      updateLocationParts(model.value.house_number, 1);
+    }
+  };
+
   const updateLocationParts = (value, index) => {
     if (index < 1 || index > 5) {
       return;
     }
 
-    const lowerCaseVal = value.toLowerCase();
+    if (!value) {
+      locationParts.value[index - 1] = "";
+      model.value.room_address = locationParts.value.filter((x) => x).join(", ");
+      return;
+    }
+
+    const lowerCaseVal = value.toString().toLowerCase();
     let customVal = value;
     switch (index) {
       case 1:
@@ -164,20 +299,8 @@ export const usePostDetailPopup = () => {
     model.value.room_address = locationParts.value.filter((x) => x).join(", ");
   };
 
-  const formatAmount = (event) => {
-    // Xóa ký tự không phải số và dấu thập phân
-    roomPrice.value = roomPrice.value.replace(/[^0-9.]/g, "");
-
-    // Chỉ cho phép một dấu thập phân trong chuỗi
-    const parts = roomPrice.value.split(".");
-    if (parts.length > 2) {
-      roomPrice.value = parts[0] + "." + parts[1];
-    }
-
-    // Định dạng số tiền
-    if (roomPrice.value) {
-      roomPrice.value = new Intl.NumberFormat().format(roomPrice.value);
-    }
+  const formatAmount = (value = roomPrice.value) => {
+    roomPrice.value = value?.toString().replace(/\D/g, "") ?? "";
   };
 
   const unitList = ["đồng/tháng"];
@@ -192,7 +315,7 @@ export const usePostDetailPopup = () => {
     me.model.room_characteristic = JSON.stringify(roomCharacteristic.value);
 
     // Loại bỏ dấu phẩy trong chuỗi
-    const numberWithoutCommas = roomPrice.value.replace(/,/g, "");
+    const numberWithoutCommas = roomPrice.value?.toString().replace(/\D/g, "");
     // Chuyển đổi chuỗi thành số
     me.model.room_price = parseInt(numberWithoutCommas);
 
@@ -321,6 +444,11 @@ export const usePostDetailPopup = () => {
   onMounted(async () => {
     const me = proxy;
 
+    if (!locationStore.items.length) {
+      await locationStore.getAllLocations();
+    }
+    syncLocationItems();
+
     const roomPostId =
       me.$route.params.roomPostId ?? me.$route.query.roomPostId;
     if (me.$route.name === "Management_PostDetail") {
@@ -336,9 +464,8 @@ export const usePostDetailPopup = () => {
       if (!roomPostId) {
         me.editMode = 1;
         const data = await store.getRoomPostByRoomId(model.value.room_id);
-        onSelectLocation(data.province_id, LocationType.Province);
-        onSelectLocation(data.district_id, LocationType.District);
         model.value = { ...model.value, ...data };
+        fillAddressFromModel(data);
         roomPrice.value = data.room_price.toString();
         formatAmount();
       }
@@ -347,14 +474,10 @@ export const usePostDetailPopup = () => {
     }
 
     if (roomPostId) {
-      if (!locationStore.items.length) {
-        await locationStore.getAllLocations();
-      }
       me.editMode = 2;
       const data = await store.getById(roomPostId);
       model.value = data;
-      onSelectLocation(data.province_id, LocationType.Province);
-      onSelectLocation(data.district_id, LocationType.District);
+      fillAddressFromModel(data);
       roomPrice.value = data.room_price?.toString() ?? "";
       formatAmount();
       savedImages.value = data.images ? data.images.split(",") : [];

@@ -4,6 +4,7 @@ import popupUtil from "../../../../common/popupUtil";
 import _enum from "../../../../common/enum";
 import {
   convertCurrencyFormat,
+  formatNumberWithCommas,
   showMessage,
   MessageType,
 } from "../../../../common/commonFunction";
@@ -36,6 +37,13 @@ export const useHouseholdList = () => {
     { key: "room_code", title: "Mã phòng", align: "start" },
     { key: "total_fee", title: "Tổng tiền", align: "end" },
     { key: "electric_water", title: "Điện & Nước", align: "start" },
+    {
+      key: "print",
+      title: "In",
+      sortable: false,
+      align: "center",
+      width: 80,
+    },
     { key: "received_fee", title: "Đã nhận", align: "end" },
     { key: "displayed_expired_date", title: "Hạn chót", align: "start" },
     { key: "displayed_fee_status", title: "Trạng thái", align: "center" },
@@ -64,7 +72,7 @@ export const useHouseholdList = () => {
 
   const getDueDate = () => {
     const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 25);
+    return new Date(now.getFullYear(), now.getMonth(), 5);
   };
 
   const getStartDate = () => {
@@ -243,6 +251,196 @@ export const useHouseholdList = () => {
     }, {});
   };
 
+  const formatCurrency = (value) => {
+    return `${formatNumberWithCommas(parseNumber(value))} VND`;
+  };
+
+  const escapeHtml = (value) => {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  const getFeeMonthLabel = (fee) => {
+    const date = fee?.from_date || fee?.expired_date || new Date();
+    const value = new Date(date);
+    const validDate = Number.isNaN(value.getTime()) ? new Date() : value;
+    return `${validDate.getMonth() + 1}/${validDate.getFullYear()}`;
+  };
+
+  const getStoredServiceFees = (feeId) => {
+    if (!feeId) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(localStorage.getItem(`fee-service-indices-${feeId}`) ?? "[]");
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const getMeteredServiceTotal = (serviceFees, feeId) => {
+    const storedServiceById = getStoredServiceFees(feeId).reduce(
+      (result, service) => {
+        if (service?.service_fee_id) {
+          result[service.service_fee_id] = service;
+        }
+        return result;
+      },
+      {}
+    );
+
+    return serviceFees
+      .filter((service) => service.price_unit > 3)
+      .reduce((total, service) => {
+        const storedService = storedServiceById[service.service_fee_id] ?? {};
+        const oldIndex = parseNumber(storedService.old_index ?? service.old_index);
+        const newIndex = parseNumber(storedService.new_index ?? service.new_index);
+        const usage = newIndex - oldIndex;
+        return total + (usage > 0 ? usage * parseNumber(service.fee_price) : 0);
+      }, 0);
+  };
+
+  const calculatePrintableServiceTotal = (serviceFees, fee) => {
+    return serviceFees
+      .filter((service) => service.price_unit <= 3)
+      .reduce(
+        (total, service) => total + calculateFixedServiceTotal([service], fee),
+        0
+      );
+  };
+
+  const getFixedServiceAmount = (service, fee) => {
+    return calculateFixedServiceTotal([service], fee);
+  };
+
+  const getMeteredServiceAmount = (service, feeId) => {
+    const storedService = getStoredServiceFees(feeId).find(
+      (item) => item?.service_fee_id === service.service_fee_id
+    );
+    const oldIndex = parseNumber(storedService?.old_index ?? service.old_index);
+    const newIndex = parseNumber(storedService?.new_index ?? service.new_index);
+    const usage = newIndex - oldIndex;
+    return usage > 0 ? usage * parseNumber(service.fee_price) : 0;
+  };
+
+  const getServiceRows = (serviceFees, fee) => {
+    return serviceFees
+      .filter((service) => service.price_unit <= 3)
+      .map((service) => [
+        service.service_type || service.fee_name || "Phí dịch vụ",
+        formatCurrency(getFixedServiceAmount(service, fee)),
+      ]);
+  };
+
+  const downloadWordDocument = (fileName, html) => {
+    const content = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${html}</body></html>`;
+    const blob = new Blob([content], { type: "application/msword;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const buildReceiptHtml = (fee, data) => {
+    const monthLabel = getFeeMonthLabel(fee);
+    const rows = [
+      ["Tên phòng", fee.room_name || fee.room_code],
+      ["Chủ phòng", fee.resident_name],
+      ["Giá phòng", formatCurrency(data.roomPrice)],
+      ...data.serviceRows,
+      ["Phí xe", formatCurrency(data.vehicleTotal)],
+      [
+        "Phí điện và nước",
+        `${formatCurrency(data.electricWaterTotal)}${
+          fee.electric_water ? ` (${fee.electric_water})` : ""
+        }`,
+      ],
+      ["Tổng tiền", formatCurrency(fee.total_fee)],
+    ];
+
+    return `
+      <style>
+        body { font-family: "Times New Roman", serif; font-size: 14pt; color: #000; }
+        .receipt { width: 680px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 20pt; text-transform: uppercase; margin: 0 0 24px; }
+        table { width: 100%; border-collapse: collapse; }
+        td { border: 1px solid #000; padding: 8px 10px; }
+        td:first-child { width: 38%; font-weight: bold; }
+        .total td { font-weight: bold; }
+        .signatures { width: 100%; border-collapse: collapse; margin-top: 42px; }
+        .signatures td { width: 50%; border: 0; text-align: center; padding: 0; }
+      </style>
+      <div class="receipt">
+        <h1>Phiếu thu tháng ${escapeHtml(monthLabel)}</h1>
+        <table>
+          ${rows
+            .map(
+              ([label, value]) =>
+                `<tr class="${label === "Tổng tiền" ? "total" : ""}"><td>${escapeHtml(
+                  label
+                )}</td><td>${escapeHtml(value)}</td></tr>`
+            )
+            .join("")}
+        </table>
+        <table class="signatures">
+          <tr>
+            <td>Người nộp tiền<br><br><br>(Ký, ghi rõ họ tên)</td>
+            <td>Người thu tiền<br><br><br>(Ký, ghi rõ họ tên)</td>
+          </tr>
+        </table>
+      </div>
+    `;
+  };
+
+  const printReceipt = async (item) => {
+    const me = proxy;
+    try {
+      me.loading = true;
+      const [feeDetail, serviceFees] = await Promise.all([
+        store.getById(item.fee_id),
+        getBuildingServiceFees(),
+      ]);
+      const fee = { ...item, ...feeDetail };
+      const roomPrice = parseNumber(fee.room_price);
+      const serviceTotal = calculatePrintableServiceTotal(serviceFees, fee);
+      const electricWaterTotal = getMeteredServiceTotal(serviceFees, fee.fee_id);
+      const vehicleTotal = Array.isArray(fee.vehicles)
+        ? fee.vehicles.reduce(
+            (total, vehicle) => total + parseNumber(vehicle.fee_price),
+            0
+          )
+        : 0;
+      const fileName = `phieu-thu-${fee.room_code || fee.room_name || "phong"}-thang-${getFeeMonthLabel(
+        fee
+      ).replace("/", "-")}.doc`;
+
+      downloadWordDocument(
+        fileName,
+        buildReceiptHtml(fee, {
+          roomPrice,
+          serviceRows: getServiceRows(serviceFees, fee),
+          electricWaterTotal,
+          vehicleTotal,
+        })
+      );
+    } catch (error) {
+      console.error(error);
+      showMessage("Có lỗi xảy ra khi in phiếu thu", MessageType.Error);
+    } finally {
+      me.loading = false;
+    }
+  };
+
   const genFees = async () => {
     const me = proxy;
     try {
@@ -406,5 +604,5 @@ export const useHouseholdList = () => {
     });
   };
 
-  return { headers, detailForm, store, genFees, pay };
+  return { headers, detailForm, store, genFees, pay, printReceipt };
 };

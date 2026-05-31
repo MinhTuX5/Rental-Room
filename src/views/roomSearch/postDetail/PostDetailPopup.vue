@@ -122,8 +122,9 @@
                     :readonly="isManagement"
                     :maxlength="16"
                     :required="true"
+                    inputmode="numeric"
                     v-model="roomPrice"
-                    @input="formatAmount"
+                    @update:modelValue="formatAmount"
                   />
                 </v-col>
                 <v-col>
