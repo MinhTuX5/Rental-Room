@@ -71,10 +71,16 @@ export const useExpenseCategoryStore = defineStore("ExpenseCategory", {
       const appStore = useAppStore();
       if (me.invalidCache) {
         try {
-          const res = await me.getAll();
-          if (Array.isArray(res)) {
+          const res = await me.getPaging({
+            skip: 0,
+            take: 100000,
+            filters: me.defaultFilters,
+            sorts: me.defaultSorts,
+          });
+          const items = res?.data ?? [];
+          if (Array.isArray(items)) {
             me.invalidCache = false;
-            const orderedItems = res.sort((a, b) => {
+            const orderedItems = items.sort((a, b) => {
               const nameA = a[me.nameField] || "";
               const nameB = b[me.nameField] || "";
               return nameA.localeCompare(nameB);

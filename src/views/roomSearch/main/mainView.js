@@ -293,6 +293,7 @@ export const useMainView = () => {
 
   const clearFilters = () => {
     filterVals.value = [];
+    changePage(1);
   };
 
   const priceMenuItems = ref([

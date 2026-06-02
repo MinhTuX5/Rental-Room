@@ -49,7 +49,7 @@
 
     <div class="register text-center mt-4">
       <span>Đã có tài khoản? </span>
-      <a href="#">Đăng nhập</a>
+      <a href="/dang-nhap">Đăng nhập</a>
     </div>
   </form>
 </template>

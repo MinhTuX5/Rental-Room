@@ -75,7 +75,7 @@ export const usePostDetail = () => {
     }
 
     proxy.$router.push({
-      name: "AppointmentSchedule",
+      name: "HomeAppointmentSchedule",
       query: {
         mode: "booking",
         ownerUserId: model.value.user_id,
@@ -126,7 +126,7 @@ export const usePostDetail = () => {
       const roomPostId = me.$route.params.id;
       const payload = {
         RoomPostId: roomPostId,
-        PostStatus: PostStatus.Posted,
+        PostStatus: PostStatus.Rejected,
         RejectMessage: rejectMessage.value,
       };
       await store.updatePostStatus(payload);

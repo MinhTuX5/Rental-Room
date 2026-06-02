@@ -28,7 +28,7 @@ export const useAppointmentScheduleDetail = () => {
 
   const customBeforeSubmit = () => {
     proxy.model.user_id =
-      proxy._formParam?.ownerUserId || contextStore.$state.user.user_id;
+      proxy._formParam?.ownerUserId || contextStore.$state.user?.user_id;
     proxy.model.appointment_title = proxy.model.to_user_name;
   };
 

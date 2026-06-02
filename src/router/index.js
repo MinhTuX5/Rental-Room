@@ -25,9 +25,14 @@ const router = createRouter({
         {
           path: "bai-dang/:id",
           name: "PostDetail",
-          meta: { requiresAuth: true },
           component: () =>
             import("@/views/roomSearch/postDetail/PostDetail.vue"),
+        },
+        {
+          path: "dat-lich",
+          name: "HomeAppointmentSchedule",
+          component: () =>
+            import("@/views/auth/schedule/AppointmentSchedule.vue"),
         },
       ],
     },

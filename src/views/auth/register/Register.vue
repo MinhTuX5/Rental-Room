@@ -5,16 +5,29 @@
   >
     <div class="form-title text-h4 text-center mb-6">Đăng ký</div>
 
-    <v-alert
-      v-if="errorMessage"
-      type="error"
-      density="compact"
-      class="mb-4"
-      closable
-      @click:close="errorMessage = ''"
-    >
-      {{ errorMessage }}
-    </v-alert>
+    <div class="register-message mb-4">
+      <v-alert
+        v-if="errorMessage"
+        type="error"
+        density="comfortable"
+        variant="tonal"
+        closable
+        @click:close="errorMessage = ''"
+      >
+        {{ errorMessage }}
+      </v-alert>
+
+      <v-alert
+        v-else-if="successMessage"
+        type="success"
+        density="comfortable"
+        variant="tonal"
+        closable
+        @click:close="successMessage = ''"
+      >
+        {{ successMessage }}
+      </v-alert>
+    </div>
 
     <v-text-field
       label="Email*"
@@ -39,13 +52,13 @@
     ></v-text-field>
 
     <v-text-field
-      label="Số điện thoại*"
-      v-model="state.phoneNumber"
+      label="Số điện thoại/tài khoản*"
+      v-model="state.account"
       density="compact"
-      :error-messages="v$.phoneNumber.$errors.map((e) => e.$message)"
+      :error-messages="v$.account.$errors.map((e) => e.$message)"
       required
-      @blur="v$.phoneNumber.$touch"
-      @input="v$.phoneNumber.$touch"
+      @blur="v$.account.$touch"
+      @input="v$.account.$touch"
     ></v-text-field>
 
     <v-select
@@ -105,6 +118,15 @@ export default {
 .v-text-field {
   & + .v-text-field {
     margin-top: 8px;
+  }
+}
+
+.register-message {
+  min-height: 48px;
+
+  .v-alert {
+    position: static;
+    width: 100%;
   }
 }
 </style>

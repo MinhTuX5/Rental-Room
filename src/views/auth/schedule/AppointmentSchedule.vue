@@ -58,7 +58,7 @@ export default {
     const eventDateSet = ref(new Set());
     const isBookingMode = computed(() => proxy.$route.query.mode === "booking");
     const appointmentOwnerUserId = computed(
-      () => proxy.$route.query.ownerUserId || contextStore.$state.user.user_id
+      () => proxy.$route.query.ownerUserId || contextStore.$state.user?.user_id
     );
 
     const handleSelect = (selectInfo) => {
@@ -73,8 +73,8 @@ export default {
         appointment_date: selectInfo.start,
         ownerUserId: appointmentOwnerUserId.value,
         model: {
-          to_user_name: contextStore.$state.user.user_name ?? "",
-          to_phone_number: contextStore.$state.user.phone_number ?? "",
+          to_user_name: contextStore.$state.user?.user_name ?? "",
+          to_phone_number: contextStore.$state.user?.phone_number ?? "",
           appointment_address: proxy.$route.query.address ?? "",
           room_post_id: proxy.$route.query.roomPostId,
           post_code: proxy.$route.query.postCode,
@@ -109,6 +109,10 @@ export default {
     };
 
     const handleEventClick = (arg) => {
+      if (isBookingMode.value) {
+        return;
+      }
+
       const param = {
         editMode: _enum.Mode.Update,
         detailForm: "AppointmentScheduleDetail",

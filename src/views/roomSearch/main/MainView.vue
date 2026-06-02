@@ -295,6 +295,7 @@
                     :label="item.label"
                     :value="item.value"
                     v-model="filterVals"
+                    @update:modelValue="changePage(1)"
                   ></v-checkbox>
                 </li>
               </ul>

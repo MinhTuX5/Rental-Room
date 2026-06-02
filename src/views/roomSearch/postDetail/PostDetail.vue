@@ -44,7 +44,9 @@
           <div class="d-flex flex-column info-item">
             <span class="title">Giờ đăng</span>
             <span class="info">{{
-              moment(model.posted_date).format("HH:mm DD/MM/YYYY")
+              model.posted_date
+                ? moment(model.posted_date).format("HH:mm DD/MM/YYYY")
+                : "--"
             }}</span>
           </div>
         </v-sheet>

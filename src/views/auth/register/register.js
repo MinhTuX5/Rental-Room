@@ -1,17 +1,16 @@
 import { reactive, ref } from "vue";
-import { useRouter } from "vue-router";
 import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, maxLength, email } from "@vuelidate/validators";
 import userAPI from "@/apis/userAPI";
 import Role from "@/common/enum/Role";
 
 export const useRegister = () => {
-  const router = useRouter();
   const loading = ref(false);
   const errorMessage = ref("");
+  const successMessage = ref("");
 
   const initialState = {
-    phoneNumber: "",
+    account: "",
     password: "",
     email: "",
     fullName: "",
@@ -22,7 +21,7 @@ export const useRegister = () => {
 
   const rules = {
     email: { email },
-    phoneNumber: {
+    account: {
       required,
       maxLength: maxLength(11),
       minLength: minLength(10),
@@ -40,17 +39,22 @@ export const useRegister = () => {
 
     loading.value = true;
     errorMessage.value = "";
+    successMessage.value = "";
 
     try {
       const payload = {
+        account: state.account,
         email: state.email,
         fullName: state.fullName,
-        phoneNumber: state.phoneNumber,
+        phoneNumber: state.account,
         password: state.password,
         role: state.role,
       };
       await userAPI.register(payload);
-      router.push("/dang-nhap");
+      Object.assign(state, initialState);
+      v$.value.$reset();
+      successMessage.value = "đăng kí thành công.";
+      
     } catch (error) {
       errorMessage.value =
         error?.response?.data?.message ||
@@ -67,5 +71,14 @@ export const useRegister = () => {
     { label: "Chủ trọ", value: Role.Innkeeper },
   ];
 
-  return { state, v$, loading, errorMessage, register, Role, registerRoles };
+  return {
+    state,
+    v$,
+    loading,
+    errorMessage,
+    successMessage,
+    register,
+    Role,
+    registerRoles,
+  };
 };

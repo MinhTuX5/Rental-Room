@@ -49,7 +49,9 @@
             <v-icon icon="mdi-calendar-clock" v-tooltip="'Ngày đăng'"></v-icon>
             <!-- HH => 24h, hh => 12h -->
             <span>{{
-              moment(item.posted_date).format("HH:mm DD/MM/YYYY")
+              item.posted_date
+                ? moment(item.posted_date).format("HH:mm DD/MM/YYYY")
+                : "--"
             }}</span>
           </v-sheet>
         </v-sheet>
