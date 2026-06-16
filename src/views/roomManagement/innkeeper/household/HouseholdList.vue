@@ -26,7 +26,7 @@
       @update:options="loadItems"
     >
       <template v-slot:item.actions="{ item }">
-        <v-row>
+        <v-row justify="center">
           <v-col>
             <v-icon
               color="blue"

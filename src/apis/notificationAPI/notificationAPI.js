@@ -27,24 +27,19 @@ class NotificationAPI extends CrudAPI {
 
   async getPaging(userId) {
     const payload = {
-      skip: 0,
-      take: 20,
-      Filters: [
-        {
-          Field: "to_user_id",
-          Value: userId,
-          Operator: FilterOperator.Equal,
-        },
-      ],
-      Sorts: [
-        {
-          Column: "created_at",
-          IsAscending: false,
-        },
-        {
-          Column: "read_at",
-        },
-      ],
+      skip: 0,              // Bắt đầu từ bản ghi thứ 0
+      take: 20,             // Lấy 20 bản ghi
+      Filters: [{           // Lọc theo userId
+        Field: "to_user_id",
+        Value: userId,
+        Operator: FilterOperator.Equal,
+      }],
+      Sorts: [{             // Sắp xếp theo created_at (mới nhất trước)
+        Column: "created_at",
+        IsAscending: false,
+      }, {                  // Sắp xếp theo read_at
+        Column: "read_at",
+      }],
     };
     var response = await this.postAsync(payload, `/list`);
     return response.data;

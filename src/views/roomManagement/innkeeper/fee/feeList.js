@@ -21,11 +21,11 @@ import FeeStatus from "@/common/enum/FeeStatus";
 import FilterOperator from "@/common/enum/FilterOperator";
 
 export const useHouseholdList = () => {
-  const { proxy } = getCurrentInstance();
+  const { proxy } = getCurrentInstance(); // lấy instance component để gọi các hàm base như refresh, loadItems
 
-  const detailForm = "FeeDetail";
+  const detailForm = "FeeDetail"; // tên popup chi tiết thu phí
 
-  const store = useFeeStore();
+  const store = useFeeStore(); // store chính quản lý hóa đơn/thu phí
   const contractStore = useContractStore();
   const roomStore = useRoomStore();
   const roomCategoryStore = useRoomCategoryStore();
@@ -33,10 +33,11 @@ export const useHouseholdList = () => {
   const vehicleFeeStore = useVehicleFeeStore();
 
   const headers = [
-    { key: "contract_code", title: "Mã hợp đồng", align: "start" },
-    { key: "room_code", title: "Mã phòng", align: "start" },
-    { key: "total_fee", title: "Tổng tiền", align: "end" },
-    { key: "electric_water", title: "Điện & Nước", align: "start" },
+    { key: "contract_code", title: "Mã hợp đồng", align: "center" },
+    { key: "resident_name", title: "Tên chủ phòng", align: "center" },
+    { key: "room_name", title: "Tên phòng", align: "center" },
+    { key: "total_fee", title: "Tổng tiền", align: "center" },
+    { key: "electric_water", title: "Điện & Nước", align: "center" },
     {
       key: "print",
       title: "In",
@@ -44,8 +45,8 @@ export const useHouseholdList = () => {
       align: "center",
       width: 80,
     },
-    { key: "received_fee", title: "Đã nhận", align: "end" },
-    { key: "displayed_expired_date", title: "Hạn chót", align: "start" },
+    { key: "received_fee", title: "Đã nhận", align: "center" },
+    { key: "displayed_expired_date", title: "Hạn chót", align: "center" },
     { key: "displayed_fee_status", title: "Trạng thái", align: "center" },
     {
       title: "Chức năng",
@@ -57,6 +58,7 @@ export const useHouseholdList = () => {
   ];
 
   const parseNumber = (value) => {
+    // chuẩn hóa số từ chuỗi định dạng tiếng Việt
     if (typeof value === "number") {
       return Number.isFinite(value) ? value : 0;
     }
@@ -71,16 +73,19 @@ export const useHouseholdList = () => {
   };
 
   const getDueDate = () => {
+    // hạn chót mặc định là ngày 5 của tháng hiện tại
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 5);
   };
 
   const getStartDate = () => {
+    // ngày bắt đầu mặc định là ngày 1 của tháng hiện tại
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   };
 
   const isCurrentMonthDate = (value) => {
+    // kiểm tra xem ngày có thuộc tháng hiện tại không
     if (!value) {
       return false;
     }
@@ -98,10 +103,12 @@ export const useHouseholdList = () => {
       return "";
     }
 
+    // lấy giá trị điện nước đã lưu localStorage nếu chưa có trong dữ liệu fee
     return localStorage.getItem(`fee-electric-water-${feeId}`) ?? "";
   };
 
   const attachElectricWater = (fees) => {
+    // gán lại giá trị điện nước lưu localStorage cho các fee
     return fees.map((fee) => ({
       ...fee,
       electric_water: fee.electric_water || getStoredElectricWater(fee.fee_id),
@@ -109,6 +116,7 @@ export const useHouseholdList = () => {
   };
 
   const getCurrentFees = async () => {
+    // tải danh sách phí hiện tại với paging lớn
     const feeResult = await store.getPaging({
       skip: 0,
       take: 100000,
@@ -120,10 +128,12 @@ export const useHouseholdList = () => {
   };
 
   const getCurrentMonthFees = (fees) => {
+    // lọc danh sách phí chỉ lấy các phí tháng hiện tại
     return fees.filter((fee) => isCurrentMonthDate(fee.expired_date));
   };
 
   const getFeeByContractId = (fees) => {
+    // tạo object tra cứu fee theo contract_id
     return fees.reduce((result, fee) => {
       if (fee?.contract_id) {
         result[fee.contract_id] = fee;
@@ -139,6 +149,7 @@ export const useHouseholdList = () => {
   };
 
   const getRoomPrice = (contract, room, roomCategories) => {
+    // ưu tiên giá hợp đồng, nếu không có lấy giá theo hạng mục phòng, nếu không có mới lấy giá phòng
     const roomCategory = getRoomCategoryById(
       roomCategories,
       room?.room_category_id ?? contract?.room_category_id
@@ -151,6 +162,7 @@ export const useHouseholdList = () => {
   };
 
   const calculateFixedServiceTotal = (serviceFees, room) => {
+    // tính tổng phí dịch vụ cố định theo đơn vị
     return serviceFees.reduce((total, service) => {
       const feePrice = parseNumber(service.fee_price);
       switch (service.price_unit) {
@@ -210,6 +222,7 @@ export const useHouseholdList = () => {
   };
 
   const calculateVehicleTotalByRoom = (vehicles, residents, vehicleFees) => {
+    // tạo map resident -> room để biết xe thuộc phòng nào
     const roomIdByResidentId = residents.reduce((result, resident) => {
       if (resident?.resident_id && resident?.room_id) {
         result[resident.resident_id] = resident.room_id;
@@ -233,6 +246,7 @@ export const useHouseholdList = () => {
       return result;
     }, {});
 
+    // cộng dồn phí xe theo phòng
     return vehicles.reduce((result, vehicle) => {
       const roomId = roomIdByResidentId[vehicle?.resident_id];
       if (!roomId) {
@@ -285,6 +299,7 @@ export const useHouseholdList = () => {
   };
 
   const getMeteredServiceTotal = (serviceFees, feeId) => {
+    // tính phí điện/nước theo chỉ số đã lưu
     const storedServiceById = getStoredServiceFees(feeId).reduce(
       (result, service) => {
         if (service?.service_fee_id) {
@@ -339,6 +354,7 @@ export const useHouseholdList = () => {
   };
 
   const downloadWordDocument = (fileName, html) => {
+    // tạo và tải file .doc từ HTML
     const content = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${html}</body></html>`;
     const blob = new Blob([content], { type: "application/msword;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -352,6 +368,7 @@ export const useHouseholdList = () => {
   };
 
   const buildReceiptHtml = (fee, data) => {
+    // xây dựng nội dung phiếu thu
     const monthLabel = getFeeMonthLabel(fee);
     const rows = [
       ["Tên phòng", fee.room_name || fee.room_code],
@@ -406,6 +423,7 @@ export const useHouseholdList = () => {
     const me = proxy;
     try {
       me.loading = true;
+      // lấy chi tiết fee và phí dịch vụ để in phiếu thu
       const [feeDetail, serviceFees] = await Promise.all([
         store.getById(item.fee_id),
         getBuildingServiceFees(),
@@ -445,6 +463,7 @@ export const useHouseholdList = () => {
     const me = proxy;
     try {
       me.loading = true;
+
       const buildingId = useContextManageStore().$state.user.building_id;
       const [
         contractResult,
@@ -494,7 +513,7 @@ export const useHouseholdList = () => {
         return;
       }
 
-      await store.genFees(buildingId);
+      await store.genFees(buildingId); // gọi API tạo các khoản phí ban đầu
 
       const roomById = rooms.reduce((result, room) => {
         result[room.room_id] = room;
@@ -577,7 +596,7 @@ export const useHouseholdList = () => {
       } else {
         showMessage(`Đã sinh ${contracts.length} khoản thu phí`);
       }
-      await me.refresh();
+      await me.refresh(); // reload danh sách
     } catch (error) {
       console.log(error);
       showMessage("Có lỗi xảy ra khi sinh thu phí", MessageType.Error);
@@ -588,6 +607,7 @@ export const useHouseholdList = () => {
 
   const pay = (item) => {
     const me = proxy;
+    // mở popup thanh toán và truyền dữ liệu cần thiết
     popupUtil.show("PaymentDetail", {
       editMode: _enum.Mode.Add,
       model: {
@@ -604,5 +624,11 @@ export const useHouseholdList = () => {
     });
   };
 
-  return { headers, detailForm, store, genFees, pay, printReceipt };
+  const showResidentsPopup = (item) => {
+    popupUtil.show("ContractResidentsPopup", {
+      model: item,
+    });
+  };
+
+  return { headers, detailForm, store, genFees, pay, printReceipt, showResidentsPopup };
 };

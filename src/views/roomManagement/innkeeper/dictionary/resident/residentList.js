@@ -8,12 +8,12 @@ export const usResidentList = () => {
   const detailForm = "ResidentDetail";
 
   const headers = [
-    { key: "resident_code", title: "Mã người thuê", align: "start" },
-    { key: "resident_name", title: "Họ tên", align: "start" },
-    { key: "room_code", title: "Mã phòng", align: "start" },
-    { key: "phone_number", title: "SĐT", align: "start" },
+    { key: "resident_code", title: "Mã người thuê", align: "center" },
+    { key: "resident_name", title: "Họ tên", align: "center" },
+    { key: "room_name", title: "Tên phòng", align: "center", sortable: false },
+    { key: "phone_number", title: "SĐT", align: "center" },
     { key: "is_owner", title: "Chủ hộ", align: "center", sortable: false }, // kiểu bit
-    { key: "identity_number", title: "Số CCCD", align: "start" },
+    { key: "identity_number", title: "Số CCCD", align: "center" },
     { key: "displayed_resident_gender", title: "Giới tính", align: "center" },
     { key: "on_leave", title: "Tạm vắng", align: "center", sortable: false }, // kiểu bit
     {

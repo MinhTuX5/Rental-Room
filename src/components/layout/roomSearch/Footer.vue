@@ -30,7 +30,7 @@ export default {
         title: "Thông tin liên hệ",
         children: [
           { title: "0963689218", prefixIcon: "call" },
-          { title: "nvthinh@gamil.com", prefixIcon: "mail" },
+          { title: "nguyenminhtu1504@gmail.com", prefixIcon: "mail" },
         ],
       },
       {

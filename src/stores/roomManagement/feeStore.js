@@ -4,12 +4,82 @@ import BaseDicStore from "@/stores/baseDicStore";
 import { useContextManageStore } from "@/stores/contextManageStore";
 // api
 import api from "../../apis/roomManagementAPI/feeAPI";
+import residentAPI from "@/apis/dictionaryAPI/residentAPI";
+import { useRoomStore } from "@/stores/roomManagement/dictionary/roomStore";
 // resource
 import FilterOperator from "@/common/enum/FilterOperator";
 import FeeStatus from "../../common/enum/FeeStatus";
 
 const store = new BaseDicStore(api);
 const contextStore = useContextManageStore();
+
+const getCurrentBuildingId = () => {
+  return useContextManageStore().$state.user?.building_id;
+};
+
+const getBuildingResidents = async () => {
+  const buildingId = getCurrentBuildingId();
+  if (!buildingId) {
+    return [];
+  }
+
+  const response = await residentAPI.getPaging({
+    skip: 0,
+    take: 100000,
+    filters: [
+      {
+        Field: "building_id",
+        Value: buildingId,
+        Operator: FilterOperator.Equal,
+      },
+    ],
+  });
+
+  return response?.data ?? [];
+};
+
+const enrichFeeRowsWithOwnerNames = async (feeRows) => {
+  if (!Array.isArray(feeRows) || feeRows.length === 0) {
+    return feeRows ?? [];
+  }
+
+  const residents = await getBuildingResidents();
+  const ownerByRoomId = residents.reduce((result, resident) => {
+    if (!resident?.room_id) {
+      return result;
+    }
+
+    if (resident.is_owner || !result[resident.room_id]) {
+      result[resident.room_id] = resident;
+    }
+
+    return result;
+  }, {});
+
+  return feeRows.map((fee) => ({
+    ...fee,
+    resident_name:
+      fee.resident_name || ownerByRoomId[fee.room_id]?.resident_name || "",
+  }));
+};
+
+const enrichFeeRowsWithRoomNames = async (feeRows) => {
+  if (!Array.isArray(feeRows) || feeRows.length === 0) {
+    return feeRows ?? [];
+  }
+
+  const roomStore = useRoomStore();
+  const rooms = await roomStore.getAllItems();
+  const roomMap = rooms.reduce((result, room) => {
+    result[room.room_id] = room;
+    return result;
+  }, {});
+
+  return feeRows.map((fee) => ({
+    ...fee,
+    room_name: fee.room_name || roomMap[fee.room_id]?.room_name || "",
+  }));
+};
 
 export const useFeeStore = defineStore("fee", {
   state: () => ({
@@ -50,6 +120,18 @@ export const useFeeStore = defineStore("fee", {
   },
   actions: {
     ...store.actions,
+    async getPaging(config) {
+      const me = this;
+      const response = await api.getPaging(config);
+      let data = await enrichFeeRowsWithOwnerNames(response.data);
+      data = await enrichFeeRowsWithRoomNames(data);
+      const result = {
+        data,
+        totalCount: response.totalCount ?? 0,
+      };
+      me.afterGetPaging(result);
+      return result;
+    },
     afterGetPaging(result) {
       const me = this;
 

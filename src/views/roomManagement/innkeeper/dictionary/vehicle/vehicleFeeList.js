@@ -13,20 +13,23 @@ export const usVehicleList = () => {
     {
       key: "vehicle_fee_code",
       title: "Mã phương tiện",
+      align: "center",
     },
     {
       key: "vehicle_type",
       title: "Loại phương tiện",
       sort: "asc",
+      align: "center",
     },
     {
       key: "fee_price",
       title: "Mức giá gửi xe",
-      align: "end",
+      align: "center",
     },
     {
       key: "unit",
       title: "Đơn vị tính",
+      align: "center",
     },
     {
       title: "Chức năng",

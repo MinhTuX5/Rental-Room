@@ -135,6 +135,9 @@ export const usePostDetailPopup = () => {
     return result;
   };
 
+  /**
+   * Đồng bộ lại các combobox địa điểm với dữ liệu từ store
+   */
   const syncLocationItems = () => {
     const provinceConfig = addressInfo.find(
       (x) => x.locationType === LocationType.Province
@@ -142,7 +145,9 @@ export const usePostDetailPopup = () => {
     const districtConfig = addressInfo.find(
       (x) => x.locationType === LocationType.District
     );
-    const wardConfig = addressInfo.find((x) => x.locationType === LocationType.Ward);
+    const wardConfig = addressInfo.find(
+      (x) => x.locationType === LocationType.Ward
+    );
 
     if (provinceConfig) {
       provinceConfig.items = locationStore.provinceItems;
@@ -167,6 +172,9 @@ export const usePostDetailPopup = () => {
       .replace(/\s+/g, " ");
   };
 
+  /**
+   * Tìm vị trí trong danh sách theo tên đã chuẩn hóa
+   */
   const findLocationByName = (items, name) => {
     const normalizedName = normalizeLocationName(name);
     if (!normalizedName) {
@@ -178,6 +186,9 @@ export const usePostDetailPopup = () => {
     );
   };
 
+  /**
+   * Tách chuỗi địa chỉ thành các phần để điền tự động
+   */
   const splitAddress = (address) => {
     const parts = address
       ?.toString()
@@ -214,6 +225,9 @@ export const usePostDetailPopup = () => {
     };
   };
 
+  /**
+   * Điền các trường địa chỉ từ model data
+   */
   const fillAddressFromModel = (data) => {
     if (!data) {
       return;
@@ -263,6 +277,9 @@ export const usePostDetailPopup = () => {
     }
   };
 
+  /**
+   * Cập nhật phần địa chỉ và ghép lại room_address
+   */
   const updateLocationParts = (value, index) => {
     if (index < 1 || index > 5) {
       return;
@@ -306,7 +323,7 @@ export const usePostDetailPopup = () => {
   const unitList = ["đồng/tháng"];
 
   /**
-   * @description Xử lý trước khi submit
+   * Xử lý trước khi gửi form: prepare dữ liệu
    */
   const customBeforeSubmit = () => {
     const me = proxy;
@@ -363,6 +380,9 @@ export const usePostDetailPopup = () => {
     room_type: RoomType.RentalRoom,
   });
 
+  /**
+   * Xử lý sau khi gửi form thành công
+   */
   const customAfterSubmit = async (data) => {
     const me = proxy;
 
@@ -387,6 +407,9 @@ export const usePostDetailPopup = () => {
   const files = ref([]);
   const imageLinks = ref([]);
 
+  /**
+   * Upload ảnh lên Cloudinary và cập nhật lại bài đăng với URL ảnh
+   */
   const saveImages = async (data) => {
     const formData = new FormData();
 

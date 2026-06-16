@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 // store
 import BaseDicStore from "@/stores/baseDicStore";
 import { useContextManageStore } from "@/stores/contextManageStore";
+import { useRoomStore } from "@/stores/roomManagement/dictionary/roomStore";
 // enum
 import _enum from "@/common/enum";
 import FilterOperator from "@/common/enum/FilterOperator";
@@ -11,6 +12,38 @@ import api from "../../../apis/dictionaryAPI/residentAPI";
 
 const store = new BaseDicStore(api);
 const contextStore = useContextManageStore();
+
+const invalidateRoomCache = () => {
+  useRoomStore().$state.invalidCache = true;
+};
+
+const enrichResidentsWithRoomName = async (residents) => {
+  if (!Array.isArray(residents) || residents.length === 0) {
+    return residents ?? [];
+  }
+
+  const rooms = await useRoomStore().getAllItems();
+  const roomById = rooms.reduce((result, room) => {
+    if (room?.room_id) {
+      result[room.room_id] = room;
+    }
+    return result;
+  }, {});
+  const roomByCode = rooms.reduce((result, room) => {
+    if (room?.room_code) {
+      result[room.room_code] = room;
+    }
+    return result;
+  }, {});
+
+  return residents.map((resident) => {
+    const room = roomById[resident.room_id] ?? roomByCode[resident.room_code] ?? {};
+    return {
+      ...resident,
+      room_name: resident.room_name || room.room_name || "",
+    };
+  });
+};
 
 export const useResidentStore = defineStore("resident", {
   state: () => ({
@@ -50,6 +83,16 @@ export const useResidentStore = defineStore("resident", {
   },
   actions: {
     ...store.actions,
+    async getPaging(config) {
+      const me = this;
+      const response = await api.getPaging(config);
+      const result = {
+        data: await enrichResidentsWithRoomName(response.data),
+        totalCount: response.totalCount ?? 0,
+      };
+      me.afterGetPaging(result);
+      return result;
+    },
     afterGetPaging(result) {
       const me = this;
 
@@ -63,11 +106,13 @@ export const useResidentStore = defineStore("resident", {
       const me = this;
       me.items.unshift(item);
       me.totalItems++;
+      invalidateRoomCache();
     },
     afterDeleteAsync(id) {
       const me = this;
       me.items = me.items.filter((x) => x[me.idField] != id);
       me.totalItems--;
+      invalidateRoomCache();
     },
     afterUpdate(item) {
       const me = this;
@@ -75,6 +120,7 @@ export const useResidentStore = defineStore("resident", {
       if (curItem) {
         Object.assign(curItem, item);
       }
+      invalidateRoomCache();
     },
     standardItem(item) {
       switch (item.resident_gender) {

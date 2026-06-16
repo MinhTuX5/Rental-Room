@@ -11,18 +11,23 @@ export const useBuildingList = () => {
   const store = useBuildingStore();
 
   const useItem = async (item, refresh) => {
+    // Nếu tòa nhà đang được sử dụng thì không cần đổi lại
     if (item.status === BuildingStatus.Using) return;
     try {
+      // Gọi API thay đổi tòa nhà đang dùng
       await store.setActive(item.building_id);
 
+      // Cập nhật context quản lý hiện tại và lưu vào localStorage
       const context = getManagementContext();
       context.user.building_id = item.building_id;
       context.user.building_name = item.building_name;
       localStorage.setItem("context_management", JSON.stringify(context));
 
+      // Cập nhật store context cho các component khác
       const contextStore = useContextManageStore();
       contextStore.$state.user = context.user;
 
+      // Đánh dấu cache phòng không hợp lệ để load lại dữ liệu mới
       useRoomStore().$state.invalidCache = true;
 
       showMessage("Đã chọn sử dụng tòa nhà!");

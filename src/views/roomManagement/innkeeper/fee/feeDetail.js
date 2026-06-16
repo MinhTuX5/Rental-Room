@@ -11,12 +11,12 @@ import {
 } from "../../../../common/commonFunction";
 
 export const useFeeDetail = () => {
-  const { proxy } = getCurrentInstance();
+  const { proxy } = getCurrentInstance(); // lấy instance component
 
-  const store = useFeeStore();
-  const serviceFeeStore = useServiceFeeStore();
+  const store = useFeeStore(); // store quản lý fee
+  const serviceFeeStore = useServiceFeeStore(); // store dictionary phí dịch vụ
 
-  const title = ref("Thông tin thu phí");
+  const title = ref("Thông tin thu phí"); // tiêu đề popup
 
   const serviceHeaders = reactive([
     {
@@ -59,11 +59,11 @@ export const useFeeDetail = () => {
     { key: "fee_price", title: "Phí gửi xe", align: "end" },
   ];
 
-  const vehicleFeeTotal = ref(0);
-  const editServiceFees = ref([]);
+  const vehicleFeeTotal = ref(0); // tổng phí xe
+  const editServiceFees = ref([]); // danh sách dịch vụ cần nhập chỉ số
 
-  const viewServiceFees = ref([]);
-  const viewServiceTotal = ref(0);
+  const viewServiceFees = ref([]); // danh sách dịch vụ hiển thị tĩnh
+  const viewServiceTotal = ref(0); // tổng phí dịch vụ hiển thị
 
   const parseNumber = (value) => {
     if (typeof value === "number") {
@@ -80,6 +80,7 @@ export const useFeeDetail = () => {
   };
 
   const serviceFeeTotal = computed(() => {
+    // tính tổng phí dịch vụ theo chỉ số nhập
     const editServiceTotal = editServiceFees.value.reduce((total, service) => {
       const oldIndex = parseNumber(service.old_index);
       const newIndex = parseNumber(service.new_index);
@@ -91,14 +92,15 @@ export const useFeeDetail = () => {
   });
 
   const toDate = computed(() => {
-    return formatDate(proxy.model.expired_date);
+    return formatDate(proxy.model.expired_date); // format ngày kết thúc
   });
 
   const fromDate = computed(() => {
-    return formatDate(proxy.model.from_date);
+    return formatDate(proxy.model.from_date); // format ngày bắt đầu
   });
 
   const totalFee = computed(() => {
+    // tổng tiền = tiền phòng + phí dịch vụ + phí xe
     return (
       parseNumber(proxy.model.room_price) +
       serviceFeeTotal.value +
@@ -112,11 +114,11 @@ export const useFeeDetail = () => {
   };
 
   const getServiceStorageKey = () => {
-    return `fee-service-indices-${proxy.model.fee_id}`;
+    return `fee-service-indices-${proxy.model.fee_id}`; // key lưu chỉ số dịch vụ
   };
 
   const getElectricWaterStorageKey = () => {
-    return `fee-electric-water-${proxy.model.fee_id}`;
+    return `fee-electric-water-${proxy.model.fee_id}`; // key lưu điện nước
   };
 
   const buildElectricWaterDisplay = () => {
@@ -129,10 +131,11 @@ export const useFeeDetail = () => {
 
     const electricUsage = electric ? getUsage(electric) : 0;
     const waterUsage = water ? getUsage(water) : 0;
-    return `${electricUsage}kw & ${waterUsage}m3`;
+    return `${electricUsage}kw & ${waterUsage}m3`; // chuỗi hiển thị điện & nước
   };
 
   const customBeforeSubmit = () => {
+    // chuẩn bị dữ liệu trước khi submit
     proxy.model.total_fee = totalFee.value;
     proxy.model.electric_water = buildElectricWaterDisplay();
     proxy.model.service_fees = editServiceFees.value.map((service) => ({

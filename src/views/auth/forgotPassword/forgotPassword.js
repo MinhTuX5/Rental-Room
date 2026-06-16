@@ -27,7 +27,7 @@ export const useForgotPassword = () => {
   };
 
   const v$ = useVuelidate(rules, model);
-
+// tạo otp ngau nhiên gồm 4 chữ số, trả về dưới dạng chuỗi
   const generateOtp = () => {
     return Math.floor(1000 + Math.random() * 9000).toString();
   };
@@ -46,7 +46,7 @@ export const useForgotPassword = () => {
   const isValidAccount = () => {
     return /^\d{10,11}$/.test(String(model.value.account ?? "").trim());
   };
-
+// gọi hàm requestOtp để lấy mã otp, nếu tài khoản hợp lệ thì sẽ hiển thị mã otp, ngược lại sẽ hiển thị thông báo lỗi
   const requestOtp = async () => {
     v$.value.account.$touch();
     if (v$.value.account.$invalid) {

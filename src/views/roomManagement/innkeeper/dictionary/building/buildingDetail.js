@@ -39,7 +39,7 @@ export const useBuildingDetail = () => {
 
   const customBeforeSubmit = () => {
     const me = proxy;
-    //debugger;
+    // gán user_id và trạng thái tòa nhà trước khi lưu
     me.model.user_id = useContextManageStore().$state.user.user_id;
     me.model.status = isUsing.value
       ? BuildingStatus.Using
@@ -77,10 +77,6 @@ export const useBuildingDetail = () => {
       const contextStore = useContextManageStore();
       contextStore.$state.user = context.user;
       roomStore.$state.invalidCache = true;
-    }
-
-    if (typeof me._formParam.refresh === "function") {
-      me._formParam.refresh();
     }
   };
 

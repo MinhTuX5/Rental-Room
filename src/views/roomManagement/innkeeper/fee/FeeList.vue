@@ -26,6 +26,14 @@
       :style="{ maxHeight: tableMaxHeight + 'px' }"
       @update:options="loadItems"
     >
+      <template v-slot:item.contract_code="{ item }">
+        <span
+          class="text-blue cursor-pointer font-weight-bold"
+          @click="showResidentsPopup(item)"
+        >
+          {{ item.contract_code }}
+        </span>
+      </template>
       <template v-slot:item.displayed_fee_status="{ item }">
         <v-chip :color="item.status_color">{{
           item.displayed_fee_status
@@ -43,7 +51,7 @@
         </v-icon>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-row>
+        <v-row justify="center">
           <v-col>
             <v-icon
               color="green"

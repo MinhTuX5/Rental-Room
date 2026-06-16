@@ -24,11 +24,19 @@
       :style="{ maxHeight: tableMaxHeight + 'px' }"
       @update:options="loadItems"
     >
+      <template v-slot:item.contract_code="{ item }">
+        <span
+          class="text-blue cursor-pointer font-weight-bold"
+          @click="showResidentsPopup(item)"
+        >
+          {{ item.contract_code }}
+        </span>
+      </template>
       <template v-slot:item.is_empty="{ item }">
         <v-checkbox-btn class="justify-center" v-model="item.is_empty" readonly></v-checkbox-btn>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-row>
+        <v-row justify="center">
           <v-col>
             <v-icon
               color="blue"

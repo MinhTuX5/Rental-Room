@@ -133,9 +133,9 @@ export default {
         throw new Error("detailForm is required");
       }
       const param = {
-        mode: me._enum.Mode.Add,
+        editMode: me._enum.Mode.Add,
         detailForm: me.detailForm,
-        refresh: this.refresh,
+        refresh: me.refresh,
       };
       popupUtil.show(me.detailForm, param);
     },
@@ -162,6 +162,7 @@ export default {
         me.loading = true;
         await me.store.deleteAsync(item[me.idField]);
         showMessage("Xóa thành công!");
+        await me.refresh();
       } catch (error) {
         console.error(error);
       } finally {

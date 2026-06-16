@@ -21,18 +21,26 @@ import FilterOperator from "../../../common/enum/FilterOperator";
 import { sortBy } from "lodash";
 import PostStatus from "../../../common/enum/PostStatus";
 
+/**
+ * useMainView - Composable function for room search main view
+ * Handles room search filtering, pagination, sorting and displaying room posts
+ */
 export const useMainView = () => {
+  // Lấy instance hiện tại để truy cập $refs và các phương thức của component
   const { proxy } = getCurrentInstance();
-  // stores
+  // Khởi tạo stores để quản lý dữ liệu phòng trọ và địa chỉ
   const roomPostStore = useRoomPostStore();
   const locationStore = useLocationStore();
 
   const goTo = useGoTo();
 
   //#region Filters
+  // Lấy các cấu hình bộ lọc từ roomSearchCommon
   const { filters } = useRoomSearchCommon();
+  // Lưu trữ các giá trị bộ lọc đã chọn
   const filterVals = ref([]);
 
+  // Model chứa các tham số lọc: số người thuê, số phương tiện, phòng ngủ, loại phòng, địa chỉ
   const filterModel = reactive({
     noOfRenters: 1,
     noOfVehicles: 0,
@@ -44,6 +52,7 @@ export const useMainView = () => {
   });
   //#endregion
 
+  // Cấu hình tìm kiếm với các tùy chọn: loại phòng và địa chỉ (tỉnh, huyện, xã)
   const searchConfig = reactive([
     {
       type: 10,
@@ -57,10 +66,17 @@ export const useMainView = () => {
     ...LocationConfig,
   ]);
 
+  /**
+   * onSelectFilter - Xử lý khi người dùng chọn bộ lọc
+   * Cập nhật các quận, huyện, xã dựa trên tỉnh được chọn
+   * @param {String|Number} selectedVal - Giá trị được chọn
+   * @param {Number} type - Loại bộ lọc (Tỉnh, Huyện, Xã)
+   */
   const onSelectFilter = (selectedVal, type) => {
     let config = null;
     switch (type) {
       case LocationType.Province:
+        // Cập nhật tỉnh được chọn và làm tươi danh sách quận
         locationStore.selectProvinceById(selectedVal);
         config = searchConfig.find(
           (x) => x.locationType === LocationType.District
@@ -70,6 +86,7 @@ export const useMainView = () => {
         }
         break;
       case LocationType.District:
+        // Cập nhật quận được chọn và làm tươi danh sách xã
         locationStore.selectDistrictById(selectedVal);
         config = searchConfig.find((x) => x.locationType === LocationType.Ward);
         if (config) {
@@ -99,20 +116,23 @@ export const useMainView = () => {
   const postDetails = ref([]);
 
   //#region Pagination
-  // Số bản ghi mỗi trang
+  // Số lượng bản ghi hiển thị trong mỗi trang
   const pageSize = ref(10);
-  // số thứ tự của trang hiện tại
+  // Chỉ số trang hiện tại (bắt đầu từ 1)
   const pageIndex = ref(1);
-  // Tổng số bản ghi thu được
+  // Tổng số bản ghi tìm kiếm được từ API
   const totalCount = ref(20);
-  // số lượng trang
+  // Tính toán tổng số trang dựa trên tổng số bản ghi và kích thước trang
   const pageTotal = computed(() =>
     Math.ceil(totalCount.value / pageSize.value)
   );
 
   /**
-   * @description Chuyển trang
-   * @param {Number} pageIndex
+   * changePage - Lấy dữ liệu phòng trọ cho trang được chỉ định
+   * @description Gọi API với các bộ lọc, phân trang và sắp xếp
+   *              Cập nhật danh sách postDetails và cuộn lên đầu danh sách
+   * @param {Number} pageIndex - Chỉ số trang cần lấy dữ liệu
+   * @param {Boolean} isFirstLoad - Nếu true, không cuộn (lần tải đầu tiên)
    */
   const changePage = async (pageIndex, isFirstLoad = false) => {
     const me = proxy;
@@ -132,6 +152,7 @@ export const useMainView = () => {
     }
 
     if (!isFirstLoad) {
+      // Cuộn đến phần tử có id là "list"
       scrollTo(
         goTo,
         "#list",
@@ -144,11 +165,20 @@ export const useMainView = () => {
     }
   };
 
+  /**
+   * getPagingPayload - Xây dựng payload cho request phân trang
+   * @description Tạo object payload chứa thông tin phân trang, bộ lọc (giá, diện tích, địa chỉ, v.v) và sắp xếp
+   * @param {Number} pageIndex - Chỉ số trang
+   * @returns {Object} Payload chứa PagingItem (Skip, Take, Filters, Sorts) và FilterVals
+   */
   const getPagingPayload = (pageIndex) => {
     const payload = {
       PagingItem: {
+        // Số bản ghi bỏ qua = (trang - 1) * kích thước trang
         Skip: (pageIndex - 1) * pageSize.value,
+        // Số bản ghi lấy = kích thước trang
         Take: pageSize.value,
+        // Mảng các bộ lọc: chỉ lấy phòng có trạng thái "Posted"
         Filters: [
           {
             Field: "post_status",
@@ -160,10 +190,12 @@ export const useMainView = () => {
       },
     };
 
+    // Thêm các bộ lọc tùy chỉnh nếu có
     if (filterVals.value.length > 0) {
       payload.FilterVals = [...(payload.FilterVals || []), ...filterVals.value];
     }
 
+    // Thêm bộ lọc loại phòng nếu có
     if (filterModel.room_type_id.length > 0) {
       payload.PagingItem.Filters.push({
         Field: "room_type_id",
@@ -172,6 +204,7 @@ export const useMainView = () => {
       });
     }
 
+    // Thêm các bộ lọc địa chỉ (tỉnh, huyện, xã) nếu có
     const locationFields = ["province_id", "district_id", "ward_id"];
     locationFields.forEach((field) => {
       if (filterModel[field]) {
@@ -183,6 +216,7 @@ export const useMainView = () => {
       }
     });
 
+    // Thêm bộ lọc giá theo lựa chọn (dưới 1 triệu, trên 20 triệu, hoặc khoảng chỉ định)
     if (priceRangeBtn.value.toLowerCase().startsWith("dưới")) {
       payload.PagingItem.Filters.push({
         Field: "room_price",
@@ -208,6 +242,7 @@ export const useMainView = () => {
       });
     }
 
+    // Thêm bộ lọc diện tích theo lựa chọn
     if (areaRangeBtn.value.toLowerCase().startsWith("dưới")) {
       payload.PagingItem.Filters.push({
         Field: "room_area",
@@ -233,6 +268,7 @@ export const useMainView = () => {
       });
     }
 
+    // Thêm bộ lọc số người thuê nếu > 1
     if (filterModel.noOfRenters > 1) {
       payload.PagingItem.Filters.push({
         Field: "room_people_limit",
@@ -241,6 +277,7 @@ export const useMainView = () => {
       });
     }
 
+    // Thêm bộ lọc số phương tiện nếu > 0
     if (filterModel.noOfVehicles > 0) {
       payload.PagingItem.Filters.push({
         Field: "room_vehicle_limit",
@@ -249,6 +286,7 @@ export const useMainView = () => {
       });
     }
 
+    // Thêm bộ lọc số phòng ngủ nếu có
     if (filterModel.noOfBedRooms && filterModel.noOfBedRooms > 0) {
       payload.PagingItem.Filters.push({
         Field: "no_of_bed_rooms",
@@ -257,6 +295,7 @@ export const useMainView = () => {
       });
     }
 
+    // Thêm sắp xếp theo ngày đăng (mới nhất trước) nếu bật sortByNew
     if (sortByNew.value) {
       payload.PagingItem.Sorts.push({
         Column: "posted_date",
@@ -264,6 +303,7 @@ export const useMainView = () => {
       });
     }
 
+    // Thêm sắp xếp theo giá (tăng dần hoặc giảm dần)
     if (sortIcon.value.includes("up")) {
       payload.PagingItem.Sorts.push({ Column: "room_price" });
     } else if (sortIcon.value.includes("down")) {
@@ -276,6 +316,11 @@ export const useMainView = () => {
     return payload;
   };
 
+  /**
+   * scrollToIndex - Cuộn danh sách ảo đến chỉ mục được chỉ định
+   * @description Sử dụng virtual scroller để cuộn đến hàng thứ index
+   * @param {Number} index - Chỉ mục hàng cần cuộn đến
+   */
   const scrollToIndex = (index) => {
     const me = proxy;
     const vs = me?.$refs?.virtualScroll;
@@ -291,11 +336,15 @@ export const useMainView = () => {
 
   const tabVal = ref(1);
 
+  /**
+   * clearFilters - Xóa tất cả các bộ lọc và quay lại trang đầu tiên
+   */
   const clearFilters = () => {
     filterVals.value = [];
     changePage(1);
   };
 
+  // Menu các tùy chọn sắp xếp theo giá
   const priceMenuItems = ref([
     {
       title: "Tăng dần",
@@ -308,42 +357,79 @@ export const useMainView = () => {
     },
   ]);
 
+  // Icon hiển thị loại sắp xếp hiện tại (up/down)
   const sortIcon = ref("");
+
+  /**
+   * sortPrice - Sắp xếp phòng trọ theo giá
+   * @description Cập nhật icon sắp xếp và tải lại trang đầu tiên
+   * @param {Object} item - Item được chọn từ menu
+   */
   const sortPrice = (item) => {
     sortIcon.value = item.icon;
     changePage(1);
   };
 
+  // Nút hiển thị mức giá đã chọn (mặc định là "Mức giá")
   const priceRangeBtn = ref("Mức giá");
+  // Khoảng giá (triệu): từ 1 đến 20 triệu
   const priceRange = ref([1, 20]);
+
+  /**
+   * selectPriceRange - Cập nhật hiển thị text khoảng giá
+   * @description Định dạng lại nút hiển thị thành "Từ X đến Y triệu"
+   */
   const selectPriceRange = () => {
     priceRangeBtn.value = `Từ ${priceRange.value[0]} đến ${priceRange.value[1]} triệu`;
   };
 
+  // Nút hiển thị diện tích đã chọn (mặc định là "Diện tích")
   const areaRangeBtn = ref("Diện tích");
+  // Khoảng diện tích (m²): từ 10 đến 100
   const areaRange = ref([10, 100]);
+
+  /**
+   * selectAreaRange - Cập nhật hiển thị text khoảng diện tích
+   * @description Định dạng lại nút hiển thị thành "Từ X đến Y m²"
+   */
   const selectAreaRange = () => {
     areaRangeBtn.value = `Từ ${areaRange.value[0]} đến ${areaRange.value[1]} m²`;
   };
 
+  // Watch khoảng giá: cập nhật text khi giá thay đổi
   watch(priceRange, (newVal) => {
     priceRangeBtn.value = `Từ ${newVal[0]} đến ${newVal[1]} triệu`;
   });
 
+  // Watch khoảng diện tích: cập nhật text khi diện tích thay đổi
   watch(areaRange, (newVal) => {
     areaRangeBtn.value = `Từ ${newVal[0]} đến ${newVal[1]} m²`;
   });
 
+  // Cờ để bật/tắt sắp xếp theo ngày đăng mới nhất
   const sortByNew = ref(false);
+
+  /**
+   * onSortByNewest - Chuyển đổi sắp xếp theo ngày đăng mới nhất
+   * @description Bật/tắt sortByNew và tải lại trang đầu tiên
+   */
   const onSortByNewest = () => {
     sortByNew.value = !sortByNew.value;
     changePage(1);
   };
 
+  /**
+   * onMounted - Hook chạy khi component được mount
+   * @description Tải dữ liệu phòng trọ cho trang đầu tiên
+   */
   onMounted(async () => {
     changePage(1, true);
   });
 
+  /**
+   * Return object chứa tất cả các biến và hàm dùng trong component
+   * Được destructure trong component để sử dụng trong template và logic
+   */
   return {
     searchConfig,
     tabVal,

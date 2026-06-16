@@ -201,13 +201,13 @@ export default {
 
       const callBack = me._formParam?.options?.afterSubmit;
       if (callBack && typeof callBack == "function") {
-        callBack(data);
+        await callBack(data);
       }
 
       await me.customAfterSubmit(data);
 
       if (typeof me._formParam.refresh == "function") {
-        me._formParam.refresh();
+        await me._formParam.refresh();
       }
 
       me.hide();

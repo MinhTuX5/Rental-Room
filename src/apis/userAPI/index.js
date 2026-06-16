@@ -14,7 +14,7 @@ class UserAPI extends BaseAPI {
    */
   login(user) {
     try {
-      const res = this.postAsync(user, "login");
+      const res = this.postAsync(user, "login"); // post tới API login
       return res;
     } catch (error) {
       console.log(error);
@@ -26,7 +26,7 @@ class UserAPI extends BaseAPI {
    */
   loginCallback(payload) {
     try {
-      const res = this.postAsync(payload, "login-callback");
+      const res = this.postAsync(payload, "login-callback"); // post tới API login-callback
       return res;
     } catch (error) {
       console.log(error);
@@ -40,7 +40,7 @@ class UserAPI extends BaseAPI {
    */
   register(user) {
     try {
-      const res = this.postAsync(user, "Register");
+      const res = this.postAsync(user, "Register"); // post tới API Register
       return res;
     } catch (error) {
       console.log(error);

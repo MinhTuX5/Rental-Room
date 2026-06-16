@@ -9,9 +9,80 @@ import FilterOperator from "@/common/enum/FilterOperator";
 import _enum from "@/common/enum";
 // api
 import api from "../../../apis/dictionaryAPI/contractAPI";
+import roomAPI from "@/apis/dictionaryAPI/roomAPI";
+import residentAPI from "@/apis/dictionaryAPI/residentAPI";
 
 const store = new BaseDicStore(api);
 const contextStore = useContextManageStore();
+
+const getCurrentBuildingId = () => {
+  return useContextManageStore().$state.user?.building_id;
+};
+
+const getBuildingItems = async (sourceAPI) => {
+  const buildingId = getCurrentBuildingId();
+  if (!buildingId) {
+    return [];
+  }
+
+  const response = await sourceAPI.getPaging({
+    skip: 0,
+    take: 100000,
+    filters: [
+      {
+        Field: "building_id",
+        Value: buildingId,
+        Operator: FilterOperator.Equal,
+      },
+    ],
+  });
+
+  return response?.data ?? [];
+};
+
+const enrichContracts = async (contracts) => {
+  if (!Array.isArray(contracts) || contracts.length === 0) {
+    return contracts ?? [];
+  }
+
+  const [rooms, residents] = await Promise.all([
+    getBuildingItems(roomAPI),
+    getBuildingItems(residentAPI),
+  ]);
+
+  const roomById = rooms.reduce((result, room) => {
+    if (room?.room_id) {
+      result[room.room_id] = room;
+    }
+    return result;
+  }, {});
+
+  const ownerByRoomId = residents.reduce((result, resident) => {
+    if (!resident?.room_id) {
+      return result;
+    }
+
+    if (resident.is_owner || !result[resident.room_id]) {
+      result[resident.room_id] = resident;
+    }
+
+    return result;
+  }, {});
+
+  return contracts.map((contract) => {
+    const room = roomById[contract.room_id] ?? {};
+    const owner = ownerByRoomId[contract.room_id] ?? {};
+    return {
+      ...contract,
+      room_name: contract.room_name || room.room_name,
+      representative_name:
+        contract.representative_name ||
+        contract.resident_name ||
+        owner.resident_name ||
+        "",
+    };
+  });
+};
 
 export const useContractStore = defineStore("contract", {
   state: () => ({
@@ -19,7 +90,7 @@ export const useContractStore = defineStore("contract", {
     building_id: contextStore.$state.user.building_id,
     idField: "contract_id",
     codeField: "contract_code",
-    searchFields: ["contract_code", "room_code"],
+    searchFields: ["contract_code", "room_name", "representative_name"],
     numberFields: ["room_price", "room_deposit", "deposit_amount_received"],
     dateFields: ["start_date", "end_date", "created_date"],
   }),
@@ -43,6 +114,16 @@ export const useContractStore = defineStore("contract", {
   },
   actions: {
     ...store.actions,
+    async getPaging(config) {
+      const me = this;
+      const response = await api.getPaging(config);
+      const result = {
+        data: await enrichContracts(response.data),
+        totalCount: response.totalCount ?? 0,
+      };
+      me.afterGetPaging(result);
+      return result;
+    },
     afterGetPaging(result) {
       const me = this;
       me.items = result.data;

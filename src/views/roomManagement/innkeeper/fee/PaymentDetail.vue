@@ -7,7 +7,7 @@
     @before-open="beforeOpen"
     @opened="opened"
   >
-    <!-- Nội dung popup -->
+    <!-- Nội dung popup thanh toán -->
     <template #content>
       <v-row>
         <v-col class="mr-4">
@@ -64,7 +64,6 @@
             activator="#date"
             :close-on-content-click="false"
           >
-            <!-- locale="sv-se" -->
             <v-date-picker
               v-model="model.payment_date"
               hide-header

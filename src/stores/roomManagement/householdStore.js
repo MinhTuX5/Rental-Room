@@ -6,6 +6,7 @@ import { useContextManageStore } from "@/stores/contextManageStore";
 import api from "../../apis/roomManagementAPI/householdAPI";
 import residentAPI from "@/apis/dictionaryAPI/residentAPI";
 import vehicleAPI from "@/apis/roomManagementAPI/vehicleAPI";
+import roomAPI from "@/apis/dictionaryAPI/roomAPI";
 // resource
 import FilterOperator from "@/common/enum/FilterOperator";
 
@@ -42,15 +43,44 @@ const getVehicles = async () => {
   return response?.data ?? [];
 };
 
+const getBuildingRooms = async () => {
+  const buildingId = getCurrentBuildingId();
+  if (!buildingId) {
+    return [];
+  }
+
+  const response = await roomAPI.getPaging({
+    skip: 0,
+    take: 100000,
+    filters: [
+      {
+        Field: "building_id",
+        Value: buildingId,
+        Operator: FilterOperator.Equal,
+      },
+    ],
+  });
+
+  return response?.data ?? [];
+};
+
 const enrichResidentRowsWithCounts = async (residentRows) => {
   if (!Array.isArray(residentRows) || residentRows.length === 0) {
     return residentRows ?? [];
   }
 
-  const [residents, vehicles] = await Promise.all([
+  const [residents, vehicles, rooms] = await Promise.all([
     getBuildingResidents(),
     getVehicles(),
+    getBuildingRooms(),
   ]);
+
+  const roomById = rooms.reduce((result, room) => {
+    if (room?.room_id) {
+      result[room.room_id] = room;
+    }
+    return result;
+  }, {});
 
   const residentsByRoomId = residents.reduce((result, resident) => {
     if (!resident?.room_id) {
@@ -83,12 +113,31 @@ const enrichResidentRowsWithCounts = async (residentRows) => {
 
   return residentRows.map((resident) => {
     const roomResidents = residentsByRoomId[resident.room_id] ?? [];
+    const room = roomById[resident.room_id] ?? {};
     return {
       ...resident,
+      room_name: resident.room_name || room.room_name,
       member_count: roomResidents.length,
       vehicle_count: vehicleCountByRoomId[resident.room_id] ?? 0,
     };
   });
+};
+
+const normalizeSearchText = (value) => {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase();
+};
+
+const matchesKeyword = (item, keyword, fields) => {
+  const normalizedKeyword = normalizeSearchText(keyword);
+  if (!normalizedKeyword) {
+    return true;
+  }
+
+  return fields.some((field) =>
+    normalizeSearchText(item?.[field]).includes(normalizedKeyword)
+  );
 };
 
 export const useHouseholdStore = defineStore("household", {
@@ -97,7 +146,7 @@ export const useHouseholdStore = defineStore("household", {
     building_id: contextStore.$state.user.building_id,
     idField: "room_id",
     codeField: "room_code",
-    searchFields: ["room_code", "room_position", "resident_code", 'resident_name'],
+    searchFields: ["room_name", "room_code", "resident_name"],
   }),
   getters: {
     defaultFilters(state) {
@@ -124,10 +173,37 @@ export const useHouseholdStore = defineStore("household", {
     ...store.actions,
     async getPaging(config) {
       const me = this;
-      const response = await residentAPI.getPaging(config);
+      const keyword = config?.searchItem?.value;
+      const shouldSearchLocally = Boolean(normalizeSearchText(keyword));
+      const pagingConfig = shouldSearchLocally
+        ? {
+            ...config,
+            skip: 0,
+            take: 100000,
+            searchItem: {
+              columns: [],
+              value: "",
+            },
+          }
+        : config;
+
+      const response = await residentAPI.getPaging(pagingConfig);
+      let data = await enrichResidentRowsWithCounts(response.data);
+
+      if (shouldSearchLocally) {
+        data = data.filter((item) =>
+          matchesKeyword(item, keyword, me.searchFields)
+        );
+      }
+
+      const totalCount = shouldSearchLocally ? data.length : response.totalCount ?? 0;
+      const pageIndex = Number(config?.skip ?? 0);
+      const pageSize = Number(config?.take ?? data.length);
+      const start = shouldSearchLocally ? pageIndex * pageSize : 0;
+
       const result = {
-        data: await enrichResidentRowsWithCounts(response.data),
-        totalCount: response.totalCount ?? 0,
+        data: shouldSearchLocally ? data.slice(start, start + pageSize) : data,
+        totalCount,
       };
       me.afterGetPaging(result);
       return result;

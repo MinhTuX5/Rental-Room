@@ -13,20 +13,23 @@ export const usServiceFeeList = () => {
     {
       key: "service_fee_code",
       title: "Mã dịch vụ",
+      align: "center",
     },
     {
       key: "service_type",
       title: "Loại dịch vụ",
       sort: "asc",
+      align: "center",
     },
     {
       key: "fee_price",
       title: "Mức giá dịch vụ",
-      align: "end",
+      align: "center",
     },
     {
       key: "displayed_price_unit",
       title: "Đơn vị tính",
+      align: "center",
     },
     {
       title: "Chức năng",

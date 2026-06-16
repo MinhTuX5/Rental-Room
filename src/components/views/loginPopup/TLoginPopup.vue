@@ -108,8 +108,8 @@ export default {
         };
 
         overlay.value = true;
-        const rs = await api.login(payload);
-        handleAfterLogin(rs);
+        const rs = await api.login(payload);// gọi api login, nếu thành công sẽ trả về context, nếu thất bại sẽ trả về lỗi
+        handleAfterLogin(rs);// xử lý sau khi login thành công và phân quyền
       } catch (error) {
         console.error(error);
         if (error.status === 400) {
@@ -130,9 +130,9 @@ export default {
       if (rs.data && typeof rs.data === "object") {
         const context = { ...rs.data };
 
-        let store = {};
-        let localStorageKey = "";
-
+        let store = {};// khai báo biến store để lưu trữ thông tin người dùng sau khi đăng nhập, sẽ được gán giá trị tương ứng với vai trò của người dùng (Admin, Renter, Innkeeper hoặc RoomSeeker)
+        let localStorageKey = ""; // khai báo biến localStorageKey để lưu trữ khóa trong localStorage, sẽ được gán giá trị tương ứng với vai trò của người dùng (context_admin, context_management hoặc context)
+        // xác định store và localStorageKey dựa trên vai trò của người dùng trong context, nếu là Admin thì sử dụng contextAdminStore và lưu vào localStorage với khóa "context_admin", nếu là Renter hoặc Innkeeper thì sử dụng contextManageStore và lưu vào localStorage với khóa "context_management", nếu là RoomSeeker thì sử dụng contextStore và lưu vào localStorage với khóa "context"
         if (context.role == Role.Admin) {
           localStorageKey = "context_admin";
           store = useContextAdminStore();
